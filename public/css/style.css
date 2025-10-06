@@ -1,0 +1,108 @@
+/* Base */
+body {
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    background: linear-gradient(135deg, #e3f2fd, #fce4ec); /* konsisten dengan signup */
+    color: #333;
+    transition: background 0.4s ease, color 0.3s ease;
+}
+
+/* Sidebar */
+.sidebar {
+    height: 100vh;
+    background: linear-gradient(180deg, #4e54c8, #8f94fb);
+    color: #fff;
+    position: fixed;
+    top: 0; left: 0;
+    width: 220px;
+    z-index: 1050;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+    padding-top: 70px;
+    transition: all 0.4s ease;
+}
+.sidebar .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+.sidebar .menu-item:hover {
+    background-color: rgba(255,255,255,0.12);
+    cursor: pointer;
+    padding-left: 28px;
+    border-radius: 8px;
+}
+
+/* Navbar */
+.custom-nav {
+    background: #ffffffcc;
+    backdrop-filter: blur(12px);
+    height: 65px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+    z-index: 1100;
+}
+.navbar-brand {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+.text-gradient {
+    background: linear-gradient(90deg, #0d6efd, #ff4fa2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Main */
+.main-content {
+    margin-left: 220px;
+    padding: 20px;
+    transition: margin-left 0.4s ease;
+    min-height: 100vh;
+}
+.content-wrapper {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+    color: #f1f1f1;
+}
+body.dark-mode .custom-nav {
+    background: #2c2c54cc;
+}
+body.dark-mode .sidebar {
+    background: linear-gradient(180deg, #141e30, #243b55);
+}
+body.dark-mode .content-wrapper {
+    background: #2a2a40;
+    color: #eaeaea;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+    .content-wrapper {
+        padding: 16px;
+    }
+}
+@media (max-width: 576px) {
+    .navbar .btn { padding: 6px 8px; }
+    .dropdown .btn img { width: 28px; height: 28px; }
+    .content-wrapper { padding: 12px; }
+}

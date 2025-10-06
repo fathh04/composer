@@ -1,0 +1,91 @@
+body {
+    overflow-x: hidden;
+}
+.sidebar {
+    height: 100vh;
+    background-color: #343a40;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: all 0.3s;
+    width: 250px;
+}
+.sidebar.minimized {
+    width: 70px;
+}
+.sidebar .menu-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    font-size: 16px;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+.sidebar .menu-item i {
+    margin-right: 10px;
+    font-size: 20px;
+}
+.sidebar .menu-item span {
+    flex-grow: 1;
+}
+.sidebar .menu-item:hover {
+    background-color: #495057;
+    cursor: pointer;
+}
+.sidebar.minimized .menu-item span {
+    display: none;
+}
+.sidebar.minimized .menu-item {
+    justify-content: center;
+}
+.main-content {
+    margin-left: 250px;
+    transition: all 0.3s;
+}
+.main-content.minimized {
+    margin-left: 70px;
+}
+.navbar-brand {
+    font-weight: bold;
+    color: #343a40 !important;
+    display: flex;
+    align-items: center;
+}
+.navbar-brand img {
+    height: 30px;
+    margin-right: 10px;
+}
+.profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.stat-box {
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    color: #fff;
+    font-size: 18px;
+}
+.stat-box h2 {
+    font-size: 36px;
+    margin: 0;
+}
+.upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #007bff;
+    padding: 20px;
+    border-radius: 8px;
+    color: #007bff;
+    cursor: pointer;
+    text-align: center;
+}
+.upload-btn:hover {
+    background-color: #ededf6;
+}
+.upload-btn i {
+    font-size: 40px;
+}
