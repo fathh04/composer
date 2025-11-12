@@ -42,8 +42,8 @@
         <div class="tab-pane fade show active" id="jelajah" role="tabpanel">@include('siswa.tabsKelas.jelajah')</div>
         <div class="tab-pane fade" id="kuis" role="tabpanel">@include('siswa.tabsKelas.kuis')</div>
         <div class="tab-pane fade" id="leaderboard" role="tabpanel">@include('siswa.tabsKelas.leaderboard')</div>
-        <div class="tab-pane fade" id="informasi" role="tabpanel">@include('siswa.tabsKelas.feed')</div>
-        <div class="tab-pane fade" id="buatfeed" role="tabpanel">@include('siswa.tabsKelas.buatfeed')</div>
+        {{-- <div class="tab-pane fade" id="informasi" role="tabpanel">@include('siswa.tabsKelas.feed')</div> --}}
+        {{-- <div class="tab-pane fade" id="buatfeed" role="tabpanel">@include('siswa.tabsKelas.buatfeed')</div> --}}
         <div class="tab-pane fade" id="livecode" role="tabpanel">@include('siswa.tabsKelas.livecode')</div>
     </div>
 </div>
