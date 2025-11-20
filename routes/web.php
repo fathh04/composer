@@ -6,6 +6,7 @@ use App\Http\Controllers\MateriController;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\CodeSubmissionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,6 +31,7 @@ Route::get('/berandaGuru', [DashboardController::class, 'guru'])->name('guru.ind
 Route::post('/materi/store', [MateriController::class, 'store'])->name('materi.store');
 Route::post('/kuis/store', [KuisController::class, 'store'])->name('kuis.store');
 
+// Siswa
 Route::middleware(['auth'])->group(function () {
     Route::get('/kelas', [DashboardController::class, 'KelasSiswa'])->name('kelas');
     Route::get('/beranda', [DashboardController::class, 'Beranda'])->name('beranda');
@@ -38,6 +40,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/CPdanTP', [DashboardController::class, 'CPdanTPSiswa'])->name('CPdanTP');
 });
 Route::get('/klasifikasi', [DashboardController::class, 'Klasifikasi'])->name('klasifikasi');
+
+Route::middleware('auth')->group(function(){
+    Route::get('/submission/status', [CodeSubmissionController::class, 'status'])->name('submission.status');
+    Route::post('/submission/save', [CodeSubmissionController::class, 'save'])->name('submission.save');
+});
+
 
 Route::get('/isiKelas', function () {
     return view('siswa.isiKelas');
@@ -64,9 +72,11 @@ Route::delete('/kelasGuru/{idkelas}/materi/{id}', [MateriController::class, 'des
 Route::get('/kelas/{id}', [KelasController::class, 'show'])->name('siswa.kelas.masuk');
 Route::get('/kelas/{id}/materi', [MateriController::class, 'showForSiswa'])->name('kelas.showForSiswa');
 Route::get('/kelas/{idkelas}/materi', [MateriController::class, 'indexSiswa'])->name('materi.indexSiswa');
-Route::get('/profile', function () {
-    return view('siswa.profile');
-});
+// Route::get('/profile', function () {
+//     return view('siswa.profile');
+// });
+
+Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
 
 Route::get('/coba', function () {
     return view('coba');

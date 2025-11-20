@@ -89,4 +89,11 @@ class AuthController extends Controller
         $request->session()->flush();            // hapus semua isi session
         return redirect()->route('login')->with('success', 'Berhasil logout.');
     }
+
+    public function profile()
+    {
+        $user = Auth::user();
+
+        return view('siswa.profile', compact('user'));
+    }
 }

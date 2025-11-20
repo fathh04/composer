@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container py-5">
-    <div class="card shadow-sm rounded p-4 mb-4">
+    <div class="card bg-light shadow-sm rounded p-4 mb-4">
         <h1 class="h4 fw-bold text-center text-primary mb-2">Kelas: {{ $kelas->pelajaran }}</h1>
         <p class="text-center text-muted mb-0">ID Kelas: {{ $kelas->idkelas }}</p>
     </div>

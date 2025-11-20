@@ -1,341 +1,345 @@
 <div class="container-fluid py-4">
   <div class="row g-4">
-
-    <!-- Kolom kiri: Instruksi -->
+    <!-- Kolom kiri -->
     <div class="col-md-3">
       <div class="card glass-card h-100 instructions-card">
         <div class="card-body">
           <h4 class="fw-bold mb-3 text-primary">📘 Petunjuk Pemakaian</h4>
           <ul class="modern-list">
-            <li><b>HTML, CSS, JS</b> tulis di editor.</li>
+            <li>Tulis <b>HTML</b> di editor.</li>
             <li>Klik <b>▶ Run</b> untuk jalankan.</li>
             <li>Klik <b>🗑 Clear</b> untuk reset editor.</li>
-            <li>Klik <b>⛶ Fullscreen</b> untuk mode penuh.</li>
+            <li>Klik <b>📤 Kirim</b> untuk kumpulkan tugas.</li>
           </ul>
           <hr>
           <h6 class="fw-bold text-primary">🎯 Tugas:</h6>
           <ol class="modern-list">
             <li>Judul: <b style="color:#ff9800;">Hello Word!</b></li>
-            <li>Paragraf singkat yang menggambarkan tentang dirimu!</li>
-            <li>Tombol alert: <code>"Selamat, kode kamu berhasil!"</code></li>
+            <li>Paragraf singkat tentang dirimu</li>
+            <li>Buatlah tombol <code>Click Me</code></li>
           </ol>
         </div>
       </div>
     </div>
 
-    <!-- Kolom kanan: Editor + Output -->
+    <!-- Kolom kanan -->
     <div class="col-md-9">
       <div class="card glass-card h-100">
         <div class="card-body p-0 d-flex">
 
-          <!-- Sidebar File Tabs -->
+          <!-- Sidebar File -->
           <div class="file-sidebar">
             <div class="file-tab active" data-file="index.html">🌐 index.html</div>
-            <div class="file-tab" data-file="style.css">🎨 style.css</div>
-            <div class="file-tab" data-file="script.js">⚡ script.js</div>
           </div>
 
           <!-- Editor + Output -->
           <div class="flex-grow-1 d-flex flex-column">
+
             <!-- Toolbar -->
             <div class="toolbar d-flex align-items-center px-3">
-              <span class="fw-bold text-primary">💻 Code Editor</span>
+              <span class="fw-bold text-primary">💻 HTML Editor</span>
               <div class="ms-auto">
-                <button id="runBtn" class="btn-run">▶ Run</button>
-                <button id="clearBtn" class="btn-clear">🗑</button>
+                <button id="runBtn" type="button" class="btn-run">▶ Run</button>
+                <button id="clearBtn" type="button" class="btn-clear">🗑</button>
+                <button id="submitBtn" type="button" class="btn-submit">📤 Kirim</button>
               </div>
             </div>
 
+            <!-- FEEDBACK OTOMATIS -->
+            <div id="feedbackBox" class="feedback-box" style="display:none;"></div>
+
             <!-- Workspace -->
-            <div class="workspace flex-grow-1">
+            <div class="workspace flex-grow-1 d-flex flex-column">
               <div id="editor"></div>
 
-              <!-- Output -->
-              <div id="output" style="display:none;">
+              <div id="output" style="display:none; flex-direction: column; height: 40vh;">
                 <div class="cmd-header d-flex align-items-center px-3">
                   <span>🖥 Preview</span>
-                  <span id="toggleBtn" class="ms-auto btn-icon small">⛶</span>
+
+                  <div class="ms-auto d-flex gap-2">
+                    <button class="zoom-btn" id="zoomInBtn" title="Zoom In">＋</button>
+                    <button class="zoom-btn" id="zoomOutBtn" title="Zoom Out">－</button>
+                    <button class="zoom-btn" id="fitBtn" title="Reset Zoom">⤢</button>
+                    <button class="zoom-btn" id="fsBtn" title="Fullscreen Preview">⛶</button>
+                  </div>
                 </div>
-                <iframe id="preview"></iframe>
+
+                <div class="preview-wrap" style="position:relative; flex:1; overflow:auto;">
+                  <iframe id="preview" style="transform-origin: top left; width:100%; height:100%;"></iframe>
+                </div>
               </div>
+
             </div>
           </div>
 
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <!-- Load Monaco Editor -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
-<script>
-let editor;
-let isFullscreen = false;
-let currentFile = "index.html";
-let originalParent;
 
+<script>
+/* ---------- Setup Editor ---------- */
+let editor;
+let editorLocked = false;
 let files = {
-  "index.html": "<!-- Tulis kode HTML Anda disini! -->\n<h1>Hello Word!</h1>\n",
-  "style.css": "/* Tulis kode CSS Anda disini! */\nbody { font-family: Comic Sans MS, Arial; background:#fdf6e3; }",
-  "script.js": "// Tulis kode javascript Anda disini!\nalert('Selamat, kode kamu berhasil!');"
+  "index.html": "<!-- Tulis kode HTML Anda disini! -->\n<h1>Hello Word!</h1>\n<p>Perkenalkan nama saya ...</p>\n<button>Click Me</button>\n"
 };
 
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
 require(["vs/editor/editor.main"], function () {
   editor = monaco.editor.create(document.getElementById('editor'), {
-    value: files[currentFile],
+    value: files["index.html"],
     language: "html",
     theme: "vs-light",
     fontSize: 15,
-    fontFamily: "JetBrains Mono, Fira Code, monospace",
-    automaticLayout: true
+    automaticLayout: true,
+    minimap: { enabled: false }
   });
 });
 
-// Ganti file
-document.querySelectorAll(".file-tab").forEach(tab => {
-  tab.addEventListener("click", function() {
-    files[currentFile] = editor.getValue();
-    document.querySelectorAll(".file-tab").forEach(t => t.classList.remove("active"));
-    this.classList.add("active");
-    currentFile = this.dataset.file;
+/* ---------- Feedback Logic ---------- */
+function checkStudentAnswer(code) {
+    const feedback = [];
+    // normalize whitespace for checks
+    const codeNorm = code.replace(/\s+/g, ' ').toLowerCase();
 
-    let lang = "html";
-    if (currentFile.endsWith(".css")) lang = "css";
-    if (currentFile.endsWith(".js")) lang = "javascript";
+    // Check heading exact phrase "hello word!" inside h1 (case-insensitive)
+    if (/<h1[^>]*>.*hello word!.*<\/h1>/i.test(code)) {
+        feedback.push({ ok: true, msg: "✔ Judul <b>Hello Word!</b> sudah benar!" });
+    } else {
+        feedback.push({ ok: false, msg: "❌ Judul belum benar. Gunakan: <code>&lt;h1&gt;Hello Word!&lt;/h1&gt;</code>" });
+    }
 
-    monaco.editor.setModelLanguage(editor.getModel(), lang);
-    editor.setValue(files[currentFile]);
-  });
-});
+    // Check paragraph presence
+    if (/<p\b[^>]*>.*?<\/p>/is.test(code)) {
+        feedback.push({ ok: true, msg: "✔ Paragraf sudah ada, bagus!" });
+    } else {
+        feedback.push({ ok: false, msg: "❌ Paragraf belum dibuat. Tambahkan: <code>&lt;p&gt;Tuliskan tentang dirimu&lt;/p&gt;</code>" });
+    }
 
-// Run
-document.getElementById("runBtn").onclick = function() {
-  files[currentFile] = editor.getValue();
-  const output = `
-  <!DOCTYPE html>
-  <html>
-  <head>
-  <style>${files["style.css"]}</style>
-  </head>
-  <body>
-  ${files["index.html"]}
-  <script>${files["script.js"]}<\/script>
-  </body>
-  </html>
-  `;
+    // Check button content "Click Me" (case-insensitive)
+    if (/<button\b[^>]*>\s*click me\s*<\/button>/i.test(code)) {
+        feedback.push({ ok: true, msg: "✔ Tombol <b>Click Me</b> sudah benar!" });
+    } else {
+        feedback.push({ ok: false, msg: "❌ Tombol belum dibuat atau teksnya berbeda. Gunakan: <code>&lt;button&gt;Click Me&lt;/button&gt;</code>" });
+    }
+
+    return feedback;
+}
+
+function showFeedback(items) {
+    const box = document.getElementById("feedbackBox");
+    box.style.display = "block";
+    box.innerHTML = items.map(it => {
+      const color = it.ok ? 'feedback-ok' : 'feedback-fail';
+      return `<div class="${color}">${it.msg}</div>`;
+    }).join("");
+    // scroll to feedback
+    box.scrollIntoView({behavior: 'smooth', block: 'center'});
+}
+
+/* ---------- Preview / Run / Clear ---------- */
+document.getElementById("runBtn").addEventListener('click', function() {
+  if (editorLocked) return;
+  files["index.html"] = editor.getValue();
+  const output = `<!doctype html><html><head><meta charset="utf-8"></head><body>${files["index.html"]}</body></html>`;
   document.getElementById("preview").srcdoc = output;
-  document.getElementById("output").style.display = "block";
-};
+  document.getElementById("output").style.display = "flex";
+});
 
-// Clear
-document.getElementById("clearBtn").onclick = function() {
-  for (let f in files) files[f] = "";
+document.getElementById("clearBtn").addEventListener('click', function() {
+  if (editorLocked) return;
+  files["index.html"] = "";
   editor.setValue("");
   document.getElementById("preview").srcdoc = "";
   document.getElementById("output").style.display = "none";
-};
+});
 
-// Toggle fullscreen
-document.getElementById("toggleBtn").onclick = function() {
-  const output = document.getElementById("output");
-  if (!isFullscreen) {
-    originalParent = output.parentNode;
-    document.body.appendChild(output);
-    output.classList.add("fullscreen");
-    this.textContent = "❐";
-    isFullscreen = true;
+/* ---------- Submit with feedback (prevent reload) ---------- */
+document.getElementById("submitBtn").addEventListener('click', function(e){
+  e && e.preventDefault();
+
+  if (editorLocked) return;
+
+  files["index.html"] = editor.getValue();
+
+  // run feedback
+  const fb = checkStudentAnswer(files["index.html"]);
+  showFeedback(fb);
+
+  // lock editor and buttons
+  editor.updateOptions({ readOnly: true });
+  editorLocked = true;
+  document.getElementById("runBtn").disabled = true;
+  document.getElementById("clearBtn").disabled = true;
+  document.getElementById("submitBtn").disabled = true;
+
+  // send via fetch (AJAX) without reload
+  fetch("{{ url('/submission/save') }}", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-TOKEN": '{{ csrf_token() }}'
+    },
+    body: JSON.stringify({ html: files["index.html"] })
+  }).then(res => {
+    // optional success handling
+    if (res.ok) {
+      // show small success indicator
+      const okNote = document.createElement('div');
+      okNote.className = 'submit-ok';
+      okNote.innerHTML = '✔ Kode berhasil dikirim';
+      document.getElementById('feedbackBox').appendChild(okNote);
+    }
+  }).catch(err => {
+    const failNote = document.createElement('div');
+    failNote.className = 'submit-fail';
+    failNote.innerHTML = '⚠ Gagal mengirim, coba lagi.';
+    document.getElementById('feedbackBox').appendChild(failNote);
+  });
+});
+
+/* ---------- Zoom & Fullscreen Controls for preview ---------- */
+let zoomLevel = 1;
+const zoomStep = 0.1;
+const minZoom = 0.3;
+const maxZoom = 2.5;
+const preview = () => document.getElementById('preview');
+
+function applyZoom() {
+  const frame = preview();
+  frame.style.transform = `scale(${zoomLevel})`;
+  // adjust container scroll/height so scaled content fits
+  // using transform scale keeps iframe width fixed; adjust wrapper height to avoid overflow
+  const wrapper = frame.parentElement;
+  if (zoomLevel > 1) {
+    wrapper.style.overflow = 'auto';
   } else {
-    originalParent.appendChild(output);
-    output.classList.remove("fullscreen");
-    this.textContent = "⛶";
-    isFullscreen = false;
+    wrapper.style.overflow = 'auto';
   }
-};
+}
+
+document.getElementById('zoomInBtn').addEventListener('click', () => {
+  zoomLevel = Math.min(maxZoom, +(zoomLevel + zoomStep).toFixed(2));
+  applyZoom();
+});
+document.getElementById('zoomOutBtn').addEventListener('click', () => {
+  zoomLevel = Math.max(minZoom, +(zoomLevel - zoomStep).toFixed(2));
+  applyZoom();
+});
+document.getElementById('fitBtn').addEventListener('click', () => {
+  zoomLevel = 1;
+  applyZoom();
+});
+document.getElementById('fsBtn').addEventListener('click', () => {
+  const frame = preview();
+  // request fullscreen on wrapper (safer)
+  const wrapper = frame.parentElement;
+  if (wrapper.requestFullscreen) wrapper.requestFullscreen();
+  else if (wrapper.webkitRequestFullscreen) wrapper.webkitRequestFullscreen();
+});
+
+/* ensure zoom resets when new preview loaded */
+window.addEventListener('message', (e) => {
+  // no-op, placeholder if you want to send messages from preview
+});
 </script>
 
 <style>
-/* Glassmorphism */
+/* ======= Layout & Visuals ======= */
 .glass-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255,255,255,0.96);
   border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-  border: 1px solid rgba(255,255,255,0.4);
-  backdrop-filter: blur(10px);
-}
-
-/* Instructions */
-.instructions-card h4 {
-  font-size: 1.1rem;
-}
-.instructions-card ul,
-.instructions-card ol {
-  font-size: 0.9rem;
-  padding-left: 18px;
-}
-.instructions-card li {
-  margin-bottom: 4px;
-  line-height: 1.4;
-}
-
-/* Sidebar Files */
-.file-sidebar {
-  width: 150px;
-  background: #f0f4ff;
-  border-right: 2px solid #ddd;
-  display: flex;
-  flex-direction: column;
-  padding: 10px 0;
-}
-.file-tab {
-  padding: 10px 14px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #444;
-  border-radius: 6px;
-  margin: 3px 8px;
-  transition: 0.2s;
-}
-.file-tab:hover {
-  background: #e3eaff;
-}
-.file-tab.active {
-  background: #4f8ef7;
-  color: #fff;
-  font-weight: bold;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  border: 1px solid rgba(255,255,255,0.6);
+  backdrop-filter: blur(8px);
 }
 
 /* Toolbar */
 .toolbar {
   height: 46px;
   background: #fafafa;
-  color: #333;
-  font-family: 'JetBrains Mono', monospace;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e6e6e6;
+  display:flex;
+  align-items:center;
 }
-.btn-run {
-  background: #4CAF50;
+.btn-run, .btn-clear, .btn-submit {
   border: none;
-  color: white;
-  padding: 4px 12px;
+  color: #fff;
+  padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
+  font-weight:600;
 }
-.btn-clear {
-  background: #f44336;
-  border: none;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-left: 6px;
+.btn-run { background:#4CAF50; }
+.btn-clear { background:#f44336; margin-left:8px; }
+.btn-submit { background:#2196F3; margin-left:8px; }
+
+/* File sidebar */
+.file-sidebar {
+  width: 150px;
+  background: #f0f4ff;
+  border-right: 1px solid #e6e9f8;
+  display:flex;
+  flex-direction:column;
+  padding:10px 8px;
+}
+.file-tab {
+  padding:10px;
+  margin:6px 4px;
+  background:#4f8ef7;
+  color:#fff;
+  border-radius:8px;
+  text-align:left;
+  font-weight:700;
 }
 
-/* Editor + Preview */
-#editor {
-  width: 100%;
-  height: 50vh;
-}
-#output {
-  height: 40vh;
-  border-top: 2px solid #ddd;
-}
-.cmd-header {
-  height: 34px;
-  background: #f3f4f6;
-  font-size: 13px;
-  font-family: 'JetBrains Mono', monospace;
-  border-bottom: 1px solid #ddd;
-  display: flex;
-  align-items: center;
-}
-iframe {
-  width: 100%;
-  height: calc(100% - 34px);
-  border: none;
-  background: #fff;
-}
+/* Editor + preview */
+#editor { width:100%; height:50vh; }
+#output { display:flex; flex-direction:column; height:40vh; border-top:1px solid #e6e6e6; }
+.cmd-header { height:44px; display:flex; align-items:center; padding:0 12px; background:#fff; border-bottom:1px solid #eee; }
+.preview-wrap { flex:1; overflow:auto; background:#fff; }
 
-/* Fullscreen */
-.fullscreen {
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 9999;
-  border-radius: 0 !important;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-}
-.fullscreen .cmd-header {
-  flex: 0 0 34px;
-  background: #f3f4f6;
-}
-.fullscreen iframe {
-  flex: 1 1 auto;
-  width: 100%;
-  height: 100% !important;
-  border: none;
-}
+/* iframe scaling (transform origin top-left) */
+#preview { width:100%; height:100%; border: none; transform-origin: top left; transition: transform .12s ease-in-out; }
 
-/* List */
-.modern-list li {
-  margin-bottom: 6px;
-  line-height: 1.5;
+/* Zoom buttons */
+.zoom-btn {
+  background:#f1f5f9;
+  border:1px solid #d1d9e6;
+  padding:4px 8px;
+  margin-left:6px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:700;
 }
+.zoom-btn:hover { background:#e6eef9; }
 
-/* Responsive */
-@media (max-width: 992px) {
-  .col-md-3 {
-    order: 2;
-    margin-top: 1rem;
-  }
-  .col-md-9 {
-    order: 1;
-  }
+/* Feedback box */
+.feedback-box {
+  display:none;
+  background: #fff7e6;
+  border-left: 5px solid #ff9800;
+  padding: 12px 16px;
+  margin: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
+.feedback-ok { color: #0f5132; background: rgba(16,185,129,0.04); padding:6px; border-radius:6px; margin-bottom:6px; }
+.feedback-fail { color: #7a1f1f; background: rgba(244,63,94,0.04); padding:6px; border-radius:6px; margin-bottom:6px; }
+.submit-ok { margin-top:8px; color:#0f5132; font-weight:700; }
+.submit-fail { margin-top:8px; color:#7a1f1f; font-weight:700; }
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .file-sidebar {
-    width: 100%;
-    flex-direction: row;
-    border-right: none;
-    border-bottom: 2px solid #ddd;
-    overflow-x: auto;
-  }
-  .file-tab {
-    flex: 1 1 auto;
-    margin: 0;
-    text-align: center;
-    border-radius: 0;
-  }
-  #editor {
-    height: 40vh;
-  }
-  #output {
-    height: 50vh;
-  }
-  .toolbar {
-    flex-wrap: wrap;
-    gap: 8px;
-    height: auto;
-    padding: 6px 10px;
-  }
-}
-@media (max-width: 576px) {
-  #editor {
-    height: 35vh;
-  }
-  #output {
-    height: 55vh;
-  }
-  .btn-run, .btn-clear {
-    padding: 3px 8px;
-    font-size: 13px;
-  }
+  .file-sidebar { display:none; }
+  #editor { height:40vh; }
+  #output { height:50vh; }
 }
 </style>

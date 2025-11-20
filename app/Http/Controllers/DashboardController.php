@@ -45,4 +45,8 @@ class DashboardController extends Controller
     {
         return view('siswa.klasifikasi');
     }
+    public function Beranda_Auditori()
+    {
+        return view('auditori.beranda');
+    }
 }
