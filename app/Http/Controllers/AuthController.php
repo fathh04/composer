@@ -43,7 +43,22 @@ class AuthController extends Controller
             if ($user->role === 'guru') {
                 return redirect()->route('guru.index')->with('success', 'Login berhasil sebagai Guru.');
             } elseif ($user->role === 'siswa') {
-                return redirect()->route('beranda')->with('success', 'Login berhasil sebagai Siswa.');
+                // Cek gaya belajar dari database
+                $style = strtolower($user->gaya_belajar ?? '');
+
+                if ($style === 'visual') {
+                    return redirect()->route('beranda')->with('success', 'Login berhasil sebagai Siswa.');
+                }
+                elseif ($style === 'auditori') {
+                    return redirect()->route('berandaAuditori')->with('success', 'Login berhasil sebagai Siswa.');
+                }
+                elseif ($style === 'kinestetik') {
+                    return redirect()->route('berandaKinestetik')->with('success', 'Login berhasil sebagai Siswa.');
+                }
+
+                // Jika belum punya gaya belajar → wajib isi kuesioner
+                return redirect()->route('login.signup')
+                    ->with('warning', 'Silakan isi kuesioner gaya belajar terlebih dahulu.');
             }
             return back()->withErrors(['role' => 'Role pengguna tidak valid.']);
         } catch (\Exception $e) {
@@ -74,8 +89,23 @@ class AuthController extends Controller
             $pengguna->role = $request->role;
             $pengguna->save();
 
-            // kasih flag session
-            return redirect()->route('signup')->with('showModal', true);
+            /** --------------------------------------------------------
+             *  JIKA GURU:
+             *  langsung redirect ke login (tidak ikut modal kuesioner)
+             * -------------------------------------------------------- */
+            if ($request->role === 'guru') {
+                return redirect()->route('login')
+                    ->with('success', 'Akun guru berhasil dibuat. Silakan login.');
+            }
+
+            /** --------------------------------------------------------
+             *  JIKA SISWA:
+             *  kembali ke signup → munculkan modal kuesioner
+             * -------------------------------------------------------- */
+            return redirect()->route('signup')
+                ->with('showModal', true)
+                ->with('email', $request->email);
+
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
@@ -95,5 +125,17 @@ class AuthController extends Controller
         $user = Auth::user();
 
         return view('siswa.profile', compact('user'));
+    }
+    public function profileAuditori()
+    {
+        $user = Auth::user();
+
+        return view('auditori.profileAuditori', compact('user'));
+    }
+    public function profileKinestetik()
+    {
+        $user = Auth::user();
+
+        return view('kinestetik.profile', compact('user'));
     }
 }

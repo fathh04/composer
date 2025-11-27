@@ -1,4 +1,4 @@
-<h3 class="mb-4 text-center text-primary fw-bold" data-aos="zoom-in">
+<h3 class="mb-4 text-center text-gradient-primary fw-bold" data-aos="zoom-in">
   🏆 Peringkat Siswa Terbaik
 </h3>
 
@@ -7,7 +7,7 @@
     <ul class="list-group list-group-flush">
 
       <!-- Juara 1 -->
-      <li class="list-group-item d-flex justify-content-between align-items-center py-4 border-0 bg-rank-1 position-relative animate__animated animate__zoomIn">
+      <li class="list-group-item d-flex justify-content-between align-items-center py-4 border-0 bg-rank-primary-light position-relative animate__animated animate__zoomIn">
         <div class="d-flex align-items-center gap-3">
           <img src="https://cdn-icons-png.flaticon.com/512/2583/2583344.png" width="45" alt="Juara 1">
           <div>
@@ -15,11 +15,11 @@
             <p class="text-muted small mb-0">🔥 Aktif dan Kreatif</p>
           </div>
         </div>
-        <span class="badge rank-badge-1 fs-6 px-4 py-2 rounded-pill shadow-sm">95 Poin</span>
+        <span class="badge rank-badge-primary fs-6 px-4 py-2 rounded-pill shadow-sm">95 Poin</span>
       </li>
 
       <!-- Juara 2 -->
-      <li class="list-group-item d-flex justify-content-between align-items-center py-4 border-0 bg-rank-2 animate__animated animate__zoomIn animate__delay-1s">
+      <li class="list-group-item d-flex justify-content-between align-items-center py-4 border-0 bg-rank-primary-light animate__animated animate__zoomIn animate__delay-1s">
         <div class="d-flex align-items-center gap-3">
           <img src="https://cdn-icons-png.flaticon.com/512/2583/2583317.png" width="40" alt="Juara 2">
           <div>
@@ -27,11 +27,11 @@
             <p class="text-muted small mb-0">💡 Konsisten Berlatih</p>
           </div>
         </div>
-        <span class="badge rank-badge-2 fs-6 px-4 py-2 rounded-pill shadow-sm">90 Poin</span>
+        <span class="badge rank-badge-primary fs-6 px-4 py-2 rounded-pill shadow-sm">90 Poin</span>
       </li>
 
       <!-- Juara 3 -->
-      <li class="list-group-item d-flex justify-content-between align-items-center py-4 border-0 bg-rank-3 animate__animated animate__zoomIn animate__delay-2s">
+      <li class="list-group-item d-flex justify-content-between align-items-center py-4 border-0 bg-rank-primary-light animate__animated animate__zoomIn animate__delay-2s">
         <div class="d-flex align-items-center gap-3">
           <img src="https://cdn-icons-png.flaticon.com/512/2583/2583338.png" width="40" alt="Juara 3">
           <div>
@@ -39,14 +39,14 @@
             <p class="text-muted small mb-0">🎯 Rajin Mengumpulkan Tugas</p>
           </div>
         </div>
-        <span class="badge rank-badge-3 fs-6 px-4 py-2 rounded-pill shadow-sm">85 Poin</span>
+        <span class="badge rank-badge-primary fs-6 px-4 py-2 rounded-pill shadow-sm">85 Poin</span>
       </li>
 
       <!-- Peringkat lainnya -->
       <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-0 animate__animated animate__fadeInUp animate__delay-3s">
         <div class="d-flex align-items-center gap-2">
           <span class="fs-5">⭐</span>
-          <span class="fw-semibold text-primary">Siswa-4</span>
+          <span class="fw-semibold text-primary">Anda</span>
         </div>
         <span class="badge bg-primary fs-6 px-4 py-2 rounded-pill shadow-sm">80 Poin</span>
       </li>
@@ -55,14 +55,16 @@
   </div>
 </div>
 
+
+
 <!-- ======================= -->
-<!-- UMPAN BALIK BELAJAR -->
+<!-- UMPAN BALIK BELAJAR     -->
 <!-- ======================= -->
 
 <div class="card shadow-lg border-0 rounded-4 mt-4 feedback-card" data-aos="fade-up" data-aos-delay="300">
   <div class="card-body p-4">
 
-    <h4 class="fw-bold mb-3 text-primary" data-aos="zoom-in" data-aos-delay="400">
+    <h4 class="fw-bold mb-3 text-gradient-primary" data-aos="zoom-in" data-aos-delay="400">
       📘 Umpan Balik Belajar
     </h4>
 
@@ -85,6 +87,7 @@
         <div class="p-3 rounded-4 bg-primary-soft shadow-sm">
           <h6 class="fw-semibold text-primary text-center mb-3">Progres yang Diselesaikan</h6>
 
+          <!-- Progress Bar -->
           <div class="progress" style="height: 15px; border-radius: 10px;">
             <div class="progress-bar bg-primary" role="progressbar" style="width: 68%;">
               68%
@@ -99,7 +102,7 @@
         <div class="p-3 rounded-4 bg-primary-soft shadow-sm">
           <h6 class="fw-semibold text-primary text-center">Rekomendasi AI</h6>
           <p class="small text-muted mb-0">
-            Tingkatkan latihan <strong>pemahaman konsep</strong> untuk hasil lebih maksimal.
+            Tingkatkan latihan <strong>pemahaman konsep</strong> dan coba selesaikan latihan.
           </p>
         </div>
       </div>
@@ -110,45 +113,39 @@
 </div>
 
 
+
 <!-- ======================= -->
-<!-- CSS PRIMARY THEME -->
+<!-- CSS                     -->
 <!-- ======================= -->
 <style>
-
-  /* Tema primary lembut */
-  .bg-primary-soft {
-    background: #e8f1ff;
+  /* Gradient tema primary */
+  .text-gradient-primary {
+    background: linear-gradient(45deg, #0d6efd, #4f8bff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
-  /* Ranking background with blue tones */
-  .bg-rank-1 {
-    background: linear-gradient(90deg, #e3f2fd, #bbdefb);
-  }
-  .bg-rank-2 {
-    background: linear-gradient(90deg, #e3f2fd, #c5cae9);
-  }
-  .bg-rank-3 {
-    background: linear-gradient(90deg, #e8eaf6, #cfd8dc);
+  /* Background juara versi primary */
+  .bg-rank-primary-light {
+    background: linear-gradient(90deg, #e7f0ff, #f0f6ff);
   }
 
-  /* Badges */
-  .rank-badge-1 {
-    background: linear-gradient(45deg, #0d6efd, #0b5ed7);
-    color: #fff;
-  }
-  .rank-badge-2 {
-    background: linear-gradient(45deg, #5a8dee, #3c6fde);
-    color: #fff;
-  }
-  .rank-badge-3 {
-    background: linear-gradient(45deg, #6c8cd5, #4a64b0);
+  /* Badge primary */
+  .rank-badge-primary {
+    background: linear-gradient(45deg, #0d6efd, #0a58ca);
     color: #fff;
   }
 
+  /* Card blur */
   .leaderboard-card,
   .feedback-card {
-    background: #ffffffcc;
+    background: #ffffffd7;
     backdrop-filter: blur(12px);
+  }
+
+  /* Card soft blue */
+  .bg-primary-soft {
+    background: #e9f1ff;
   }
 
   .list-group-item {
@@ -156,8 +153,8 @@
   }
 
   .list-group-item:hover {
-    transform: scale(1.02);
-    background-color: #f7faff !important;
+    transform: scale(1.03);
+    background-color: #fdfdfd !important;
   }
 
   .feedback-card .p-3 {
@@ -171,7 +168,8 @@
 </style>
 
 
-<!-- JS, AOS, Confetti -->
+
+<!-- JS AOS + Confetti -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>

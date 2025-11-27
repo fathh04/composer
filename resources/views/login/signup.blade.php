@@ -17,7 +17,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 15px;
         }
-
         .signup-wrapper {
             display: flex;
             width: 100%;
@@ -26,8 +25,6 @@
             overflow: hidden;
             box-shadow: 0 8px 28px rgba(0,0,0,0.2);
         }
-
-        /* Bagian kiri (form signup) */
         .signup-form {
             flex: 1;
             background: rgba(255, 255, 255, 0.2);
@@ -65,26 +62,6 @@
             margin-top: 15px;
             transition: transform 0.2s ease;
         }
-        .btn-signup:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Teks login link */
-        .login-link {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        .login-link a {
-            color: #001aff;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-
-        /* Bagian kanan (logo) */
         .signup-logo {
             flex: 1;
             background: #e0e0e0;
@@ -94,189 +71,272 @@
             flex-direction: column;
             padding: 40px;
         }
-        .signup-logo img {
-            width: 160px;
-            margin-bottom: 20px;
-            max-width: 100%;
-            height: auto;
+
+        /* Modal Style */
+        .modal-content {
+            border-radius: 25px !important;
+            background: rgba(255, 255, 255, 0.25) !important;
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: popUp 0.25s ease;
         }
-        .signup-logo h2 {
+
+        @keyframes popUp {
+            from { transform: scale(0.9); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+
+        .survey-step h5 {
+            color: #ffffff;
             font-weight: 700;
-            color: #2196f3;
-            text-align: center;
-        }
-        .signup-logo p {
-            color: #555;
-            letter-spacing: 2px;
-            font-size: 14px;
-            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
         }
 
-        /* ===== Responsive ===== */
-        @media (max-width: 992px) {
-            .signup-wrapper {
-                max-width: 750px;
-            }
+        .child-btn {
+            background: linear-gradient(135deg, #6f9bff, #8b5bff);
+            border: none;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin: 8px 0;
+            width: 90%;
+            max-width: 260px;
+            transition: transform 0.15s ease, opacity 0.15s ease;
         }
 
-        @media (max-width: 768px) {
-            .signup-wrapper {
-                flex-direction: column-reverse; /* Logo di bawah */
-            }
-            .signup-form,
-            .signup-logo {
-                padding: 25px;
-            }
+        .child-btn:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
         }
 
-        @media (max-width: 576px) {
-            .signup-form h3 {
-                font-size: 1.3rem;
-                margin-bottom: 20px;
-            }
-            .btn-signup {
-                padding: 8px;
-                font-size: 0.9rem;
-            }
-            .signup-logo img {
-                width: 120px;
-            }
-            .signup-logo h2 {
-                font-size: 1.2rem;
-            }
-            .signup-logo p {
-                font-size: 12px;
-            }
+        .child-btn:active {
+            transform: scale(0.97);
         }
     </style>
 </head>
+
 <body>
-    <div class="signup-wrapper">
-        <!-- Bagian kiri -->
-        <div class="signup-form">
-            <h3>Daftar Akun Baru</h3>
-            <form method="POST" action="{{ route('prosesdaftar') }}">
-                @csrf
-                <div class="mb-3">
-                    <label for="nama" class="form-label">Nama</label>
-                    <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror"
-                           id="nama" placeholder="Masukkan nama lengkap" value="{{ old('nama') }}" required>
-                    @error('nama')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+<div class="signup-wrapper">
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Alamat Email</label>
-                    <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                           id="email" placeholder="example@mail.com" value="{{ old('email') }}" required>
-                    @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+    <!-- LEFT FORM -->
+    <div class="signup-form">
+        <h3>Daftar Akun Baru</h3>
 
-                <div class="mb-3">
-                    <label for="password" class="form-label">Kata Sandi</label>
-                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
-                           id="password" placeholder="Masukkan kata sandi" required>
-                    @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+        <form id="signupForm" method="POST" action="{{ route('prosesdaftar') }}">
+            @csrf
 
-                <div class="mb-3">
-                    <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi</label>
-                    <input type="password" name="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror"
-                           id="password_confirmation" placeholder="Ulangi kata sandi" required>
-                    @error('password_confirmation')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+            <input type="hidden" name="q1" id="q1">
+            <input type="hidden" name="q2" id="q2">
+            <input type="hidden" name="q3" id="q3">
 
-                <div class="mb-4">
-                    <label for="role" class="form-label">Daftar Sebagai</label>
-                    <select name="role" id="role" class="form-select @error('role') is-invalid @enderror" required>
-                        <option value="">-- Pilih Peran --</option>
-                        <option value="guru" {{ old('role') == 'guru' ? 'selected' : '' }}>Guru</option>
-                        <option value="siswa" {{ old('role') == 'siswa' ? 'selected' : '' }}>Siswa</option>
-                    </select>
-                    @error('role')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <button type="submit" class="btn btn-signup w-100">Sign Up</button>
-            </form>
-
-            <!-- Link login -->
-            <div class="login-link">
-                Sudah punya akun?
-                <a href="{{ route('login') }}">Login di sini</a>
+            <div class="mb-3">
+                <label class="form-label">Nama</label>
+                <input type="text" name="nama" class="form-control" required>
             </div>
+
+            <div class="mb-3">
+                <label class="form-label">Alamat Email</label>
+                <input type="email" name="email" class="form-control"
+                    value="{{ session('email') }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Kata Sandi</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Konfirmasi Kata Sandi</label>
+                <input type="password" name="password_confirmation" class="form-control" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Daftar Sebagai</label>
+                <select name="role" class="form-select" required>
+                    <option value="">-- Pilih Peran --</option>
+                    <option value="guru">Guru</option>
+                    <option value="siswa">Siswa</option>
+                </select>
+            </div>
+
+            <button id="submitBtn" type="submit" class="btn btn-signup w-100">Sign Up</button>
+        </form>
+
+        <div id="loader" class="text-center mt-4" style="display:none;">
+            <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"></div>
+            <p class="mt-3 fw-bold">AI menganalisis gaya belajar…</p>
         </div>
 
-        <!-- Bagian kanan -->
-        <div class="signup-logo">
-            <img src="{{ asset('img/logoakadia.png') }}" alt="Logo">
-            <h2>EDUCATION</h2>
-            <p>FREEDOM LEARNING</p>
+        <div class="login-link text-center mt-3">
+            Sudah punya akun?
+            <a href="{{ route('login') }}">Login di sini</a>
         </div>
     </div>
 
-    <!-- Modal Kuesioner -->
-    <div class="modal fade" id="surveyModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <!-- RIGHT LOGO -->
+    <div class="signup-logo">
+        <img src="{{ asset('img/logoakadia.png') }}" width="150">
+        <h2>EDUCATION</h2>
+        <p>FREEDOM LEARNING</p>
+    </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="surveyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(12px);border-radius:20px;">
-        <div class="modal-body text-center p-4">
-            <!-- Step Container -->
-            <div id="step-1" class="survey-step">
-                <lottie-player src="https://assets1.lottiefiles.com/packages/lf20_touohxv0.json" background="transparent" speed="1" style="width:200px;height:200px;margin:0 auto;" loop autoplay></lottie-player>
-                <h5 class="text-white my-3">Saya lebih suka belajar menggunakan....</h5>
-                <button class="btn btn-primary mx-2 next-step">📖 Teks</button>
-                <button class="btn btn-primary mx-2 next-step">🎥 Video</button>
-            </div>
+        <div class="modal-content">
 
-            <div id="step-2" class="survey-step d-none">
-                <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json" background="transparent" speed="1" style="width:200px;height:200px;margin:0 auto;" loop autoplay></lottie-player>
+            <div class="modal-body text-center p-4">
 
-                <h5 class="text-white my-3">Saya dapat fokus belajar lebih dari 20 menit....</h5>
-                <button class="btn btn-primary mx-2 next-step">🙅‍♂️ Tidak</button>
-                <button class="btn btn-primary mx-2 next-step">😐 Kadang</button>
-                <button class="btn btn-primary mx-2 next-step">💪 Bisa</button>
+                <!-- STEP 1 -->
+                <div id="step-1" class="survey-step">
+                    <h5>Aku lebih suka...</h5>
+
+                    <button class="child-btn answer-q1"
+                        data-value="Saya suka melihat gambar atau diagram">
+                        📘 Melihat gambar / diagram
+                    </button>
+
+                    <button class="child-btn answer-q1"
+                        data-value="Saya suka mendengarkan penjelasan">
+                        🎧 Mendengarkan penjelasan
+                    </button>
+
+                    <button class="child-btn answer-q1"
+                        data-value="Saya suka mempraktikkan langsung">
+                        🤸 Praktik langsung
+                    </button>
+                </div>
+
+                <!-- STEP 2 -->
+                <div id="step-2" class="survey-step d-none">
+                    <h5>Aku lebih mudah memahami dari...</h5>
+
+                    <button class="child-btn answer-q2"
+                        data-value="Saya lebih mudah memahami materi berupa video">
+                        🎬 Video / Visual
+                    </button>
+
+                    <button class="child-btn answer-q2"
+                        data-value="Saya memahami lebih cepat saat mendengar audio">
+                        🔊 Audio
+                    </button>
+
+                    <button class="child-btn answer-q2"
+                        data-value="Saya mudah belajar saat melakukan aktivitas fisik">
+                        🏃 Aktivitas Fisik
+                    </button>
+                </div>
+
+                <!-- STEP 3 -->
+                <div id="step-3" class="survey-step d-none">
+                    <h5>Saat belajar aku biasanya...</h5>
+
+                    <button class="child-btn answer-q3"
+                        data-value="Saya sering membuat catatan visual">
+                        📝 Membuat catatan visual
+                    </button>
+
+                    <button class="child-btn answer-q3"
+                        data-value="Saya sering berbicara sendiri saat belajar">
+                        🗣️ Berbicara sendiri
+                    </button>
+
+                    <button class="child-btn answer-q3"
+                        data-value="Saya sulit duduk diam lama">
+                        😣 Sulit duduk diam
+                    </button>
+                </div>
+
             </div>
         </div>
-        </div>
     </div>
-    </div>
+</div>
 
-    <!-- Script -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-    <script>
-    document.addEventListener("DOMContentLoaded", function(){
-        @if(session('showModal'))
-            var modalEl = document.getElementById('surveyModal');
-            var modal = new bootstrap.Modal(modalEl, {
-                backdrop: 'static',
-                keyboard: false
-            });
-            modal.show();
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-            let step = 1;
-            document.querySelectorAll(".next-step").forEach(btn => {
-                btn.addEventListener("click", function(){
-                    document.getElementById("step-" + step).classList.add("d-none");
-                    step++;
-                    if(document.getElementById("step-" + step)){
-                        document.getElementById("step-" + step).classList.remove("d-none");
-                    } else {
-                        // semua pertanyaan selesai → redirect login
-                        window.location.href = "{{ route('login') }}";
-                    }
-                });
-            });
-        @endif
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    @if(session('showModal'))
+        // 🚀 Modal wajib diisi (tidak bisa ditutup)
+        const modal = new bootstrap.Modal(document.getElementById('surveyModal'), {
+            backdrop: 'static',
+            keyboard: false
+        });
+        modal.show();
+    @endif
+
+    // STEP 1
+    document.querySelectorAll(".answer-q1").forEach(btn => {
+        btn.addEventListener("click", function () {
+            document.getElementById("q1").value = this.dataset.value;
+            document.getElementById("step-1").classList.add("d-none");
+            document.getElementById("step-2").classList.remove("d-none");
+        });
     });
-    </script>
+
+    // STEP 2
+    document.querySelectorAll(".answer-q2").forEach(btn => {
+        btn.addEventListener("click", function () {
+            document.getElementById("q2").value = this.dataset.value;
+            document.getElementById("step-2").classList.add("d-none");
+            document.getElementById("step-3").classList.remove("d-none");
+        });
+    });
+
+    // STEP 3
+    document.querySelectorAll(".answer-q3").forEach(btn => {
+        btn.addEventListener("click", function () {
+            document.getElementById("q3").value = this.dataset.value;
+
+            document.getElementById('signupForm').action = "{{ route('gayaBelajar.prediksi') }}";
+
+            const emailInput = document.querySelector("input[name='email']");
+            const hiddenEmail = document.createElement("input");
+            hiddenEmail.type = "hidden";
+            hiddenEmail.name = "user_email";
+            hiddenEmail.value = emailInput.value;
+            signupForm.appendChild(hiddenEmail);
+
+            const modalElement = document.getElementById('surveyModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            modalInstance.hide();
+
+            document.getElementById("signupForm").submit();
+        });
+    });
+
+    // Loader khusus siswa
+    document.getElementById('signupForm').addEventListener('submit', function (e) {
+
+        const role = document.querySelector("select[name='role']").value;
+
+        // Jika guru ➜ tidak pakai loader
+        if (role === "guru") {
+            return; // langsung submit
+        }
+
+        // Jika siswa ➜ tampilkan loader
+        document.getElementById('loader').style.display = 'block';
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = "Memproses...";
+    });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.modal-backdrop').forEach(e => e.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = 'auto';
+});
+</script>
+
 </body>
 </html>

@@ -41,16 +41,16 @@
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <div class="menu-item @yield('menuBeranda')" onclick="location.href='{{ route('beranda') }}'">
+        <div class="menu-item @yield('menuBeranda')" onclick="location.href='{{ route('berandaAuditori') }}'">
             <i class="bi bi-house-door"></i><span>Beranda</span>
         </div>
-        <div class="menu-item @yield('menuPetunjuk')" onclick="location.href='{{ route('petunjuk') }}'">
+        <div class="menu-item @yield('menuPetunjuk')" onclick="location.href='{{ route('petunjukAuditori') }}'">
             <i class="bi bi-journal-text"></i><span>Petunjuk</span>
         </div>
-        <div class="menu-item @yield('menuKelas')" onclick="location.href='{{ route('kelas') }}'">
+        <div class="menu-item @yield('menuKelas')" onclick="location.href='{{ route('kelasAuditori') }}'">
             <i class="bi bi-grid"></i><span>Kelas</span>
         </div>
-        <div class="menu-item @yield('menuCPdanTP')" onclick="location.href='{{ route('CPdanTP') }}'">
+        <div class="menu-item @yield('menuCPdanTP')" onclick="location.href='{{ route('CPdanTPAuditori') }}'">
             <i class="bi bi-check2-circle"></i><span>CP & TP</span>
         </div>
     </div>
@@ -77,7 +77,7 @@
                     <i class="bi bi-caret-down-fill ms-1 text-muted small d-none d-sm-inline"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2 rounded-3">
-                    <li><a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('profile') }}">
+                    <li><a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('profileAuditori') }}">
                         <i class="bi bi-person-circle text-primary"></i> Profile</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger"

@@ -2,7 +2,7 @@
 body {
     font-family: 'Inter', sans-serif;
     overflow-x: hidden;
-    background: linear-gradient(135deg, #e3f2fd, #fce4ec); /* konsisten dengan signup */
+    background: linear-gradient(135deg, #e8f1ff, #d7e6ff); /* primary soft */
     color: #333;
     transition: background 0.4s ease, color 0.3s ease;
 }
@@ -10,12 +10,12 @@ body {
 /* Sidebar */
 .sidebar {
     height: 100vh;
-    background: linear-gradient(180deg, #4e54c8, #8f94fb);
+    background: linear-gradient(180deg, #0d6efd, #6ab7ff); /* primary modern */
     color: #fff;
     position: fixed;
     top: 0; left: 0;
     width: 220px;
-    z-index: 1050;
+    z-index: 1000;
     box-shadow: 2px 0 12px rgba(0,0,0,0.15);
     padding-top: 70px;
     transition: all 0.4s ease;
@@ -29,7 +29,7 @@ body {
     transition: all 0.3s ease;
 }
 .sidebar .menu-item:hover {
-    background-color: rgba(255,255,255,0.12);
+    background-color: rgba(255,255,255,0.18);
     cursor: pointer;
     padding-left: 28px;
     border-radius: 8px;
@@ -43,14 +43,14 @@ body {
     display: flex;
     align-items: center;
     box-shadow: 0 4px 18px rgba(0,0,0,0.1);
-    z-index: 1100;
+    z-index: 1000;
 }
 .navbar-brand {
     font-size: 1.3rem;
     font-weight: 700;
 }
 .text-gradient {
-    background: linear-gradient(90deg, #0d6efd, #ff4fa2);
+    background: linear-gradient(90deg, #0d6efd, #6ab7ff); /* modern primary */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -71,17 +71,17 @@ body {
 
 /* Dark Mode */
 body.dark-mode {
-    background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+    background: linear-gradient(135deg, #0a1a33, #123a70); /* dark primary */
     color: #f1f1f1;
 }
 body.dark-mode .custom-nav {
-    background: #2c2c54cc;
+    background: #10325dcc;
 }
 body.dark-mode .sidebar {
-    background: linear-gradient(180deg, #141e30, #243b55);
+    background: linear-gradient(180deg, #0a2347, #0d47a1); /* deep primary */
 }
 body.dark-mode .content-wrapper {
-    background: #2a2a40;
+    background: #1b2d4d;
     color: #eaeaea;
 }
 

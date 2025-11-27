@@ -7,6 +7,7 @@ use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\CodeSubmissionController;
+use App\Http\Controllers\GayaBelajarController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,14 +32,50 @@ Route::get('/berandaGuru', [DashboardController::class, 'guru'])->name('guru.ind
 Route::post('/materi/store', [MateriController::class, 'store'])->name('materi.store');
 Route::post('/kuis/store', [KuisController::class, 'store'])->name('kuis.store');
 
-// Siswa
+// Siswa Visual
 Route::middleware(['auth'])->group(function () {
     Route::get('/kelas', [DashboardController::class, 'KelasSiswa'])->name('kelas');
-    Route::get('/beranda', [DashboardController::class, 'Beranda'])->name('beranda');
+    // Route::get('/beranda', [DashboardController::class, 'Beranda'])->name('beranda');
+    Route::get('/beranda', [GayaBelajarController::class, 'index'])
+    ->name('beranda');
     Route::get('/peringkat', [DashboardController::class, 'PeringkatSiswa'])->name('peringkat');
     Route::get('/petunjuk', [DashboardController::class, 'petunjukSiswa'])->name('petunjuk');
     Route::get('/CPdanTP', [DashboardController::class, 'CPdanTPSiswa'])->name('CPdanTP');
+    Route::get('/profile', [DashboardController::class, 'ProfileSiswa'])->name('profile');
 });
+
+//Siswa Kinestetik
+Route::get('/kelasKinestetik', [DashboardController::class, 'KelasKinestetik'])->name('kelasKinestetik');
+Route::get('/berandaKinestetik', [DashboardController::class, 'BerandaKinestetik'])->name('berandaKinestetik');
+Route::get('/peringkatKinestetik', [DashboardController::class, 'PeringkatKinestetik'])->name('peringkatKinestetik');
+Route::get('/petunjukKinestetik', [DashboardController::class, 'petunjukKinestetik'])->name('petunjukKinestetik');
+Route::get('/CPdanTPKinestetik', [DashboardController::class, 'CPdanTPKinestetik'])->name('CPdanTPKinestetik');
+Route::get('/profileKinestetik', [DashboardController::class, 'ProfileKinestetik'])->name('profileKinestetik');
+
+//Siswa Auditori
+Route::get('/kelasAuditori', [DashboardController::class, 'KelasAuditori'])->name('kelasAuditori');
+Route::get('/berandaAuditori', [DashboardController::class, 'BerandaAuditori'])->name('berandaAuditori');
+Route::get('/peringkatAuditori', [DashboardController::class, 'PeringkatAuditori'])->name('peringkatAuditori');
+Route::get('/petunjukAuditori', [DashboardController::class, 'petunjukAuditori'])->name('petunjukAuditori');
+Route::get('/CPdanTPAuditori', [DashboardController::class, 'CPdanTPAuditori'])->name('CPdanTPAuditori');
+Route::get('/profileAuditori', [DashboardController::class, 'ProfileAuditori'])->name('profileAuditori');
+
+// Gaya Belajar
+// FORM / KUESIONER
+// Route::get('/gaya-belajar', [GayaBelajarController::class, 'form'])
+//     ->name('gayaBelajar.form');
+
+// PROSES AI
+Route::post('/gaya-belajar/prediksi', [GayaBelajarController::class, 'prediksi'])
+    ->name('gayaBelajar.prediksi');
+
+// BERANDA UTAMA
+Route::get('/beranda/visual', fn() => view('siswa.beranda'))->name('beranda');
+
+// HALAMAN KHUSUS
+Route::get('/beranda/auditori', fn() => view('auditori.berandaAuditori'))->name('beranda.auditori');
+Route::get('/beranda/kinestetik', fn() => view('kinestetik.berandaKinestetik'))->name('beranda.kinestetik');
+
 Route::get('/klasifikasi', [DashboardController::class, 'Klasifikasi'])->name('klasifikasi');
 
 Route::middleware('auth')->group(function(){
@@ -77,6 +114,8 @@ Route::get('/kelas/{idkelas}/materi', [MateriController::class, 'indexSiswa'])->
 // });
 
 Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
+Route::get('/profileAuditori', [AuthController::class, 'profileAuditori'])->name('profileAuditori');
+Route::get('/profileKinestetik', [AuthController::class, 'profileKinestetik'])->name('profileKinestetik');
 
 Route::get('/coba', function () {
     return view('coba');
