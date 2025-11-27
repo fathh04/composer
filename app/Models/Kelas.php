@@ -14,7 +14,7 @@ class Kelas extends Model
     ];
     public function pengguna()
     {
-        return $this->hasMany(Pengguna::class, 'user_id');
+        return $this->belongsToMany(Pengguna::class, 'kelas_pengguna', 'kelas_id', 'pengguna_id');
     }
     public function materi()
     {

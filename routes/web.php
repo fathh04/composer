@@ -128,3 +128,7 @@ Route::get('/jelajah', [KontenController::class, 'jelajah'])->name('jelajah');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::post('/feed', [FeedController::class, 'store'])->name('feed.store');
+
+Route::get('/kelas', [KelasController::class, 'kelas'])->name('kelas');
+Route::get('/kelasAuditori', [KelasController::class, 'kelasAuditori'])->name('kelasAuditori');
+Route::get('/kelasKinestetik', [KelasController::class, 'kelasKinestetik'])->name('kelasKinestetik');

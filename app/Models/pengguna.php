@@ -25,6 +25,6 @@ class Pengguna extends Authenticatable
     ];
     public function kelas()
     {
-        return $this->hasMany(Kelas::class, 'user_id');
+        return $this->belongsToMany(Kelas::class, 'kelas_pengguna', 'pengguna_id', 'kelas_id');
     }
 }

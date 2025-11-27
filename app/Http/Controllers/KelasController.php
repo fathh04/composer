@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kelas; // Model Kelas
-use App\Models\Materi; // Import model Materi
-
+use App\Models\Kelas;
+use App\Models\Materi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,80 +57,66 @@ class KelasController extends Controller
     {
         $kelas = Kelas::findOrFail($id);
         $kelas->delete();
+
         return redirect()->route('kelasGuru')->with('success', 'Kelas berhasil dihapus');
     }
 
+    // ======================================================
+    //            **SISWA JOIN KELAS (attach)**
+    // ======================================================
     public function tambahKelasSiswa(Request $request)
     {
         $request->validate([
             'idkelas' => 'required|exists:kelas,idkelas',
         ]);
 
-        $kelas = Kelas::where('idkelas', $request->idkelas)->first();
+        $kelas = Kelas::where('idkelas', $request->idkelas)->firstOrFail();
 
-        // Cek apakah siswa sudah pernah join kelas ini
-        if ($kelas->user_id == auth()->id()) {
-            return redirect()->back()->with('error', 'Kelas sudah ditambahkan.');
+        // Cek apakah user sudah join (pivot)
+        if ($kelas->pengguna()->where('pengguna_id', auth()->id())->exists()) {
+            return back()->with('error', 'Anda sudah bergabung di kelas ini.');
         }
 
-        // Assign kelas ke siswa
-        $kelas->user_id = auth()->id();
-        $kelas->save();
+        // Tambahkan ke pivot table
+        $kelas->pengguna()->attach(auth()->id());
 
-        // Ambil gaya belajar dari user
+        // Redirect sesuai gaya belajar
         $style = strtolower(Auth::user()->gaya_belajar ?? '');
 
-        // Tentukan redirect sesuai gaya belajar
-        if ($style === 'visual') {
-            return redirect()->route('beranda')->with('success', 'Kelas berhasil ditambahkan.');
-        }
-        elseif ($style === 'auditori') {
-            return redirect()->route('berandaAuditori')->with('success', 'Kelas berhasil ditambahkan.');
-        }
-        elseif ($style === 'kinestetik') {
-            return redirect()->route('berandaKinestetik')->with('success', 'Kelas berhasil ditambahkan.');
-        }
-
-        // Jika tidak punya gaya belajar (harusnya tidak terjadi)
-        return redirect()->route('kelas')->with('success', 'Kelas berhasil ditambahkan.');
+        return match ($style) {
+            'visual'    => redirect()->route('beranda')->with('success', 'Kelas berhasil ditambahkan.'),
+            'auditori'  => redirect()->route('berandaAuditori')->with('success', 'Kelas berhasil ditambahkan.'),
+            'kinestetik'=> redirect()->route('berandaKinestetik')->with('success', 'Kelas berhasil ditambahkan.'),
+            default     => redirect()->route('kelas')->with('success', 'Kelas berhasil ditambahkan.'),
+        };
     }
 
+    // ======================================================
+    //            **SISWA KELUAR KELAS (detach)**
+    // ======================================================
     public function keluarKelasSiswa($id)
     {
         $kelas = Kelas::findOrFail($id);
 
-        // Cek apakah kelas milik siswa yg login
-        if ($kelas->user_id != auth()->id()) {
-            return redirect()->back()->with('error', 'Anda tidak dapat keluar dari kelas ini.');
-        }
+        // Hapus hanya user ini, tidak mengganggu siswa lain
+        $kelas->pengguna()->detach(auth()->id());
 
-        // Hapus relasi kelas → user
-        $kelas->user_id = null;
-        $kelas->save();
-
-        // Ambil gaya belajar user
         $style = strtolower(Auth::user()->gaya_belajar ?? '');
 
-        // Tentukan redirect sesuai gaya belajar
-        if ($style === 'visual') {
-            return redirect()->route('kelas')->with('success', 'Anda berhasil keluar dari kelas.');
-        }
-        elseif ($style === 'auditori') {
-            return redirect()->route('kelasAuditori')->with('success', 'Anda berhasil keluar dari kelas.');
-        }
-        elseif ($style === 'kinestetik') {
-            return redirect()->route('kelasKinestetik')->with('success', 'Anda berhasil keluar dari kelas.');
-        }
-
-        // Default fallback
-        return redirect()->route('kelas')->with('success', 'Anda berhasil keluar dari kelas.');
+        return match ($style) {
+            'visual'    => redirect()->route('kelas')->with('success', 'Anda berhasil keluar dari kelas.'),
+            'auditori'  => redirect()->route('kelasAuditori')->with('success', 'Anda berhasil keluar dari kelas.'),
+            'kinestetik'=> redirect()->route('kelasKinestetik')->with('success', 'Anda berhasil keluar dari kelas.'),
+            default     => redirect()->route('kelas')->with('success', 'Anda berhasil keluar dari kelas.'),
+        };
     }
 
     public function masukKelas($id)
     {
-        $kelas = Kelas::findOrFail($id); // Ambil data kelas berdasarkan ID
-    $materi = Materi::where('idkelas', $id)->get(); // Ambil semua materi yang berkaitan dengan kelas tersebut
-    return view('guru.isiKelasGuru', compact('kelas', 'materi'));
+        $kelas = Kelas::findOrFail($id);
+        $materi = Materi::where('idkelas', $id)->get();
+
+        return view('guru.isiKelasGuru', compact('kelas', 'materi'));
     }
 
     public function show($id)
@@ -139,22 +124,34 @@ class KelasController extends Controller
         $kelas = Kelas::findOrFail($id);
         $materi = Materi::where('idkelas', $id)->get();
 
-        // Ambil gaya belajar user
         $style = strtolower(Auth::user()->gaya_belajar ?? '');
 
-        // Pilih tampilan sesuai gaya belajar
-        if ($style === 'visual') {
-            return view('siswa.isiKelas', compact('kelas', 'materi'));
-        }
-        elseif ($style === 'auditori') {
-            return view('auditori.isiKelasAuditori', compact('kelas', 'materi'));
-        }
-        elseif ($style === 'kinestetik') {
-            return view('kinestetik.isiKelas', compact('kelas', 'materi'));
-        }
-
-        // Default jika gaya_belajar kosong
-        return view('siswa.isiKelas', compact('kelas', 'materi'));
+        return match ($style) {
+            'visual'    => view('siswa.isiKelas', compact('kelas', 'materi')),
+            'auditori'  => view('auditori.isiKelasAuditori', compact('kelas', 'materi')),
+            'kinestetik'=> view('kinestetik.isiKelas', compact('kelas', 'materi')),
+            default     => view('siswa.isiKelas', compact('kelas', 'materi')),
+        };
     }
+    public function kelas()
+    {
+        // Ambil semua kelas yang diikuti siswa lewat pivot
+        $kelas = Auth::user()->kelas;
 
+        return view('siswa.kelas', compact('kelas'));
+    }
+    public function kelasAuditori()
+    {
+        // Ambil semua kelas yang diikuti siswa lewat pivot
+        $kelas = Auth::user()->kelas;
+
+        return view('auditori.kelasAuditori', compact('kelas'));
+    }
+    public function kelasKinestetik()
+    {
+        // Ambil semua kelas yang diikuti siswa lewat pivot
+        $kelas = Auth::user()->kelas;
+
+        return view('kinestetik.kelas', compact('kelas'));
+    }
 }
