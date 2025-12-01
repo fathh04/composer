@@ -146,34 +146,6 @@
         </div>
     </div>
 
-    <!-- ======= STATISTIK ======= -->
-    <div class="row text-center">
-
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="stat-box bg-primary text-white p-4">
-                <i class="bi bi-collection fs-1 mb-2"></i>
-                <h2 class="fw-bold mb-1">{{ 1 }}</h2>
-                <p class="mb-0 small text-white-50">Kelas Diikuti</p>
-            </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="stat-box bg-success text-white p-4">
-                <i class="bi bi-check2-circle fs-1 mb-2"></i>
-                <h2 class="fw-bold mb-1">{{ 1 }}</h2>
-                <p class="mb-0 small text-white-50">Materi Diselesaikan</p>
-            </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="stat-box bg-warning text-white p-4">
-                <i class="bi bi-journal-check fs-1 mb-2"></i>
-                <h2 class="fw-bold mb-1">{{ 0 }}</h2>
-                <p class="mb-0 small text-white-50">Tugas Selesai</p>
-            </div>
-        </div>
-
-    </div>
     <!-- ======= MATERI YANG DIREKOMENDASIKAN ======= -->
     <div class="mt-4 mb-4">
         <h5 class="fw-bold mb-3">Materi yang Direkomendasikan</h5>
