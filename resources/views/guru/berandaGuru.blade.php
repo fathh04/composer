@@ -4,107 +4,109 @@
 
 @section('content')
 <div class="container py-4">
-    <div class="mb-4">
-        <h1 class="h4 fw-bold text-primary">Hi, {{ session('user_name') }}</h1>
-        <p class="text-muted">Atur kelas Anda dengan mudah dan cek statistik penting di bawah</p>
-    </div>
 
-    <!-- Statistik -->
-    <div class="row text-center g-4">
-        <div class="col-md-3">
-            <div class="stat-box bg-warning text-dark shadow-sm rounded p-4">
-                <h2 class="fw-bold">{{ 2 }}</h2>
-                <p>Jumlah Kelas Aktif</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-box bg-primary text-white shadow-sm rounded p-4">
-                <h2 class="fw-bold">{{ 90 }}</h2>
-                <p>Siswa Terdaftar</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-box bg-danger text-white shadow-sm rounded p-4">
-                <h2 class="fw-bold">{{ 92 }}</h2>
-                <p>Jumlah Tugas yang Dikirim</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-box bg-secondary text-white shadow-sm rounded p-4">
-                <h2 class="fw-bold">{{ 126 }}</h2>
-                <p>Jumlah Siswa Aktif</p>
-            </div>
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold text-primary mb-1">Selamat Datang, {{ session('user_name') }} </h1>
+            <p class="text-muted">Kelola kelas dan pantau aktivitas pembelajaran Anda.</p>
         </div>
     </div>
 
-    <!-- Daftar Kelas -->
-    <div class="mt-5">
-        <h3 class="fw-bold">Daftar Kelas</h3>
-        <div class="card p-4 mt-3 shadow-sm rounded">
-            @foreach ($kelas as $item)
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <h5 class="fw-bold text-dark">{{ $item->pelajaran }}</h5>
-                    <p class="text-muted mb-0">{{ $item->idkelas }}</p>
+    <!-- STATISTIK -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="stat-card shadow-sm border-0 rounded-4 p-4 bg-primary text-white">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-white text-primary me-3">
+                        <i class="bi bi-journal-bookmark-fill"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold">{{ $jumlahKelasGuru }}</h2>
+                        <p class="m-0">Jumlah Kelas Aktif</p>
+                    </div>
                 </div>
-                <a href="{{ route('kelas.masuk', $item->id) }}" class="btn btn-warning text-white rounded-pill px-4 py-2 shadow-sm transition-all">
-                    Lihat
-                </a>
             </div>
-            <hr class="my-3">
+        </div>
+
+        @foreach ($kelas as $k)
+        <div class="col-md-4">
+            <div class="stat-card shadow-sm rounded-4 p-4 bg-light">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-primary text-white me-3">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold">{{ $k->pengguna->count() }}</h2>
+                        <p class="m-0">Siswa Terdaftar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    <!-- LIST KELAS -->
+    <div class="mt-5">
+        <h3 class="fw-bold text-primary mb-3">Daftar Kelas Anda</h3>
+
+        <div class="row g-4">
+            @foreach ($kelas as $item)
+            <div class="col-md-4">
+                <div class="kelas-card shadow-sm rounded-4 p-4 bg-white">
+                    <h5 class="fw-bold text-dark">{{ $item->pelajaran }}</h5>
+                    <p class="text-muted small m-0">Kode Kelas: {{ $item->idkelas }}</p>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="badge bg-primary px-3 py-2 rounded-pill">
+                            {{ $item->pengguna->count() }} siswa
+                        </span>
+
+                        <a href="{{ route('kelas.masuk', $item->id) }}" 
+                           class="btn btn-primary rounded-pill px-4 shadow-sm">
+                            Masuk
+                        </a>
+                    </div>
+                </div>
+            </div>
             @endforeach
         </div>
+
     </div>
+
 </div>
 
-<!-- Custom Styles -->
+<!-- CUSTOM CSS -->
 @section('styles')
 <style>
-    .stat-box h2 {
-        font-size: 2.5rem;
+    .stat-card {
+        transition: transform 0.3s ease;
+        border-radius: 1rem;
     }
 
-    .stat-box p {
-        font-size: 1.1rem;
-        margin-top: 10px;
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
     }
 
-    .stat-box {
-        border-radius: 10px;
-        padding: 30px 20px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
     }
 
-    .stat-box:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    .kelas-card {
+        transition: 0.3s ease;
+        border-radius: 1rem;
     }
 
-    .btn-warning {
-        border-radius: 30px;
-        font-size: 1rem;
-        padding: 8px 20px;
-        transition: background-color 0.3s, transform 0.3s;
-    }
-
-    .btn-warning:hover {
-        background-color: #f39c12;
-        transform: scale(1.05);
-    }
-
-    .card {
-        border-radius: 10px;
-    }
-
-    .hr {
-        border: 0;
-        border-top: 1px solid #ddd;
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
-
-    .transition-all {
-        transition: all 0.3s ease;
+    .kelas-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12) !important;
     }
 </style>
 @endsection

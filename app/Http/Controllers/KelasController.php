@@ -4,11 +4,67 @@ namespace App\Http\Controllers;
 
 use App\Models\Kelas;
 use App\Models\Materi;
+use App\Models\pengguna;
+use App\Models\KuisResult;
+use App\Models\FeedbackGuru;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class KelasController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+
+            if (Auth::check()) {
+
+                $user = Auth::user();
+
+                /* ============================================
+                *  FEEDBACK GURU
+                * ============================================ */
+                $feedbackGuru = FeedbackGuru::where('pengguna_id', $user->id)
+                    ->with('guru')
+                    ->get();
+                view()->share('feedbackGuru', $feedbackGuru);
+
+                /* ============================================
+                *  RATA-RATA NILAI
+                * ============================================ */
+                $rataRataNilai = KuisResult::where('pengguna_id', $user->id)->avg('score');
+                $rataRataNilai = $rataRataNilai ? round($rataRataNilai) : 0;
+                view()->share('rataRataNilai', $rataRataNilai);
+
+                /* ============================================
+                *  REKOMENDASI AI
+                * ============================================ */
+                $rekomendasiAI = $user->rekomendasi ?? 'Belum ada rekomendasi';
+                view()->share('rekomendasiAI', $rekomendasiAI);
+
+                /* ============================================
+                *  JUMLAH KELAS DIMILIKI GURU
+                * ============================================ */
+                $jumlahKelasGuru = 0;
+
+                // hitung jika user role = guru
+                if (isset($user->role) && strtolower($user->role) === 'guru') {
+                    $jumlahKelasGuru = Kelas::where('pengguna_id', $user->id)->count();
+                }
+
+                view()->share('jumlahKelasGuru', $jumlahKelasGuru);
+            }
+            else {
+                // jika belum login
+                view()->share('feedbackGuru', collect());
+                view()->share('rataRataNilai', 0);
+                view()->share('rekomendasiAI', 'Belum ada rekomendasi');
+                view()->share('jumlahKelasGuru', 0);
+            }
+
+            return $next($request);
+        });
+    }
+
     public function index()
     {
         $kelas = Kelas::all();
@@ -29,6 +85,7 @@ class KelasController extends Controller
             'namaKelas' => $request->namakelas,
             'pelajaran' => $request->pelajaran,
             'pengampu' => $request->pengampu,
+            'pengguna_id' => Auth::id(),
         ]);
 
         return redirect()->route('kelasGuru')->with('success', 'Kelas berhasil dibuat');
@@ -62,6 +119,18 @@ class KelasController extends Controller
     }
 
     // ======================================================
+    //          PEMBELAJARAN SISWA UNTUK GURU
+    // ======================================================
+    public function pembelajaranSiswa()
+    {
+        $visual     = pengguna::where('gaya_belajar', 'Visual')->get();
+        $auditori   = pengguna::where('gaya_belajar', 'Auditori')->get();
+        $kinestetik = pengguna::where('gaya_belajar', 'Kinestetik')->get();
+
+        return view('guru.tabsKelas.feed', compact('visual', 'auditori', 'kinestetik'));
+    }
+
+    // ======================================================
     //            **SISWA JOIN KELAS (attach)**
     // ======================================================
     public function tambahKelasSiswa(Request $request)
@@ -72,15 +141,12 @@ class KelasController extends Controller
 
         $kelas = Kelas::where('idkelas', $request->idkelas)->firstOrFail();
 
-        // Cek apakah user sudah join (pivot)
         if ($kelas->pengguna()->where('pengguna_id', auth()->id())->exists()) {
             return back()->with('error', 'Anda sudah bergabung di kelas ini.');
         }
 
-        // Tambahkan ke pivot table
         $kelas->pengguna()->attach(auth()->id());
 
-        // Redirect sesuai gaya belajar
         $style = strtolower(Auth::user()->gaya_belajar ?? '');
 
         return match ($style) {
@@ -98,7 +164,6 @@ class KelasController extends Controller
     {
         $kelas = Kelas::findOrFail($id);
 
-        // Hapus hanya user ini, tidak mengganggu siswa lain
         $kelas->pengguna()->detach(auth()->id());
 
         $style = strtolower(Auth::user()->gaya_belajar ?? '');
@@ -116,7 +181,24 @@ class KelasController extends Controller
         $kelas = Kelas::findOrFail($id);
         $materi = Materi::where('idkelas', $id)->get();
 
-        return view('guru.isiKelasGuru', compact('kelas', 'materi'));
+        $visual     = pengguna::where('gaya_belajar', 'Visual')->get();
+        $auditori   = pengguna::where('gaya_belajar', 'Auditori')->get();
+        $kinestetik = pengguna::where('gaya_belajar', 'Kinestetik')->get();
+
+        $leaderboard = [
+            'visual'     => $this->getLeaderboardByStyle('Visual'),
+            'auditori'   => $this->getLeaderboardByStyle('Auditori'),
+            'kinestetik' => $this->getLeaderboardByStyle('Kinestetik'),
+        ];
+
+        return view('guru.isiKelasGuru', compact(
+            'kelas',
+            'materi',
+            'visual',
+            'auditori',
+            'kinestetik',
+            'leaderboard'
+        ));
     }
 
     public function show($id)
@@ -124,34 +206,128 @@ class KelasController extends Controller
         $kelas = Kelas::findOrFail($id);
         $materi = Materi::where('idkelas', $id)->get();
 
+        $leaderboard = [
+            'visual'     => $this->getLeaderboardByStyle('Visual'),
+            'auditori'   => $this->getLeaderboardByStyle('Auditori'),
+            'kinestetik' => $this->getLeaderboardByStyle('Kinestetik'),
+        ];
+
         $style = strtolower(Auth::user()->gaya_belajar ?? '');
 
         return match ($style) {
-            'visual'    => view('siswa.isiKelas', compact('kelas', 'materi')),
-            'auditori'  => view('auditori.isiKelasAuditori', compact('kelas', 'materi')),
-            'kinestetik'=> view('kinestetik.isiKelas', compact('kelas', 'materi')),
-            default     => view('siswa.isiKelas', compact('kelas', 'materi')),
+            'visual'    => view('siswa.isiKelas', compact('kelas', 'materi', 'leaderboard')),
+            'auditori'  => view('auditori.isiKelasAuditori', compact('kelas', 'materi', 'leaderboard')),
+            'kinestetik'=> view('kinestetik.isiKelas', compact('kelas', 'materi', 'leaderboard')),
+            default     => view('siswa.isiKelas', compact('kelas', 'materi', 'leaderboard')),
         };
     }
+
     public function kelas()
     {
-        // Ambil semua kelas yang diikuti siswa lewat pivot
         $kelas = Auth::user()->kelas;
-
         return view('siswa.kelas', compact('kelas'));
     }
     public function kelasAuditori()
     {
-        // Ambil semua kelas yang diikuti siswa lewat pivot
         $kelas = Auth::user()->kelas;
-
         return view('auditori.kelasAuditori', compact('kelas'));
     }
     public function kelasKinestetik()
     {
-        // Ambil semua kelas yang diikuti siswa lewat pivot
         $kelas = Auth::user()->kelas;
-
         return view('kinestetik.kelas', compact('kelas'));
+    }
+
+    // === LEADERBOARD ===
+    public function leaderboard()
+    {
+        $leaderboard = [
+            'visual' => $this->getLeaderboardByStyle('Visual'),
+            'auditori' => $this->getLeaderboardByStyle('Auditori'),
+            'kinestetik' => $this->getLeaderboardByStyle('Kinestetik')
+        ];
+
+        return view('guru.tabsKelas.leaderboard', compact('leaderboard'));
+    }
+
+    public function leaderboardVisual()
+    {
+        $leaderboard = [
+            'visual'     => $this->getLeaderboardByStyle('Visual'),
+        ];
+
+        return view('siswa.tabsKelas.leaderboard', compact('leaderboard'));
+    }
+
+    public function leaderboardKinestetik()
+    {
+        $leaderboard = [
+            'kinestetik'     => $this->getLeaderboardByStyle('Kinestetik'),
+        ];
+
+        return view('kinestetik.tabsKelas.leaderboard', compact('leaderboard'));
+    }
+
+    public function leaderboardAuditori()
+    {
+        $leaderboard = [
+            'auditori'     => $this->getLeaderboardByStyle('Auditori'),
+        ];
+
+        return view('auditori.tabsKelas.leaderboard', compact('leaderboard'));
+    }
+
+    /**
+     * Helper: dapatkan leaderboard untuk satu gaya
+     */
+    private function getLeaderboardByStyle(string $style)
+    {
+        $users = pengguna::where('gaya_belajar', $style)->get();
+
+        $rows = $users->map(function($user) {
+            $kuis = KuisResult::where('pengguna_id', $user->id)->latest()->first();
+            return [
+                'id'    => $user->id,
+                'name'  => $user->nama,
+                'score' => $kuis ? (int)$kuis->score : 0,
+                'avatar'=> $user->avatar ?? null,
+            ];
+        })->sortByDesc('score')->values();
+
+        return $rows;
+    }
+
+    /**
+     * Helper: getLeaderboard dipakai di method dashboard()
+     * Kembalikan array gabungan (visual, auditori, kinestetik)
+     */
+    private function getLeaderboard()
+    {
+        return [
+            'visual'     => $this->getLeaderboardByStyle('Visual'),
+            'auditori'   => $this->getLeaderboardByStyle('Auditori'),
+            'kinestetik' => $this->getLeaderboardByStyle('Kinestetik'),
+        ];
+    }
+
+    public function dashboard()
+    {
+        $user = Auth::user();
+
+        // Leaderboard
+        $leaderboard = $this->getLeaderboard();
+
+        // Hitung rata-rata nilai kuis siswa
+        $rataRataNilai = KuisResult::where('pengguna_id', $user->id)->avg('score');
+        $rataRataNilai = $rataRataNilai ? round($rataRataNilai) : 0;
+
+        // Ambil rekomendasi dari AI (disimpan di database pengguna)
+        $rekomendasiAI = $user->rekomendasi ?? 'Belum ada rekomendasi';
+
+        return view('dashboard.index', [
+            'leaderboard'     => $leaderboard,
+            'rataRataNilai'   => $rataRataNilai,
+            'rekomendasiAI'   => $rekomendasiAI,
+        ]);
     }
 }

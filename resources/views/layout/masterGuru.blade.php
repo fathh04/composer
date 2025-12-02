@@ -64,7 +64,7 @@
             <div class="dropdown">
                 <button class="btn btn-light rounded-pill d-flex align-items-center px-2 py-1 shadow-sm"
                         type="button" data-bs-toggle="dropdown">
-                    <img src="{{ asset('img/guru.jpg') }}"
+                    <img src="{{ asset('https://cdn-icons-png.flaticon.com/512/3135/3135715.png') }}"
                          class="rounded-circle me-2 border border-2 border-primary-subtle"
                          style="width:32px; height:32px; object-fit:cover;">
                     <span class="fw-semibold text-dark d-none d-sm-inline">

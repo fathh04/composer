@@ -1,5 +1,6 @@
 <div class="container-fluid py-4">
   <div class="row g-4">
+
     <!-- Kolom kiri -->
     <div class="col-md-3">
       <div class="card glass-card h-100 instructions-card">
@@ -11,12 +12,21 @@
             <li>Klik <b>🗑 Clear</b> untuk reset editor.</li>
             <li>Klik <b>📤 Kirim</b> untuk kumpulkan tugas.</li>
           </ul>
+
           <hr>
+
+          <!-- ====== BADGE STATUS SUBMISSION (NEW) ====== -->
+          <div id="submissionBadge" class="mb-3">
+            <span class="badge-status badge-wait">⏳ Mengecek status...</span>
+          </div>
+          <!-- =========================================== -->
+
+          <!-- =============== TUGAS BARU =============== -->
           <h6 class="fw-bold text-primary">🎯 Tugas:</h6>
           <ol class="modern-list">
-            <li>Judul: <b style="color:#ff9800;">Hello Word!</b></li>
-            <li>Paragraf singkat tentang dirimu</li>
-            <li>Buatlah tombol <code>Click Me</code></li>
+            <li>Buat Judul: <b style="color:#ff9800;">Tabel Sederhana</b></li>
+            <li>Buat paragraf penjelasan singkat</li>
+            <li>Buat tabel sederhana minimal 2 kolom dan 2 baris</li>
           </ol>
         </div>
       </div>
@@ -69,6 +79,20 @@
                 </div>
               </div>
 
+              <!-- UPLOAD GAMBAR SETELAH SUBMIT HTML -->
+              <div id="uploadBox" style="display:none;" class="mt-3 p-3 bg-light border rounded">
+                <h5 class="fw-bold">📤 Upload Hasil Preview</h5>
+
+                <form action="{{ route('submission.upload') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="submission_id" id="submissionIdInput">
+
+                    <input type="file" name="image" accept="image/*" class="form-control mb-2" required>
+
+                    <button class="btn btn-primary w-100">Kirim Gambar</button>
+                </form>
+              </div>
+
             </div>
           </div>
 
@@ -86,7 +110,21 @@
 let editor;
 let editorLocked = false;
 let files = {
-  "index.html": "<!-- Tulis kode HTML Anda disini! -->\n<h1>Hello Word!</h1>\n<p>Perkenalkan nama saya ...</p>\n<button>Click Me</button>\n"
+  "index.html":
+`<!-- Mulai koding tabel sederhana di sini -->
+<h1>Tabel Sederhana</h1>
+<p>Ini adalah contoh tabel sederhana buatan saya.</p>
+
+<table border="1">
+  <tr>
+    <th>Kolom 1</th>
+    <th>Kolom 2</th>
+  </tr>
+  <tr>
+    <td>Data 1</td>
+    <td>Data 2</td>
+  </tr>
+</table>`
 };
 
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
@@ -101,31 +139,63 @@ require(["vs/editor/editor.main"], function () {
   });
 });
 
+/* =====================================================
+   === BADGE STATUS SUBMISSION (AUTO LOCK) — NEW =======
+   ===================================================== */
+fetch("/submission/check/{{ Auth::id() }}")
+  .then(res => res.json())
+  .then(data => {
+      const badge = document.getElementById("submissionBadge");
+
+      if (data.exists) {
+          badge.innerHTML =
+            `<span class="badge-status badge-success">🟢 Anda sudah mengumpulkan tugas</span>`;
+
+          // Lock editor
+          editorLocked = true;
+          editor.updateOptions({ readOnly: true });
+
+          runBtn.disabled = true;
+          clearBtn.disabled = true;
+          submitBtn.disabled = true;
+
+      } else {
+          badge.innerHTML =
+            `<span class="badge-status badge-fail">🔴 Anda belum mengumpulkan tugas</span>`;
+      }
+  })
+  .catch(() => {
+      document.getElementById("submissionBadge").innerHTML =
+        `<span class="badge-status badge-wait">⚠ Tidak bisa mengecek status</span>`;
+  });
+
 /* ---------- Feedback Logic ---------- */
 function checkStudentAnswer(code) {
     const feedback = [];
-    // normalize whitespace for checks
-    const codeNorm = code.replace(/\s+/g, ' ').toLowerCase();
+    const c = code.toLowerCase();
 
-    // Check heading exact phrase "hello word!" inside h1 (case-insensitive)
-    if (/<h1[^>]*>.*hello word!.*<\/h1>/i.test(code)) {
-        feedback.push({ ok: true, msg: "✔ Judul <b>Hello Word!</b> sudah benar!" });
+    if (/<h1[^>]*>.*tabel sederhana.*<\/h1>/i.test(code)) {
+        feedback.push({ ok: true, msg: "✔ Judul <b>Tabel Sederhana</b> sudah benar!" });
     } else {
-        feedback.push({ ok: false, msg: "❌ Judul belum benar. Gunakan: <code>&lt;h1&gt;Hello Word!&lt;/h1&gt;</code>" });
+        feedback.push({ ok: false, msg: "❌ Judul belum benar. Gunakan: <code>&lt;h1&gt;Tabel Sederhana&lt;/h1&gt;</code>" });
     }
 
-    // Check paragraph presence
     if (/<p\b[^>]*>.*?<\/p>/is.test(code)) {
-        feedback.push({ ok: true, msg: "✔ Paragraf sudah ada, bagus!" });
+        feedback.push({ ok: true, msg: "✔ Paragraf sudah dibuat!" });
     } else {
-        feedback.push({ ok: false, msg: "❌ Paragraf belum dibuat. Tambahkan: <code>&lt;p&gt;Tuliskan tentang dirimu&lt;/p&gt;</code>" });
+        feedback.push({ ok: false, msg: "❌ Paragraf belum ada. Tambahkan paragraf penjelasan." });
     }
 
-    // Check button content "Click Me" (case-insensitive)
-    if (/<button\b[^>]*>\s*click me\s*<\/button>/i.test(code)) {
-        feedback.push({ ok: true, msg: "✔ Tombol <b>Click Me</b> sudah benar!" });
+    if (/<table\b[^>]*>[\s\S]*<\/table>/i.test(code)) {
+        feedback.push({ ok: true, msg: "✔ Tabel sederhana ditemukan!" });
     } else {
-        feedback.push({ ok: false, msg: "❌ Tombol belum dibuat atau teksnya berbeda. Gunakan: <code>&lt;button&gt;Click Me&lt;/button&gt;</code>" });
+        feedback.push({ ok: false, msg: "❌ Tabel belum ada. Tambahkan: <code>&lt;table&gt;...&lt;/table&gt;</code>" });
+    }
+
+    if (/<tr>[\s\S]*?<td>.*?<\/td>[\s\S]*?<\/tr>/i.test(code)) {
+        feedback.push({ ok: true, msg: "✔ Tabel memiliki baris & kolom, sudah benar!" });
+    } else {
+        feedback.push({ ok: false, msg: "❌ Tabel belum berisi baris dan kolom." });
     }
 
     return feedback;
@@ -138,119 +208,92 @@ function showFeedback(items) {
       const color = it.ok ? 'feedback-ok' : 'feedback-fail';
       return `<div class="${color}">${it.msg}</div>`;
     }).join("");
-    // scroll to feedback
-    box.scrollIntoView({behavior: 'smooth', block: 'center'});
 }
 
-/* ---------- Preview / Run / Clear ---------- */
+/* ---------- Submit + AJAX ---------- */
+document.getElementById("submitBtn").addEventListener('click', function(e){
+  e.preventDefault();
+  if (editorLocked) return;
+
+  files["index.html"] = editor.getValue();
+
+  const fb = checkStudentAnswer(files["index.html"]);
+  showFeedback(fb);
+
+  editor.updateOptions({ readOnly: true });
+  editorLocked = true;
+
+  runBtn.disabled = true;
+  clearBtn.disabled = true;
+  submitBtn.disabled = true;
+
+  fetch("{{ route('submission.save') }}", {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": "{{ csrf_token() }}"
+      },
+      body: JSON.stringify({ html: files["index.html"] })
+  })
+  .then(res => res.json())
+  .then(data => {
+      if (data.success) {
+          window.submissionId = data.submission_id;
+          document.getElementById("uploadBox").style.display = "block";
+      }
+  });
+});
+
+/* ---------- Auto-inject submission ID ---------- */
+setInterval(() => {
+    if (window.submissionId) {
+        document.getElementById("submissionIdInput").value = window.submissionId;
+    }
+}, 300);
+
+/* ---------- Run Preview ---------- */
 document.getElementById("runBtn").addEventListener('click', function() {
   if (editorLocked) return;
   files["index.html"] = editor.getValue();
-  const output = `<!doctype html><html><head><meta charset="utf-8"></head><body>${files["index.html"]}</body></html>`;
+  const output = `<!doctype html><html><body>${files["index.html"]}</body></html>`;
   document.getElementById("preview").srcdoc = output;
   document.getElementById("output").style.display = "flex";
 });
 
+/* ---------- Clear ---------- */
 document.getElementById("clearBtn").addEventListener('click', function() {
   if (editorLocked) return;
-  files["index.html"] = "";
   editor.setValue("");
   document.getElementById("preview").srcdoc = "";
   document.getElementById("output").style.display = "none";
 });
-
-/* ---------- Submit with feedback (prevent reload) ---------- */
-document.getElementById("submitBtn").addEventListener('click', function(e){
-  e && e.preventDefault();
-
-  if (editorLocked) return;
-
-  files["index.html"] = editor.getValue();
-
-  // run feedback
-  const fb = checkStudentAnswer(files["index.html"]);
-  showFeedback(fb);
-
-  // lock editor and buttons
-  editor.updateOptions({ readOnly: true });
-  editorLocked = true;
-  document.getElementById("runBtn").disabled = true;
-  document.getElementById("clearBtn").disabled = true;
-  document.getElementById("submitBtn").disabled = true;
-
-  // send via fetch (AJAX) without reload
-  fetch("{{ url('/submission/save') }}", {
-    method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-TOKEN": '{{ csrf_token() }}'
-    },
-    body: JSON.stringify({ html: files["index.html"] })
-  }).then(res => {
-    // optional success handling
-    if (res.ok) {
-      // show small success indicator
-      const okNote = document.createElement('div');
-      okNote.className = 'submit-ok';
-      okNote.innerHTML = '✔ Kode berhasil dikirim';
-      document.getElementById('feedbackBox').appendChild(okNote);
-    }
-  }).catch(err => {
-    const failNote = document.createElement('div');
-    failNote.className = 'submit-fail';
-    failNote.innerHTML = '⚠ Gagal mengirim, coba lagi.';
-    document.getElementById('feedbackBox').appendChild(failNote);
-  });
-});
-
-/* ---------- Zoom & Fullscreen Controls for preview ---------- */
-let zoomLevel = 1;
-const zoomStep = 0.1;
-const minZoom = 0.3;
-const maxZoom = 2.5;
-const preview = () => document.getElementById('preview');
-
-function applyZoom() {
-  const frame = preview();
-  frame.style.transform = `scale(${zoomLevel})`;
-  // adjust container scroll/height so scaled content fits
-  // using transform scale keeps iframe width fixed; adjust wrapper height to avoid overflow
-  const wrapper = frame.parentElement;
-  if (zoomLevel > 1) {
-    wrapper.style.overflow = 'auto';
-  } else {
-    wrapper.style.overflow = 'auto';
-  }
-}
-
-document.getElementById('zoomInBtn').addEventListener('click', () => {
-  zoomLevel = Math.min(maxZoom, +(zoomLevel + zoomStep).toFixed(2));
-  applyZoom();
-});
-document.getElementById('zoomOutBtn').addEventListener('click', () => {
-  zoomLevel = Math.max(minZoom, +(zoomLevel - zoomStep).toFixed(2));
-  applyZoom();
-});
-document.getElementById('fitBtn').addEventListener('click', () => {
-  zoomLevel = 1;
-  applyZoom();
-});
-document.getElementById('fsBtn').addEventListener('click', () => {
-  const frame = preview();
-  // request fullscreen on wrapper (safer)
-  const wrapper = frame.parentElement;
-  if (wrapper.requestFullscreen) wrapper.requestFullscreen();
-  else if (wrapper.webkitRequestFullscreen) wrapper.webkitRequestFullscreen();
-});
-
-/* ensure zoom resets when new preview loaded */
-window.addEventListener('message', (e) => {
-  // no-op, placeholder if you want to send messages from preview
-});
 </script>
 
 <style>
+/* ===== BADGE STATUS ===== */
+.badge-status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.badge-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+.badge-fail {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+.badge-wait {
+  background: #fff3cd;
+  color: #775700;
+  border: 1px solid #ffe49c;
+}
+
 /* ======= Layout & Visuals ======= */
 .glass-card {
   background: rgba(255,255,255,0.96);
@@ -305,10 +348,8 @@ window.addEventListener('message', (e) => {
 .cmd-header { height:44px; display:flex; align-items:center; padding:0 12px; background:#fff; border-bottom:1px solid #eee; }
 .preview-wrap { flex:1; overflow:auto; background:#fff; }
 
-/* iframe scaling (transform origin top-left) */
 #preview { width:100%; height:100%; border: none; transform-origin: top left; transition: transform .12s ease-in-out; }
 
-/* Zoom buttons */
 .zoom-btn {
   background:#f1f5f9;
   border:1px solid #d1d9e6;
@@ -333,10 +374,7 @@ window.addEventListener('message', (e) => {
 }
 .feedback-ok { color: #0f5132; background: rgba(16,185,129,0.04); padding:6px; border-radius:6px; margin-bottom:6px; }
 .feedback-fail { color: #7a1f1f; background: rgba(244,63,94,0.04); padding:6px; border-radius:6px; margin-bottom:6px; }
-.submit-ok { margin-top:8px; color:#0f5132; font-weight:700; }
-.submit-fail { margin-top:8px; color:#7a1f1f; font-weight:700; }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .file-sidebar { display:none; }
   #editor { height:40vh; }

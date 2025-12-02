@@ -27,4 +27,8 @@ class Pengguna extends Authenticatable
     {
         return $this->belongsToMany(Kelas::class, 'kelas_pengguna', 'pengguna_id', 'kelas_id');
     }
+    public function kuis()
+    {
+        return $this->hasMany(\App\Models\KuisResult::class, 'pengguna_id');
+    }
 }

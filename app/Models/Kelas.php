@@ -10,7 +10,7 @@ class Kelas extends Model
     use HasFactory;
 
     protected $fillable = [
-        'idkelas', 'namaKelas', 'pelajaran', 'pengampu',
+        'idkelas', 'namaKelas', 'pelajaran', 'pengampu', 'pengguna_id',
     ];
     public function pengguna()
     {
@@ -24,5 +24,9 @@ class Kelas extends Model
     public function kuis()
     {
         return $this->hasMany(Kuis::class, 'idkelas');
+    }
+    public function guru()
+    {
+        return $this->belongsTo(Pengguna::class, 'pengguna_id');
     }
 }

@@ -1,24 +1,41 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use App\Models\Kuis;
 use Illuminate\Http\Request;
+use App\Models\KuisResult;
+use Illuminate\Support\Facades\Auth;
 
 class KuisController extends Controller
 {
-    public function store(Request $request)
+    public function submit(Request $request)
     {
-        $request->validate([
-            'judul_kuis' => 'required|string|max:255',
-            'deskripsi_kuis' => 'required|string',
+        $penggunaId = Auth::id();
+        $score = $request->score; // score mentah dari 0-5
+
+        // Cek apakah user sudah pernah mengerjakan
+        $cek = KuisResult::where('pengguna_id', $penggunaId)->first();
+
+        if ($cek) {
+            return response()->json([
+                'status' => 'locked',
+                'message' => 'Kuis sudah pernah dikerjakan'
+            ]);
+        }
+
+        // Convert nilai 0-5 menjadi 0-100
+        $nilaiAkhir = $score;
+
+        // Simpan hasil
+        KuisResult::create([
+            'pengguna_id' => $penggunaId,
+            'score'       => $nilaiAkhir
         ]);
 
-        Kuis::create([
-            'judul_kuis' => $request->judul_kuis,
-            'deskripsi_kuis' => $request->deskripsi_kuis,
-            'idkelas' => $request->kelas_id,
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Nilai berhasil disimpan',
+            'score'   => $nilaiAkhir
         ]);
-
-        return redirect()->route('kelasGuru')->with('success', 'Kuis berhasil dibuat!');
     }
 }

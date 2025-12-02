@@ -66,7 +66,7 @@
             </div>
 
             <p class="text-muted mb-4">
-                Sistem telah memprediksi gaya belajar Anda. Hasil prediksi ini membantu penyajian materi lebih sesuai.
+                Sistem telah memprediksi gaya belajar Anda, Selamat Belajar...
             </p>
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
@@ -97,16 +97,26 @@
     <h5 class="fw-bold mb-3">Materi yang Direkomendasikan</h5>
 
     <div class="row">
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card recommended-card shadow-sm border-0 rounded-4">
-                <div class="card-body p-4">
-                    <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-3 mb-3 d-inline-flex p-3">
-                        <i class="bi bi-play-circle fs-4"></i>
-                    </div>
-                    <h6 class="fw-bold">Pengenalan Table dalam HTML</h6>
-                    <p class="text-muted small">Materi dasar HTML5</p>
-                    <a href="#" class="btn btn-primary btn-sm rounded-pill px-3">Lihat Materi</a>
+        <div class="col-lg-12">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-4 bg-light">
+
+                <!-- Badge Icon Baru -->
+                <div class="d-inline-flex justify-content-center align-items-center mb-3"
+                     style="
+                        width: 55px;
+                        height: 55px;
+                        background: linear-gradient(135deg, #dfe4ea, #f1f2f6);
+                        border-radius: 15px;
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                        backdrop-filter: blur(4px);
+                     ">
+                    <i class="bi bi-info-circle text-secondary fs-3"></i>
                 </div>
+
+                <p class="fw-semibold text-secondary mb-1">Belum Ada Rekomendasi</p>
+                <p class="text-muted small mb-0">
+                    Selesaikan materi dan kuis di dalam kelas untuk mendapatkan rekomendasi sesuai dengan gaya belajar Anda!
+                </p>
             </div>
         </div>
     </div>
