@@ -1,5 +1,5 @@
 @extends('layout.masterGuru')
-@section('title', 'Materi Guru - Akadia')
+@section('title', 'Materi Guru - HTMLVirtual')
 @section('menuBeranda', 'active')
 
 @section('content')

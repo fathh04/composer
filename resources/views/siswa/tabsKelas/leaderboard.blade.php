@@ -1,3 +1,5 @@
+<div id="leaderboardSection">
+
 <h3 class="mb-4 text-center text-primary fw-bold" data-aos="zoom-in">
   🏆 Peringkat Siswa Terbaik Kategori Visual
 </h3>
@@ -149,3 +151,5 @@ renderLeaderboard();
   backdrop-filter: blur(12px);
 }
 </style>
+
+</div>

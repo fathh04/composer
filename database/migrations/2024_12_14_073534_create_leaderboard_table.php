@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('leaderboard', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('idkelas')->constrained('Kelas')->onDelete('cascade');  // Menghubungkan dengan tabel kelas
+            $table->foreignId('idkelas')->constrained('kelas')->onDelete('cascade');  // Menghubungkan dengan tabel kelas
             $table->foreignId('idpengguna')->constrained('pengguna')->onDelete('cascade');  // Menghubungkan dengan tabel pengguna
             $table->integer('total_skor');
             $table->timestamps();

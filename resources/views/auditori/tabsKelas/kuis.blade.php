@@ -73,7 +73,7 @@
     <!-- START CARD -->
     <!-- ========================================================= -->
     <div id="startCard" class="start-card">
-        <img src="{{ asset('img/struktur.jpg') }}" class="img-fluid mb-3" style="max-height:180px; object-fit:contain;">
+        <img src="{{ url('img/struktur.jpg') }}" class="img-fluid mb-3" style="max-height:180px; object-fit:contain;">
         <p class="text-muted">Kerjakan 5 soal dan jadilah peringkat pertama!</p>
         <button id="startBtn" class="btn btn-primary px-4 py-2" style="border-radius:12px;">
             🎧 Mulai Kuis
@@ -235,7 +235,6 @@ function checkAll() {
 
     let score = 0;
 
-    // FIX: gunakan correctAnswers, bukan answers
     for (let q in correctAnswers) {
         let selected = document.querySelector('input[name="'+q+'"]:checked');
         if (selected && selected.value === correctAnswers[q]) {
@@ -243,14 +242,20 @@ function checkAll() {
         }
     }
 
-    // Kirim nilai ke server
+    // --- KONVERSI KE /100 ---
+    let nilaiFinal = score * 20;
+
+    // --- KIRIM NILAI /100 KE DATABASE ---
     fetch("{{ route('kuis.submit') }}", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "X-CSRF-TOKEN": "{{ csrf_token() }}"
         },
-        body: JSON.stringify({ score: score })
+        body: JSON.stringify({
+            score: nilaiFinal,      // database simpan 0–100
+            raw: score              // opsional, kalo ingin simpan skor asli
+        })
     })
     .then(res => res.json())
     .then(data => {
@@ -265,10 +270,15 @@ function checkAll() {
         // Sembunyikan quiz
         document.getElementById("quizBox").style.display = "none";
 
-        // Tampilkan hasil
+        // Tampilkan hasil /100
         document.getElementById("hasilCard").style.display = "block";
         document.getElementById("hasilText").innerHTML =
-            "Nilai Kamu: <strong>" + (score * 20) + "</strong>";
+            "Nilai Kamu: <strong>" + nilaiFinal + "</strong>";
+
+        // Auto reload
+        setTimeout(() => {
+            location.reload();
+        }, 600);
     });
 }
 </script>

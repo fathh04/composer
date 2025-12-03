@@ -12,7 +12,7 @@
 
                 <div class="row g-0">
                     <div class="col-md-4 bg-primary text-white d-flex justify-content-center align-items-center p-3">
-                        <img src="{{ asset('img/profile.jpg') }}"
+                        <img src="{{ url('img/profile.jpg') }}"
                              alt="Profile"
                              class="img-fluid rounded-circle border border-white"
                              style="width: 130px; height: 130px; object-fit: cover;">

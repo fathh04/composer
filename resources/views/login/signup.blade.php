@@ -177,7 +177,7 @@
 
     <!-- RIGHT LOGO -->
     <div class="signup-logo">
-        <img src="{{ asset('img/logoakadia.png') }}" width="150">
+        <img src="{{ url('img/logoakadia.png') }}" width="150">
         <h2>EDUCATION</h2>
         <p>FREEDOM LEARNING</p>
     </div>

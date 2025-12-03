@@ -6,6 +6,7 @@ use App\Models\Kelas;
 use App\Models\Materi;
 use App\Models\pengguna;
 use App\Models\KuisResult;
+use App\Models\TugasGuru;
 use App\Models\FeedbackGuru;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -181,6 +182,10 @@ class KelasController extends Controller
         $kelas = Kelas::findOrFail($id);
         $materi = Materi::where('idkelas', $id)->get();
 
+        $tugas = TugasGuru::whereHas('materi', function($q) use ($id) {
+            $q->where('idkelas', $id);
+        })->with('pengguna', 'materi')->get();
+
         $visual     = pengguna::where('gaya_belajar', 'Visual')->get();
         $auditori   = pengguna::where('gaya_belajar', 'Auditori')->get();
         $kinestetik = pengguna::where('gaya_belajar', 'Kinestetik')->get();
@@ -194,6 +199,7 @@ class KelasController extends Controller
         return view('guru.isiKelasGuru', compact(
             'kelas',
             'materi',
+            'tugas',
             'visual',
             'auditori',
             'kinestetik',

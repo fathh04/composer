@@ -19,8 +19,7 @@
                             <th>#</th>
                             <th>Judul</th>
                             <th>Deskripsi</th>
-                            <th>Gaya Belajar</th>
-                            <th>File / Konten</th>
+                            <th>File</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -34,22 +33,15 @@
 
                             <td style="max-width: 300px;">{{ $m->deskripsi }}</td>
 
-                            <td class="fw-semibold text-capitalize">
-                                {{ $m->gaya_belajar }}
-                            </td>
-
                             <td>
-                                @if ($m->gaya_belajar == 'kinestetik')
-                                    <span class="text-muted fst-italic">Tidak ada file (materi teks)</span>
-                                @else
-                                    <a href="{{ asset('storage/' . $m->file_materi) }}" target="_blank"
-                                       class="btn btn-sm btn-outline-primary rounded-pill">
-                                        <i class="bi bi-file-earmark"></i> Lihat
-                                    </a>
-                                @endif
+                                <a href="{{ url('storage/' . $m->file_materi) }}" target="_blank"
+                                   class="btn btn-sm btn-outline-primary rounded-pill">
+                                    <i class="bi bi-file-earmark"></i> Lihat
+                                </a>
                             </td>
 
                             <td class="text-center">
+
                                 <!-- Tombol Hapus -->
                                 <button type="button"
                                         class="btn btn-sm btn-outline-danger rounded-pill"
@@ -137,22 +129,11 @@
                         <textarea class="form-control rounded-3" name="deskripsi" rows="4" required></textarea>
                     </div>
 
-                    <!-- GAYA BELAJAR -->
+                    <!-- Upload PDF -->
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-primary">Gaya Belajar</label>
-                        <select name="gaya_belajar" id="gaya_belajar" class="form-control rounded-3" required>
-                            <option value="">-- Pilih Gaya Belajar --</option>
-                            <option value="visual">Visual (Video/Gambar)</option>
-                            <option value="auditori">Auditori (Audio/MP3)</option>
-                            <option value="kinestetik">Kinestetik (Teks)</option>
-                        </select>
-                    </div>
-
-                    <!-- UPLOAD FILE (Dinamis) -->
-                    <div class="mb-3" id="uploadFileWrapper">
-                        <label class="form-label fw-semibold text-primary">Upload Materi</label>
+                        <label class="form-label fw-semibold text-primary">Upload Materi (PDF saja)</label>
                         <input type="file" class="form-control rounded-3" name="file_materi"
-                               id="file_materi" required>
+                            accept="application/pdf" required>
                     </div>
 
                 </div>
@@ -180,27 +161,3 @@
         border-radius: 14px;
     }
 </style>
-
-<!-- SCRIPT: Ubah input file berdasarkan gaya belajar -->
-<script>
-document.getElementById('gaya_belajar').addEventListener('change', function () {
-    let selected = this.value;
-    let input = document.getElementById('file_materi');
-
-    if (selected === 'visual') {
-        input.required = true;
-        input.accept = ".mp4, .jpg, .jpeg, .png";
-        input.style.display = "block";
-    }
-    else if (selected === 'auditori') {
-        input.required = true;
-        input.accept = ".mp3, .wav";
-        input.style.display = "block";
-    }
-    else if (selected === 'kinestetik') {
-        input.required = false;
-        input.value = "";
-        input.style.display = "none";
-    }
-});
-</script>

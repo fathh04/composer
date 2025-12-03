@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ url('css/style.css') }}">
 </head>
 <body>
     <!-- Modal Logout -->
@@ -68,7 +68,7 @@
             <div class="dropdown">
                 <button class="btn btn-light rounded-pill d-flex align-items-center px-2 py-1 shadow-sm"
                         type="button" data-bs-toggle="dropdown">
-                    <img src="{{ asset('img/profile.jpg') }}" alt="Profile"
+                    <img src="{{ url('img/profile.jpg') }}" alt="Profile"
                          class="rounded-circle me-2 border border-2 border-primary-subtle"
                          style="width: 32px; height: 32px; object-fit: cover;">
                     <span class="fw-semibold text-dark d-none d-sm-inline">

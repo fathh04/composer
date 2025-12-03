@@ -1,119 +1,108 @@
 <style>
-/* ================== CARD UTAMA ================== */
-.quiz-container {
+/* ================== GLOBAL CARD ================== */
+.quiz-card {
+    border-radius: 18px;
     background: #ffffff;
-    padding: 20px 25px;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    margin-bottom: 40px !important;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    padding: 25px;
+    border: 1px solid #e5e7eb;
 }
 
-/* ================== ZONE KOTAK ================== */
-.drop-zone, .zone {
-    border: 2px dashed #0d6efd;
-    padding: 12px;
-    border-radius: 8px;
-    min-height: 90px;
-    margin-bottom: 12px;
-    background: #f8faff;
-}
-
-/* ================== ITEM DRAG ================== */
-.code-piece, .tag-item {
-    background: #eef5ff;
-    padding: 8px 12px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    font-size: 14px;
-    cursor: grab;
-    border: 1px solid #0d6efd;
-}
-
-.code-piece.dragging, .tag-item.dragging {
-    opacity: .5;
-}
-
-/* ================== RESULT ================== */
-.result-box {
-    margin-top: 10px;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-/* ================== TOMBOL ================== */
-#btnFinal, #startBtn {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border: none;
-    background: #0d6efd;
-    color: #fff;
-    border-radius: 8px;
-    margin-top: 25px;
-    transition: .2s;
-}
-
-#btnFinal:hover, #startBtn:hover {
-    background: #0b5ed7;
-}
-
-/* START CARD */
+/* START + HASIL CARD */
 .start-card, .hasil-card {
     border-radius: 20px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     padding: 25px;
     background: #fff;
-    margin-bottom: 25px;
     text-align: center;
 }
 
+/* ================== DROP ZONE ================== */
+.zone, .drop-zone {
+    border: 2px dashed #0d6efd;
+    padding: 12px;
+    border-radius: 10px;
+    min-height: 90px;
+    background: #f1f6ff;
+    margin-bottom: 15px;
+}
+
+/* ================== DRAG ITEMS ================== */
+.code-piece, .tag-item {
+    background: #e8f0ff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #0d6efd;
+    margin-bottom: 8px;
+    cursor: grab;
+    transition: 0.2s;
+}
+
+.code-piece:hover, .tag-item:hover {
+    background: #dbe8ff;
+}
+
+.code-piece.dragging, .tag-item.dragging {
+    opacity: .4;
+}
+
+/* ================== BUTTON ================== */
+.btn-main {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 10px;
+}
+
+.result-box {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
 </style>
 
 <div class="container py-4">
 
-    <h3 class="fw-bold text-center mb-4 text-primary">🧩 Kuis Tabel HTML</h3>
-
-    <!-- ================= START CARD ================= -->
-    <div id="startCard" class="start-card">
-        <img src="{{ asset('img/puzzle.png') }}" class="img-fluid mb-3" style="max-height:180px;">
-        <p class="text-muted">Susun kode tabel dan jadilah peringkat pertama.</p>
-        <button id="startBtn">Mulai Kuis</button>
+    <!-- ==================== START CARD ==================== -->
+    <div id="startCard" class="start-card mb-4">
+        <img src="{{ url('img/puzzle.png') }}" class="img-fluid mb-3" style="max-height:180px;">
+        <h4 class="fw-bold text-primary">🧩 Kuis Tabel Drag & Drop</h4>
+        <p class="text-muted mt-2">Selesaikan dua tantangan HTML tabel dan raih score terbaik!</p>
+        <button id="startBtn" class="btn btn-primary btn-main">🚀 Mulai Kuis</button>
     </div>
 
-    <!-- ================= HASIL JIKA SUDAH PERNAH ================= -->
-    <div id="hasilCard" class="hasil-card" style="display:none;">
-        <h4 class="fw-bold text-success">📊 Hasil Kuis Kamu</h4>
-        <p id="hasilText" class="mt-3 fs-5"></p>
+    <!-- ==================== CARD HASIL (JIKA SUDAH) ==================== -->
+    <div id="hasilCard" class="hasil-card mb-4" style="display:none;">
+        <h3 class="fw-bold text-success">🎉 Hasil Kuis Kamu</h3>
+        <h4 id="hasilText" class="mt-3"></h4>
+        <button onclick="location.reload()" class="btn btn-secondary mt-3">🔄 Kembali</button>
     </div>
 
-    <!-- ================= BOX QUIZ (DISEMBUNYIKAN DULU) ================= -->
+    <!-- ==================== KUIS CARD ==================== -->
     <div id="quizBox" style="display:none;">
-        <div class="quiz-container">
+        <div class="quiz-card">
+
+            <h3 class="fw-bold text-center text-primary mb-4">🧩 Kuis Tabel HTML</h3>
 
             <!-- ================= SOAL 1 ================= -->
-            <h4 class="text-center fw-bold text-primary mb-3">
-                🧩 Soal 1 — Susun Kode HTML Tabel
-            </h4>
+            <h5 class="fw-bold mb-2 text-primary">Soal 1 — Susun Struktur Tabel</h5>
 
-            <div class="row">
+            <div class="row mb-4">
                 <div class="col-md-6">
-                    <h5 class="fw-bold text-primary">📌 Potongan Kode</h5>
+                    <h6 class="fw-bold">📌 Potongan Kode</h6>
                     <div id="codeList">
-                        <div class="code-piece" draggable="true" data-order="3">&nbsp;&nbsp;&nbsp;&lt;tr&gt;</div>
-                        <div class="code-piece" draggable="true" data-order="6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/tr&gt;</div>
+                        <div class="code-piece" draggable="true" data-order="3">&nbsp;&nbsp;&lt;tr&gt;</div>
+                        <div class="code-piece" draggable="true" data-order="6">&nbsp;&nbsp;&lt;/tr&gt;</div>
                         <div class="code-piece" draggable="true" data-order="1">&lt;table border="1"&gt;</div>
-                        <div class="code-piece" draggable="true" data-order="4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;Nama&lt;/td&gt;</div>
-                        <div class="code-piece" draggable="true" data-order="2">&nbsp;&nbsp;&nbsp;&lt;thead&gt;</div>
-                        <div class="code-piece" draggable="true" data-order="5">&nbsp;&nbsp;&nbsp;&lt;/thead&gt;</div>
+                        <div class="code-piece" draggable="true" data-order="4">&nbsp;&nbsp;&lt;td&gt;Nama&lt;/td&gt;</div>
+                        <div class="code-piece" draggable="true" data-order="2">&lt;thead&gt;</div>
+                        <div class="code-piece" draggable="true" data-order="5">&lt;/thead&gt;</div>
                         <div class="code-piece" draggable="true" data-order="7">&lt;/table&gt;</div>
                     </div>
                 </div>
 
                 <div class="col-md-6">
-                    <h5 class="fw-bold text-primary">👇 Susun Kode di Sini</h5>
+                    <h6 class="fw-bold">👇 Susun Kode di Sini</h6>
                     <div id="dropZone" class="drop-zone"></div>
                 </div>
             </div>
@@ -123,15 +112,12 @@
             <hr class="my-4">
 
             <!-- ================= SOAL 2 ================= -->
-            <h4 class="text-center fw-bold text-primary mb-3">
-                🧩 Soal 2 — Pilah Tag Tabel berdasarkan Kategori
-            </h4>
+            <h5 class="fw-bold mb-2 text-primary">Soal 2 — Pilah Tag Tabel</h5>
 
             <div class="row">
                 <div class="col-md-6">
-                    <h5 class="fw-bold text-primary text-center">📌 Tag yang Harus Dipilah</h5>
-
-                    <div class="zone" id="tagList" style="min-height:250px;">
+                    <h6 class="fw-bold text-center">📌 Tag yang Harus Dipilah</h6>
+                    <div id="tagList" class="zone" style="min-height:250px;">
                         <div class="tag-item" draggable="true" data-type="table">&lt;table&gt;</div>
                         <div class="tag-item" draggable="true" data-type="table">&lt;/table&gt;</div>
                         <div class="tag-item" draggable="true" data-type="row">&lt;tr&gt;</div>
@@ -142,31 +128,28 @@
                 </div>
 
                 <div class="col-md-6">
-
                     <div class="row g-3">
                         <div class="col-md-12">
-                            <h5 class="fw-bold text-primary text-center">Tag Table</h5>
-                            <div class="zone" id="zoneTable"></div>
+                            <h6 class="fw-bold text-center">Tag Table</h6>
+                            <div id="zoneTable" class="zone"></div>
                         </div>
 
                         <div class="col-md-12">
-                            <h5 class="fw-bold text-primary text-center">Tag Row</h5>
-                            <div class="zone" id="zoneRow"></div>
+                            <h6 class="fw-bold text-center">Tag Row</h6>
+                            <div id="zoneRow" class="zone"></div>
                         </div>
 
                         <div class="col-md-12">
-                            <h5 class="fw-bold text-primary text-center">Tag Cell</h5>
-                            <div class="zone" id="zoneCell"></div>
+                            <h6 class="fw-bold text-center">Tag Cell</h6>
+                            <div id="zoneCell" class="zone"></div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
             <div id="result2" class="result-box"></div>
 
-            <!-- ================= SUBMIT ================= -->
-            <button type="submit" id="btnFinal">✔ Submit</button>
+            <button id="btnFinal" class="btn btn-primary btn-main mt-3">✔ Submit</button>
 
             <div id="finalScore" class="result-box text-center"></div>
         </div>
@@ -176,52 +159,49 @@
 
 <script>
 
+/* ================== CEK STATUS SUDAH MENGERJAKAN ================== */
 let sudahMengerjakan = false;
 
-/* ================= CEK STATUS ================= */
 fetch("{{ url('/api/kuis/status') }}?user={{ Auth::id() }}&jenis=tabel_html_dragdrop")
     .then(res => res.json())
     .then(data => {
         if (data.status === "locked") {
             sudahMengerjakan = true;
-
             document.getElementById("startCard").style.display = "none";
             document.getElementById("hasilCard").style.display = "block";
             document.getElementById("hasilText").innerHTML =
-                "Nilai Kamu: <strong>" + data.score + "</strong>";
+                "Nilai Kamu: <b>" + data.score + "</b>";
         }
     });
 
-/* ================= START BUTTON ================= */
+/* ================== MULAI KUIS ================== */
 document.getElementById("startBtn").addEventListener("click", () => {
     if (sudahMengerjakan) return;
-
     document.getElementById("quizBox").style.display = "block";
     document.getElementById("startCard").style.display = "none";
 });
 
-/* ================= DRAG & DROP KUIS 1 ================= */
+/* ================== DRAG KODE ================== */
 const pieces = document.querySelectorAll('.code-piece');
 const dropZone = document.getElementById('dropZone');
 const codeList = document.getElementById('codeList');
 
-pieces.forEach(piece => {
-    piece.addEventListener('dragstart', () => piece.classList.add('dragging'));
-    piece.addEventListener('dragend', () => piece.classList.remove('dragging'));
+pieces.forEach(p => {
+    p.addEventListener('dragstart', () => p.classList.add('dragging'));
+    p.addEventListener('dragend', () => p.classList.remove('dragging'));
 });
 
 dropZone.addEventListener('dragover', e => {
     e.preventDefault();
-    const dragging = document.querySelector('.dragging');
-    dropZone.appendChild(dragging);
+    dropZone.appendChild(document.querySelector('.dragging'));
 });
 
 codeList.addEventListener('dragover', e => {
     e.preventDefault();
-    const dragging = document.querySelector('.dragging');
-    codeList.appendChild(dragging);
+    codeList.appendChild(document.querySelector('.dragging'));
 });
 
+/* CEK URUTAN */
 function checkKuis1() {
     const items = dropZone.querySelectorAll('.code-piece');
     if (items.length < 7) return 0;
@@ -233,42 +213,56 @@ function checkKuis1() {
     return correct ? 1 : 0;
 }
 
-/* ================= DRAG & DROP KUIS 2 ================= */
+/* ================== DRAG TAG ================== */
 const tagItems = document.querySelectorAll('.tag-item');
 const zones = document.querySelectorAll('.zone');
 
-tagItems.forEach(tag => {
-    tag.addEventListener('dragstart', () => tag.classList.add('dragging'));
-    tag.addEventListener('dragend', () => tag.classList.remove('dragging'));
+tagItems.forEach(t => {
+    t.addEventListener('dragstart', () => t.classList.add('dragging'));
+    t.addEventListener('dragend', () => t.classList.remove('dragging'));
 });
 
-zones.forEach(zone => {
-    zone.addEventListener('dragover', e => {
+zones.forEach(z => {
+    z.addEventListener('dragover', e => {
         e.preventDefault();
-        const dragging = document.querySelector('.dragging');
-        if (dragging) zone.appendChild(dragging);
+        z.appendChild(document.querySelector('.dragging'));
     });
 });
 
+/* CEK TAG */
 function checkKuis2() {
-    let correct = true;
+    let ok = true;
 
     document.querySelectorAll('#zoneTable .tag-item').forEach(i => {
-        if (i.dataset.type !== 'table') correct = false;
+        if (i.dataset.type !== 'table') ok = false;
     });
 
     document.querySelectorAll('#zoneRow .tag-item').forEach(i => {
-        if (i.dataset.type !== 'row') correct = false;
+        if (i.dataset.type !== 'row') ok = false;
     });
 
     document.querySelectorAll('#zoneCell .tag-item').forEach(i => {
-        if (i.dataset.type !== 'cell') correct = false;
+        if (i.dataset.type !== 'cell') ok = false;
     });
 
-    return correct ? 1 : 0;
+    return ok ? 1 : 0;
 }
 
-/* ================= SUBMIT KE SERVER ================= */
+/* ================== REFRESH BAGIAN FEED & LEADERBOARD ================== */
+function reloadSection(id, url) {
+    fetch(url)
+        .then(res => res.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            const newContent = doc.querySelector("#" + id);
+            if (newContent) {
+                document.getElementById(id).innerHTML = newContent.innerHTML;
+            }
+        });
+}
+
+/* ================== SUBMIT ================== */
 document.getElementById("btnFinal").addEventListener("click", () => {
 
     const score1 = checkKuis1();
@@ -279,9 +273,6 @@ document.getElementById("btnFinal").addEventListener("click", () => {
     document.getElementById("result1").innerHTML = score1 ? "✅ Kuis 1 Benar!" : "❌ Kuis 1 Salah";
     document.getElementById("result2").innerHTML = score2 ? "✅ Kuis 2 Benar!" : "❌ Kuis 2 Salah";
 
-    document.getElementById("finalScore").innerHTML =
-        "🎉 Nilai Akhir: " + nilaiAkhir;
-
     fetch("{{ route('kuis.submit') }}", {
         method: "POST",
         headers: {
@@ -289,6 +280,18 @@ document.getElementById("btnFinal").addEventListener("click", () => {
             "X-CSRF-TOKEN": "{{ csrf_token() }}"
         },
         body: JSON.stringify({ score: nilaiAkhir })
+    })
+    .then(() => {
+
+        // tampilkan card hasil
+        document.getElementById("quizBox").style.display = "none";
+        document.getElementById("hasilCard").style.display = "block";
+        document.getElementById("hasilText").innerHTML =
+            "Nilai Kamu: <b>" + nilaiAkhir + "</b>";
+
+        setTimeout(() => {
+                location.reload();
+            }, 600);
     });
 });
 

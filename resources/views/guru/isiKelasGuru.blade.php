@@ -1,5 +1,5 @@
 @extends('layout.masterGuru')
-@section('title', 'Kelola Kelas - HTMLExplore')
+@section('title', 'Kelola Kelas - HTMLVirtual')
 @section('menuKelas', 'active')
 
 @section('content')
@@ -97,6 +97,14 @@
 
             <li class="nav-item flex-fill text-center">
                 <button class="nav-link w-100"
+                        id="feed-tab" data-bs-toggle="tab" data-bs-target="#tugas"
+                        type="button">
+                    <i class="bi bi-journal-text me-1"></i> Tugas Siswa
+                </button>
+            </li>
+
+            <li class="nav-item flex-fill text-center">
+                <button class="nav-link w-100"
                         id="leaderboard-tab" data-bs-toggle="tab" data-bs-target="#leaderboard"
                         type="button">
                     <i class="bi bi-trophy me-1"></i> Leaderboard
@@ -121,6 +129,10 @@
 
         <div class="tab-pane fade show active" id="materi">
             @include('guru.tabsKelas.materi')
+        </div>
+
+        <div class="tab-pane fade" id="tugas">
+            @include('guru.tabsKelas.tugas')
         </div>
 
         <div class="tab-pane fade" id="leaderboard">

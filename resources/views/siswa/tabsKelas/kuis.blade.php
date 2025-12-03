@@ -77,7 +77,7 @@
 
 <!-- 🚀 START CARD -->
 <div id="startCard" class="card shadow-lg border-0 mb-4" style="border-radius: 18px;">
-    <img src="{{ asset('img/syntax.png')}}"
+    <img src="{{ url('img/syntax.png')}}"
          class="card-img-top p-4"
          style="height: 200px; object-fit: contain;" alt="Kuis">
 
@@ -255,6 +255,10 @@
                 "Nilai Anda: <b>" + nilaiAkhir + "</b>";
 
             document.getElementById("hasilCard").style.display = "block";
+
+            setTimeout(() => {
+                location.reload();
+            }, 600);
         });
     }
 </script>

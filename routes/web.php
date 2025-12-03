@@ -162,3 +162,13 @@ Route::get('/leaderboard/auditori', [KelasController::class, 'leaderboardAuditor
      ->name('leaderboard.auditori');
 
 Route::get('/submission/check/{id}', [TugasSubmissionController::class, 'getSubmission']);
+
+Route::post('/upload-tugas/{materi_id}', [TugasSubmissionController::class, 'uploadPdf'])
+    ->name('tugas.upload');
+Route::get('/guru/materi/{id}/tugas',
+    [TugasSubmissionController::class, 'listTugasSiswa']
+)->name('guru.tabsKelas.tugas');
+Route::post('/guru/tugas/{id}/nilai', [TugasSubmissionController::class, 'beriNilai'])
+    ->name('guru.tugas.nilai');
+
+

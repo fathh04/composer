@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') - HTMLExplore</title>
+    <title>@yield('title') - HTMLVirtual</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
     <!-- Custom CSS (SAMA DENGAN LAYOUT SISWA) -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ url('css/style.css') }}">
 </head>
 <body>
 
@@ -54,7 +54,7 @@
             <i class="bi bi-list fs-5"></i>
         </button>
 
-        <a class="navbar-brand fw-bold text-gradient">HTMLExplore</a>
+        <a class="navbar-brand fw-bold text-gradient">HTMLVirtual</a>
 
         <div class="ms-auto d-flex align-items-center gap-2">
             <button id="toggleTheme" class="btn btn-light rounded-circle shadow-sm">
@@ -64,7 +64,7 @@
             <div class="dropdown">
                 <button class="btn btn-light rounded-pill d-flex align-items-center px-2 py-1 shadow-sm"
                         type="button" data-bs-toggle="dropdown">
-                    <img src="{{ asset('https://cdn-icons-png.flaticon.com/512/3135/3135715.png') }}"
+                    <img src="{{ url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png') }}"
                          class="rounded-circle me-2 border border-2 border-primary-subtle"
                          style="width:32px; height:32px; object-fit:cover;">
                     <span class="fw-semibold text-dark d-none d-sm-inline">

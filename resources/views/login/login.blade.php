@@ -186,7 +186,7 @@
 
         <!-- Bagian kanan -->
         <div class="login-logo">
-            <img src="{{ asset('img/logoakadia.png') }}" alt="Logo">
+            <img src="{{ url('img/logoakadia.png') }}" alt="Logo">
             <h2>EDUCATION</h2>
             <p>FREEDOM LEARNING</p>
         </div>

@@ -56,13 +56,16 @@ class MateriController extends Controller
         $kinestetik = pengguna::where('gaya_belajar', 'Kinestetik')->get();
         $leaderboard = $this->getFullLeaderboard();
 
+        $tugas = [];
+
         return view('guru.isiKelasGuru', compact(
             'materi',
             'kelas',
             'visual',
             'auditori',
             'kinestetik',
-            'leaderboard'
+            'leaderboard',
+            'tugas'
         ));
     }
 
@@ -72,33 +75,22 @@ class MateriController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'judul'        => 'required|string|max:255',
-            'deskripsi'    => 'required|string',
-            'gaya_belajar' => 'required|string|in:visual,auditori,kinestetik',
-            'file_materi'  => 'nullable|file|max:20000',
-            'kelas_id'     => 'required|integer|exists:kelas,id',
+            'judul'       => 'required|string|max:255',
+            'deskripsi'   => 'required|string',
+            'file_materi' => 'required|mimes:pdf|max:20000',
+            'kelas_id'    => 'required|integer|exists:kelas,id',
         ]);
 
-        $filePath = null;
-
-        // Jika bukan kinestetik maka wajib upload file
-        if ($request->gaya_belajar !== 'kinestetik') {
-            $request->validate([
-                'file_materi' => 'required|file|mimes:pdf,mp4,jpg,jpeg,png,mp3,wav'
-            ]);
-
-            $filePath = $request->file('file_materi')->store('materi', 'public');
-        }
+        // Simpan PDF ke storage
+        $filePath = $request->file('file_materi')->store('materi', 'public');
 
         Materi::create([
             'judul'        => $request->judul,
             'deskripsi'    => $request->deskripsi,
-            'gaya_belajar' => $request->gaya_belajar,
-            'file_materi'  => $filePath ?? '',
+            'file_materi'  => $filePath,
             'idkelas'      => $request->kelas_id,
         ]);
 
-        // redirect ke halaman masuk kelas (supaya semua variabel yang diperlukan dikirim)
         return redirect()->route('guru.masukKelas', ['id' => $request->kelas_id])
             ->with('success', 'Materi berhasil ditambahkan!');
     }
@@ -116,13 +108,16 @@ class MateriController extends Controller
         $kinestetik = pengguna::where('gaya_belajar', 'Kinestetik')->get();
         $leaderboard = $this->getFullLeaderboard();
 
+        $tugas = [];
+        
         return view('guru.isiKelasGuru', compact(
             'materi',
             'kelas',
             'visual',
             'auditori',
             'kinestetik',
-            'leaderboard'
+            'leaderboard',
+            'tugas'
         ));
     }
 

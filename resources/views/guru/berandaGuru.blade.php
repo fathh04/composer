@@ -1,5 +1,5 @@
 @extends('layout.masterGuru')
-@section('title', 'Dashboard Guru - HTMLExplore')
+@section('title', 'Dashboard Guru - HTMLVirtual')
 @section('menuBeranda', 'active')
 
 @section('content')
@@ -62,7 +62,7 @@
                             {{ $item->pengguna->count() }} siswa
                         </span>
 
-                        <a href="{{ route('kelas.masuk', $item->id) }}" 
+                        <a href="{{ route('kelas.masuk', $item->id) }}"
                            class="btn btn-primary rounded-pill px-4 shadow-sm">
                             Masuk
                         </a>
