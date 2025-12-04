@@ -64,18 +64,41 @@
 <div class="container py-4">
 
     <!-- ==================== START CARD ==================== -->
-    <div id="startCard" class="start-card mb-4">
-        <img src="{{ url('img/puzzle.png') }}" class="img-fluid mb-3" style="max-height:180px;">
-        <h4 class="fw-bold text-primary">🧩 Kuis Tabel Drag & Drop</h4>
-        <p class="text-muted mt-2">Selesaikan dua tantangan HTML tabel dan raih score terbaik!</p>
-        <button id="startBtn" class="btn btn-primary btn-main">🚀 Mulai Kuis</button>
+    <div id="startCard"
+        class="card shadow-lg border-0 mb-4 text-center"
+        style="border-radius: 18px; {{ $score !== null ? 'display:none;' : '' }}">
+
+        <img src="{{ url('img/puzzle.png') }}"
+            class="card-img-top p-4"
+            style="height: 180px; object-fit: contain;">
+
+        <div class="card-body">
+            <h4 class="fw-bold text-primary">🧩 Kuis Tabel Drag & Drop</h4>
+            <p class="text-muted mt-2">
+                Selesaikan dua tantangan HTML tabel dan raih score terbaik!
+            </p>
+            <button id="startBtn" class="btn btn-primary px-4 py-2 mt-2" style="border-radius: 12px;">
+                🚀 Mulai Kuis
+            </button>
+        </div>
     </div>
 
-    <!-- ==================== CARD HASIL (JIKA SUDAH) ==================== -->
-    <div id="hasilCard" class="hasil-card mb-4" style="display:none;">
-        <h3 class="fw-bold text-success">🎉 Hasil Kuis Kamu</h3>
-        <h4 id="hasilText" class="mt-3"></h4>
-        <button onclick="location.reload()" class="btn btn-secondary mt-3">🔄 Kembali</button>
+    <!-- ==================== CARD HASIL ==================== -->
+    <div id="hasilCard"
+        class="card shadow-lg border-0 mb-4 text-center"
+        style="border-radius: 18px; {{ $score !== null ? '' : 'display:none;' }}">
+
+        <div class="card-body p-4">
+            <h3 class="fw-bold text-success">🎉 Hasil Kuis Kamu</h3>
+
+            <h4 id="hasilText" class="mt-3">
+                {{ $score !== null ? "Nilai Kamu: $score" : '' }}
+            </h4>
+
+            <button onclick="location.reload()" class="btn btn-secondary mt-3">
+                🔄 Kembali
+            </button>
+        </div>
     </div>
 
     <!-- ==================== KUIS CARD ==================== -->
@@ -159,24 +182,8 @@
 
 <script>
 
-/* ================== CEK STATUS SUDAH MENGERJAKAN ================== */
-let sudahMengerjakan = false;
-
-fetch("{{ url('/api/kuis/status') }}?user={{ Auth::id() }}&jenis=tabel_html_dragdrop")
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "locked") {
-            sudahMengerjakan = true;
-            document.getElementById("startCard").style.display = "none";
-            document.getElementById("hasilCard").style.display = "block";
-            document.getElementById("hasilText").innerHTML =
-                "Nilai Kamu: <b>" + data.score + "</b>";
-        }
-    });
-
 /* ================== MULAI KUIS ================== */
-document.getElementById("startBtn").addEventListener("click", () => {
-    if (sudahMengerjakan) return;
+document.getElementById("startBtn")?.addEventListener("click", () => {
     document.getElementById("quizBox").style.display = "block";
     document.getElementById("startCard").style.display = "none";
 });
@@ -201,7 +208,6 @@ codeList.addEventListener('dragover', e => {
     codeList.appendChild(document.querySelector('.dragging'));
 });
 
-/* CEK URUTAN */
 function checkKuis1() {
     const items = dropZone.querySelectorAll('.code-piece');
     if (items.length < 7) return 0;
@@ -229,7 +235,6 @@ zones.forEach(z => {
     });
 });
 
-/* CEK TAG */
 function checkKuis2() {
     let ok = true;
 
@@ -246,20 +251,6 @@ function checkKuis2() {
     });
 
     return ok ? 1 : 0;
-}
-
-/* ================== REFRESH BAGIAN FEED & LEADERBOARD ================== */
-function reloadSection(id, url) {
-    fetch(url)
-        .then(res => res.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, "text/html");
-            const newContent = doc.querySelector("#" + id);
-            if (newContent) {
-                document.getElementById(id).innerHTML = newContent.innerHTML;
-            }
-        });
 }
 
 /* ================== SUBMIT ================== */
@@ -289,10 +280,10 @@ document.getElementById("btnFinal").addEventListener("click", () => {
         document.getElementById("hasilText").innerHTML =
             "Nilai Kamu: <b>" + nilaiAkhir + "</b>";
 
+        // reload untuk mengunci kuis
         setTimeout(() => {
-                location.reload();
-            }, 600);
+            location.reload();
+        }, 600);
     });
 });
-
 </script>

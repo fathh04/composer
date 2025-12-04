@@ -3,28 +3,20 @@
         border-left: 6px solid #0d6efd;
         border-radius: 14px;
         padding: 20px;
-        transition: 0.25s;
         background: #fff;
+        transition: 0.25s;
     }
-    .quiz-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-    }
-
     .option-box {
         padding: 12px 15px;
         border: 2px solid #dcdcdc;
         border-radius: 10px;
         margin-bottom: 10px;
         cursor: pointer;
-        transition: 0.2s;
-        background: white;
     }
     .option-box:hover {
         border-color: #0d6efd;
         background: #eff6ff;
     }
-
     .option-box input {
         margin-right: 8px;
         transform: scale(1.2);
@@ -36,80 +28,80 @@
         padding: 12px 22px;
         border-radius: 10px;
         border: none;
-        margin-top: 20px;
         width: 100%;
         font-size: 18px;
-        transition: 0.2s;
-    }
-    .submit-btn:hover {
-        background: #084ec1;
-    }
-
-    .result-box {
-        padding: 20px;
-        background: #f0f8ff;
-        border: 2px solid #0d6efd;
-        border-radius: 12px;
-        display: none;
         margin-top: 20px;
     }
-
-    /* CARD START + CARD RESULT */
-    .start-card, .hasil-card {
+    .hasil-card {
         border-radius: 20px;
         box-shadow: 0 8px 24px rgba(0,0,0,0.08);
         padding: 25px;
         background: #fff;
-        margin-bottom: 25px;
         text-align: center;
     }
 </style>
 
 <div class="container py-4">
 
-    <h3 class="fw-bold text-center mb-4 text-primary">🎧 Kuis Tabel HTML</h3>
+    <h3 class="fw-bold text-center mb-4 text-primary">🎧 Kuis Tabel HTML (Audio)</h3>
 
-    <!-- ========================================================= -->
-    <!-- START CARD -->
-    <!-- ========================================================= -->
-    <div id="startCard" class="start-card">
-        <img src="{{ url('img/struktur.jpg') }}" class="img-fluid mb-3" style="max-height:180px; object-fit:contain;">
-        <p class="text-muted">Kerjakan 5 soal dan jadilah peringkat pertama!</p>
-        <button id="startBtn" class="btn btn-primary px-4 py-2" style="border-radius:12px;">
-            🎧 Mulai Kuis
-        </button>
+    <!-- ================== START CARD ================== -->
+    <div id="startCard"
+        class="card shadow-lg border-0 mb-4 text-center"
+        style="border-radius: 18px; {{ $score !== null ? 'display:none;' : '' }}">
+
+        <img src="{{ url('img/struktur.jpg') }}"
+            class="card-img-top p-4"
+            style="height: 200px; object-fit: contain;">
+
+        <div class="card-body">
+            <h4 class="fw-bold text-primary">Kuis Struktur</h4>
+            <p class="text-muted">Kerjakan 5 soal dan jadilah peringkat pertama!</p>
+
+            <button id="startBtn" class="btn btn-primary px-4 py-2 mt-2" style="border-radius:12px;">
+                🎧 Mulai Kuis
+            </button>
+        </div>
     </div>
 
-    <!-- ========================================================= -->
-    <!-- HASIL CARD (MUNCUL SETELAH SUBMIT / JIKA SUDAH PERNAH) -->
-    <!-- ========================================================= -->
-    <div id="hasilCard" class="hasil-card" style="display:none;">
-        <h4 class="fw-bold text-success">📊 Hasil Kuis Kamu</h4>
-        <p id="hasilText" class="mt-3 fs-5"></p>
+    <!-- ================== HASIL CARD ================== -->
+    <div id="hasilCard"
+        class="card shadow-lg border-0 mt-4 text-center"
+        style="border-radius:18px; {{ $score !== null ? '' : 'display:none;' }}">
+
+        <div class="card-body p-4">
+            <h3 class="fw-bold text-success">📊 Hasil Kuis Kamu</h3>
+
+            <h4 id="hasilText" class="mt-3 mb-3">
+                {{ $score !== null ? "Nilai Kamu: $score" : '' }}
+            </h4>
+
+            <button class="btn btn-secondary mt-2" onclick="location.reload()">
+                🔄 Kembali
+            </button>
+        </div>
     </div>
 
-    <!-- ========================================================= -->
-    <!-- BOX SEMUA SOAL - DISembunyikan sampai klik MULAI -->
-    <!-- ========================================================= -->
+    <!-- ================== BOX SOAL ================== -->
     <div id="quizBox" style="display:none;">
 
-        <!-- Instruksi Audio -->
-        <div class="quiz-card shadow-sm mb-4">
+        <!-- Instruksi -->
+        <div class="quiz-card mb-4">
             <h5 class="fw-bold">📢 Instruksi</h5>
-            <p>Dengarkan audio penjelasan sebelum menjawab soal.</p>
+            <p>Dengarkan audio sebelum menjawab.</p>
             <audio controls class="w-100">
                 <source src="/audio/intro-tabel-html.mp3" type="audio/mpeg">
             </audio>
         </div>
 
-        <!-- ====================== SOAL 1 ======================= -->
-        <div class="quiz-card shadow-sm mb-4">
+        <!-- ================= SOAL 1 ================= -->
+        <div class="quiz-card mb-4">
             <h5 class="fw-bold">Soal 1</h5>
             <audio controls class="w-100 mb-3">
                 <source src="/audio/soal1-tabel-html.mp3" type="audio/mpeg">
             </audio>
 
-            <p><strong>Pertanyaan:</strong> Tag apakah yang digunakan untuk membuat baris dalam tabel HTML?</p>
+            <p><strong>Pertanyaan:</strong> Tag untuk membuat baris tabel adalah?</p>
 
             <div class="option-box"><input type="radio" name="s1" value="td"> &lt;td&gt;</div>
             <div class="option-box"><input type="radio" name="s1" value="th"> &lt;th&gt;</div>
@@ -117,14 +109,14 @@
             <div class="option-box"><input type="radio" name="s1" value="table"> &lt;table&gt;</div>
         </div>
 
-        <!-- ====================== SOAL 2 ======================= -->
-        <div class="quiz-card shadow-sm mb-4">
+        <!-- ================= SOAL 2 ================= -->
+        <div class="quiz-card mb-4">
             <h5 class="fw-bold">Soal 2</h5>
             <audio controls class="w-100 mb-3">
                 <source src="/audio/soal2-tabel-html.mp3" type="audio/mpeg">
             </audio>
 
-            <p><strong>Pertanyaan:</strong> Tag apakah yang digunakan untuk membuat header kolom pada tabel?</p>
+            <p><strong>Tag header kolom adalah?</strong></p>
 
             <div class="option-box"><input type="radio" name="s2" value="td"> &lt;td&gt;</div>
             <div class="option-box"><input type="radio" name="s2" value="th"> &lt;th&gt;</div>
@@ -132,14 +124,14 @@
             <div class="option-box"><input type="radio" name="s2" value="tr"> &lt;tr&gt;</div>
         </div>
 
-        <!-- ====================== SOAL 3 ======================= -->
-        <div class="quiz-card shadow-sm mb-4">
+        <!-- ================= SOAL 3 ================= -->
+        <div class="quiz-card mb-4">
             <h5 class="fw-bold">Soal 3</h5>
             <audio controls class="w-100 mb-3">
                 <source src="/audio/soal3-tabel-html.mp3" type="audio/mpeg">
             </audio>
 
-            <p><strong>Pertanyaan:</strong> Tag manakah yang digunakan untuk membuat isi sel dalam tabel?</p>
+            <p><strong>Tag isi sel tabel adalah?</strong></p>
 
             <div class="option-box"><input type="radio" name="s3" value="td"> &lt;td&gt;</div>
             <div class="option-box"><input type="radio" name="s3" value="th"> &lt;th&gt;</div>
@@ -147,31 +139,31 @@
             <div class="option-box"><input type="radio" name="s3" value="body"> &lt;body&gt;</div>
         </div>
 
-        <!-- ====================== SOAL 4 ======================= -->
-        <div class="quiz-card shadow-sm mb-4">
+        <!-- ================= SOAL 4 ================= -->
+        <div class="quiz-card mb-4">
             <h5 class="fw-bold">Soal 4</h5>
 
             <audio controls class="w-100 mb-3">
                 <source src="/audio/soal4-tabel-html.mp3" type="audio/mpeg">
             </audio>
 
-            <p><strong>Pertanyaan:</strong> Apa fungsi atribut <code>border="1"</code>?</p>
+            <p><strong>Apa fungsi border="1"?</strong></p>
 
             <div class="option-box"><input type="radio" name="s4" value="warna"> Mengubah warna teks</div>
-            <div class="option-box"><input type="radio" name="s4" value="font"> Menambah ukuran font</div>
-            <div class="option-box"><input type="radio" name="s4" value="garis"> Memberi garis pada tabel</div>
-            <div class="option-box"><input type="radio" name="s4" value="bg"> Menambahkan background</div>
+            <div class="option-box"><input type="radio" name="s4" value="font"> Membesarkan font</div>
+            <div class="option-box"><input type="radio" name="s4" value="garis"> Memberi garis tabel</div>
+            <div class="option-box"><input type="radio" name="s4" value="bg"> Menambah background</div>
         </div>
 
-        <!-- ====================== SOAL 5 ======================= -->
-        <div class="quiz-card shadow-sm mb-4">
+        <!-- ================= SOAL 5 ================= -->
+        <div class="quiz-card mb-4">
             <h5 class="fw-bold">Soal 5</h5>
 
             <audio controls class="w-100 mb-3">
                 <source src="/audio/soal5-tabel-html.mp3" type="audio/mpeg">
             </audio>
 
-            <p><strong>Pertanyaan:</strong> Struktur tabel yang benar adalah?</p>
+            <p><strong>Struktur tabel yang benar:</strong></p>
 
             <div class="option-box"><input type="radio" name="s5" value="salah1"> table - th - tr - td</div>
             <div class="option-box"><input type="radio" name="s5" value="benar"> table - tr - th/td</div>
@@ -179,53 +171,22 @@
             <div class="option-box"><input type="radio" name="s5" value="salah3"> td - tr - table</div>
         </div>
 
-        <!-- BUTTON CEK -->
-        <button class="submit-btn" onclick="checkAll()">✔ Cek Semua Jawaban</button>
-
-        <!-- HASIL PER SOAL -->
-        <div id="result-box" class="result-box"></div>
+        <!-- SUBMIT BUTTON -->
+        <button class="submit-btn" onclick="checkAll()">✔ Selesaikan Kuis</button>
     </div>
 </div>
 
 <script>
-let sudahMengerjakan = false;
-
-/* ============================================================
-   CEK STATUS SAAT PAGE LOAD
-============================================================ */
-fetch("{{ url('/api/kuis/status') }}?user={{ Auth::id() }}&jenis=tabel_html_auditori")
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "locked") {
-            sudahMengerjakan = true;
-
-            // Sembunyikan start card
-            document.getElementById("startCard").style.display = "none";
-
-            // Tampilkan hasil
-            document.getElementById("hasilCard").style.display = "block";
-            document.getElementById("hasilText").innerHTML =
-                "Nilai Kamu: <strong>" + data.score + "</strong>";
-        }
-    });
-
-/* ============================================================
-   TOMBOL MULAI
-============================================================ */
-document.getElementById("startBtn").addEventListener("click", () => {
-    if (sudahMengerjakan) return;
-
-    document.getElementById("quizBox").style.display = "block";
+/* ========== MULAI KUIS ========== */
+document.getElementById("startBtn")?.addEventListener("click", () => {
     document.getElementById("startCard").style.display = "none";
+    document.getElementById("quizBox").style.display = "block";
 });
 
-/* ============================================================
-   CEK JAWABAN PEMBELAJAR
-============================================================ */
+/* ========== CEK KUIS ========== */
 function checkAll() {
-    if (sudahMengerjakan) return;
 
-    const correctAnswers = {
+    const benar = {
         s1: "tr",
         s2: "th",
         s3: "td",
@@ -235,27 +196,20 @@ function checkAll() {
 
     let score = 0;
 
-    for (let q in correctAnswers) {
-        let selected = document.querySelector('input[name="'+q+'"]:checked');
-        if (selected && selected.value === correctAnswers[q]) {
-            score++;
-        }
+    for (let q in benar) {
+        let pilih = document.querySelector('input[name="'+q+'"]:checked');
+        if (pilih && pilih.value === benar[q]) score++;
     }
 
-    // --- KONVERSI KE /100 ---
-    let nilaiFinal = score * 20;
+    let nilaiAkhir = score * 20;
 
-    // --- KIRIM NILAI /100 KE DATABASE ---
     fetch("{{ route('kuis.submit') }}", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "X-CSRF-TOKEN": "{{ csrf_token() }}"
         },
-        body: JSON.stringify({
-            score: nilaiFinal,      // database simpan 0–100
-            raw: score              // opsional, kalo ingin simpan skor asli
-        })
+        body: JSON.stringify({ score: nilaiAkhir })
     })
     .then(res => res.json())
     .then(data => {
@@ -265,20 +219,13 @@ function checkAll() {
             return;
         }
 
-        sudahMengerjakan = true;
-
-        // Sembunyikan quiz
+        // Tampilkan hasil
         document.getElementById("quizBox").style.display = "none";
-
-        // Tampilkan hasil /100
         document.getElementById("hasilCard").style.display = "block";
         document.getElementById("hasilText").innerHTML =
-            "Nilai Kamu: <strong>" + nilaiFinal + "</strong>";
+            "Nilai Kamu: <strong>" + nilaiAkhir + "</strong>";
 
-        // Auto reload
-        setTimeout(() => {
-            location.reload();
-        }, 600);
+        setTimeout(() => location.reload(), 600);
     });
 }
 </script>

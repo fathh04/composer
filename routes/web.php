@@ -143,6 +143,7 @@ Route::get('/kelasKinestetik', [KelasController::class, 'kelasKinestetik'])->nam
 // KuisResult
 Route::post('/siswa/kuis/submit', [App\Http\Controllers\KuisController::class, 'submit'])
     ->name('kuis.submit');
+Route::get('/kuis', [KuisController::class, 'halamanKuis'])->name('kuis.halaman');
 
 Route::post('/submission/save', [TugasSubmissionController::class, 'saveHtml'])->name('submission.save');
 Route::post('/submission/upload', [TugasSubmissionController::class, 'uploadScreenshot'])->name('submission.upload');
@@ -161,7 +162,7 @@ Route::get('/leaderboard/kinestetik', [KelasController::class, 'leaderboardKines
 Route::get('/leaderboard/auditori', [KelasController::class, 'leaderboardAuditori'])
      ->name('leaderboard.auditori');
 
-Route::get('/submission/check/{id}', [TugasSubmissionController::class, 'getSubmission']);
+Route::get('/submission/check/{id}', [TugasSubmissionController::class, 'getSubmission'])->name('submission.check');
 
 Route::post('/upload-tugas/{materi_id}', [TugasSubmissionController::class, 'uploadPdf'])
     ->name('tugas.upload');

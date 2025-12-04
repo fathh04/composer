@@ -212,6 +212,10 @@ class KelasController extends Controller
         $kelas = Kelas::findOrFail($id);
         $materi = Materi::where('idkelas', $id)->get();
 
+        // 🔥 Ambil score kuis siswa
+        $cek = KuisResult::where('pengguna_id', Auth::id())->first();
+        $score = $cek->score ?? null;
+
         $leaderboard = [
             'visual'     => $this->getLeaderboardByStyle('Visual'),
             'auditori'   => $this->getLeaderboardByStyle('Auditori'),
@@ -221,10 +225,10 @@ class KelasController extends Controller
         $style = strtolower(Auth::user()->gaya_belajar ?? '');
 
         return match ($style) {
-            'visual'    => view('siswa.isiKelas', compact('kelas', 'materi', 'leaderboard')),
-            'auditori'  => view('auditori.isiKelasAuditori', compact('kelas', 'materi', 'leaderboard')),
-            'kinestetik'=> view('kinestetik.isiKelas', compact('kelas', 'materi', 'leaderboard')),
-            default     => view('siswa.isiKelas', compact('kelas', 'materi', 'leaderboard')),
+            'visual'    => view('siswa.isiKelas', compact('kelas', 'materi', 'leaderboard', 'score')),
+            'auditori'  => view('auditori.isiKelasAuditori', compact('kelas', 'materi', 'leaderboard', 'score')),
+            'kinestetik'=> view('kinestetik.isiKelas', compact('kelas', 'materi', 'leaderboard', 'score')),
+            default     => view('siswa.isiKelas', compact('kelas', 'materi', 'leaderboard', 'score')),
         };
     }
 

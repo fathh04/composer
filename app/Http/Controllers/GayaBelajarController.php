@@ -29,7 +29,7 @@ class GayaBelajarController extends Controller
         }
 
         /* ------------------------------------------------------
-         * Gabungkan jawaban user
+         * Menggabungkan jawaban user
          * ------------------------------------------------------ */
         $answers = strtolower(trim($request->q1 . ' ' . $request->q2 . ' ' . $request->q3));
 
@@ -87,8 +87,6 @@ class GayaBelajarController extends Controller
         return $this->finalize($user, $label, $detail['alasan'], $detail['rekom']);
     }
 
-
-
     /* =========================================================
      *   DATASET LOADER
      * ========================================================= */
@@ -116,8 +114,6 @@ class GayaBelajarController extends Controller
 
         return $rows;
     }
-
-
 
     /* =========================================================
      *   LOAD / BUILD EMBEDDING DATASET
@@ -149,8 +145,6 @@ class GayaBelajarController extends Controller
         return $result;
     }
 
-
-
     /* =========================================================
      *   SIMILARITY
      * ========================================================= */
@@ -166,8 +160,6 @@ class GayaBelajarController extends Controller
         arsort($score);
         return array_key_first($score);
     }
-
-
 
     /* =========================================================
      *   HARD RULE
@@ -188,8 +180,6 @@ class GayaBelajarController extends Controller
         return array_key_first($score);
     }
 
-
-
     /* =========================================================
      *   COSINE SIMILARITY
      * ========================================================= */
@@ -208,30 +198,28 @@ class GayaBelajarController extends Controller
         return $dot / (sqrt($magA) * sqrt($magB));
     }
 
-
-
     /* =========================================================
      *   LLM VALIDATION
      * ========================================================= */
     private function llmValidation($datasetPrediction, $rulePrediction, $answers)
     {
         $prompt = "
-Anda adalah model klasifikasi gaya belajar.
-Konteks:
-- Prediksi dataset: $datasetPrediction
-- Prediksi rule: $rulePrediction
+            Anda adalah model klasifikasi gaya belajar.
+            Konteks:
+            - Prediksi dataset: $datasetPrediction
+            - Prediksi rule: $rulePrediction
 
-Jawaban user:
-$answers
+            Jawaban user:
+            $answers
 
-Tolong balas HANYA JSON murni.
+            Tolong balas HANYA JSON murni.
 
-Format:
-{
-  \"label\": \"Visual/Auditori/Kinestetik\",
-  \"alasan\": \"...\",
-  \"rekomendasi\": \"...\"
-}";
+            Format:
+            {
+            \"label\": \"Visual/Auditori/Kinestetik\",
+            \"alasan\": \"...\",
+            \"rekomendasi\": \"...\"
+            }";
         $raw = GeminiService::predict($prompt);
         if (!$raw) return null;
 
@@ -240,8 +228,6 @@ Format:
 
         return $json ?: null;
     }
-
-
 
     /* =========================================================
      *   EXTRACT JSON
@@ -254,10 +240,8 @@ Format:
         return "{}";
     }
 
-
-
     /* =========================================================
-     *   DETAIL ALASAN + REKOMENDASI
+     *   DETAIL ALASAN DAN REKOMENDASI
      * ========================================================= */
     private function getDetail($label)
     {
@@ -278,8 +262,6 @@ Format:
 
         return $data[$label] ?? ["alasan" => "-", "rekom" => "-"];
     }
-
-
 
     /* =========================================================
      *   FINAL SAVE

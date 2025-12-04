@@ -83,7 +83,7 @@
               <div id="uploadBox" style="display:none;" class="mt-3 p-3 bg-light border rounded">
                 <h5 class="fw-bold">📤 Upload Hasil Preview</h5>
 
-                <form action="{{ route('submission.upload') }}" method="POST" enctype="multipart/form-data">
+                <form id="UploadForm" action="{{ route('submission.upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="submission_id" id="submissionIdInput">
 
@@ -139,35 +139,38 @@ require(["vs/editor/editor.main"], function () {
   });
 });
 
-/* =====================================================
-   === BADGE STATUS SUBMISSION (AUTO LOCK) — NEW =======
-   ===================================================== */
-fetch("/submission/check/{{ Auth::id() }}")
-  .then(res => res.json())
-  .then(data => {
-      const badge = document.getElementById("submissionBadge");
+/* =======================================================
+   === FUNGSI BARU: RELOAD STATUS SUBMISSION ============
+   ======================================================= */
+function reloadSubmissionStatus() {
+    fetch("{{ route('submission.check', Auth::id()) }}?t=" + Date.now())
+      .then(res => res.json())
+      .then(data => {
+          const badge = document.getElementById("submissionBadge");
 
-      if (data.exists) {
-          badge.innerHTML =
-            `<span class="badge-status badge-success">🟢 Anda sudah mengumpulkan tugas</span>`;
+          if (data.exists) {
+              badge.innerHTML =
+                `<span class="badge-status badge-success">🟢 Anda sudah mengumpulkan tugas</span>`;
 
-          // Lock editor
-          editorLocked = true;
-          editor.updateOptions({ readOnly: true });
+              editorLocked = true;
+              editor.updateOptions({ readOnly: true });
 
-          runBtn.disabled = true;
-          clearBtn.disabled = true;
-          submitBtn.disabled = true;
+              runBtn.disabled = true;
+              clearBtn.disabled = true;
+              submitBtn.disabled = true;
+          } else {
+              badge.innerHTML =
+                `<span class="badge-status badge-fail">🔴 Anda belum mengumpulkan tugas</span>`;
+          }
+      })
+      .catch(() => {
+          document.getElementById("submissionBadge").innerHTML =
+            `<span class="badge-status badge-wait">⚠ Tidak bisa mengecek status</span>`;
+      });
+}
 
-      } else {
-          badge.innerHTML =
-            `<span class="badge-status badge-fail">🔴 Anda belum mengumpulkan tugas</span>`;
-      }
-  })
-  .catch(() => {
-      document.getElementById("submissionBadge").innerHTML =
-        `<span class="badge-status badge-wait">⚠ Tidak bisa mengecek status</span>`;
-  });
+/* === GANTI FETCH AWAL MENJADI PANGGILAN FUNGSI === */
+reloadSubmissionStatus();
 
 /* ---------- Feedback Logic ---------- */
 function checkStudentAnswer(code) {
@@ -240,6 +243,9 @@ document.getElementById("submitBtn").addEventListener('click', function(e){
       if (data.success) {
           window.submissionId = data.submission_id;
           document.getElementById("uploadBox").style.display = "block";
+
+          // Setelah submit HTML → cek lagi status
+          setTimeout(() => reloadSubmissionStatus(), 600);
       }
   });
 });
@@ -250,6 +256,32 @@ setInterval(() => {
         document.getElementById("submissionIdInput").value = window.submissionId;
     }
 }, 300);
+
+/* =======================================================
+   === AUTO RELOAD STATUS SETELAH UPLOAD GAMBAR (FINAL) ===
+   ======================================================= */
+const uploadForm = document.getElementById("UploadForm");
+
+if (uploadForm) {
+    uploadForm.addEventListener("submit", function () {
+
+        // Kunci tombol kirim agar tidak double klik
+        const btn = uploadForm.querySelector("button");
+        if (btn) btn.disabled = true;
+
+        // Tunggu proses upload gambar selesai (shared hosting butuh delay)
+        setTimeout(() => {
+
+            // Refresh status badge
+            reloadSubmissionStatus();
+
+            // Sembunyikan box upload setelah berhasil
+            const box = document.getElementById("uploadBox");
+            if (box) box.style.display = "none";
+
+        }, 1200); // 1.2 detik aman untuk server lambat
+    });
+}
 
 /* ---------- Run Preview ---------- */
 document.getElementById("runBtn").addEventListener('click', function() {

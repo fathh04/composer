@@ -38,4 +38,18 @@ class KuisController extends Controller
             'score'   => $nilaiAkhir
         ]);
     }
+    public function halamanKuis()
+    {
+        $cek = KuisResult::where('pengguna_id', Auth::id())->first();
+        $score = $cek->score ?? null;
+
+        $style = strtolower(Auth::user()->gaya_belajar ?? '');
+
+        return match ($style) {
+            'kinestetik' => view('kinestetik.tabsKelas.kuis', compact('score')),
+            'auditori'   => view('auditori.tabsKelas.kuis', compact('score')),
+            'visual'     => view('siswa.tabsKelas.kuis', compact('score')),
+            default      => view('siswa.tabsKelas.kuis', compact('score')),
+        };
+    }
 }
