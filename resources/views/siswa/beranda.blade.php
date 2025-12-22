@@ -46,6 +46,31 @@
         transform: translateY(-4px);
         box-shadow: 0 10px 22px rgba(0,0,0,0.12);
     }
+    /* Card Materi */
+    .card-materi {
+        transition: all 0.3s ease;
+    }
+
+    .card-materi:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 32px rgba(13,110,253,.25);
+    }
+
+    /* Thumbnail Landscape */
+    .img-landscape {
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+    }
+
+    /* Badge */
+    .badge-materi {
+        background: linear-gradient(90deg, #0b5ed7, #0d6efd);
+        color: #fff;
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(13,110,253,.3);
+    }
 </style>
 
 <div class="container py-4">
@@ -94,29 +119,76 @@
         </div>
     </div>
 
+    <!-- ======= MATERI YANG DIREKOMENDASIKAN ======= -->
     <h5 class="fw-bold mb-3">Materi yang Direkomendasikan</h5>
+    <div class="col-md-4 col-sm-6" data-aos="fade-up">
+        <div class="card h-100 border-0 rounded-4 shadow-sm card-materi">
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card shadow-sm border-0 rounded-4 text-center p-4 bg-light">
+            <!-- Thumbnail -->
+            <div class="position-relative">
+                <img
+                    src="{{ url('img/visual.jpg') }}"
+                    class="card-img-top img-landscape rounded-top-4"
+                    alt="Materi Auditori HTML"
+                >
 
-                <!-- Badge Icon Baru -->
-                <div class="d-inline-flex justify-content-center align-items-center mb-3"
-                     style="
-                        width: 55px;
-                        height: 55px;
-                        background: linear-gradient(135deg, #dfe4ea, #f1f2f6);
-                        border-radius: 15px;
-                        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-                        backdrop-filter: blur(4px);
-                     ">
-                    <i class="bi bi-info-circle text-secondary fs-3"></i>
+                <span class="badge badge-materi position-absolute top-0 start-0 m-3">
+                    🎨 Visual
+                </span>
+            </div>
+
+            <!-- Body -->
+            <div class="card-body d-flex flex-column p-4">
+                <h5 class="card-title fw-bold text-primary mb-2">
+                    Tips Gaya Belajar Visual
+                </h5>
+
+                <p class="card-text text-secondary small flex-grow-1">
+                    Tonton video penjelasan mengenai cara belajar HTML, aktivitas yang disarankan, urutan belajar yang disarankan, dan tips untuk kamu dengan gaya belajar Visual!
+                </p>
+
+                <!-- BUTTON -->
+                <button
+                    class="btn btn-primary mt-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalVideoAuditori"
+                >
+                    ▶️ Tonton Materi
+                </button>
+            </div>
+
+        </div>
+    </div>
+    <div class="modal fade" id="modalVideoAuditori" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content rounded-4 shadow-lg overflow-hidden">
+
+                <!-- HEADER -->
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-primary">
+                        Tips Gaya Belajar Visual
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <p class="fw-semibold text-secondary mb-1">Belum Ada Rekomendasi</p>
-                <p class="text-muted small mb-0">
-                    Selesaikan materi dan kuis di dalam kelas untuk mendapatkan rekomendasi sesuai dengan gaya belajar Anda!
-                </p>
+                <!-- BODY -->
+                <div class="modal-body p-0">
+
+                    <div class="ratio ratio-16x9">
+                        <video
+                            id="videoAuditori"
+                            controls
+                            preload="metadata"
+                        >
+                            <source src="{{ url('video/visual.mp4') }}" type="video/mp4">
+                            Browser Anda tidak mendukung video.
+                        </video>
+                    </div>
+
+                    <div class="p-3 small text-muted">
+                        Video ini berisi penjelasan cara belajar HTML untuk gaya belajar Visual, termasuk urutan belajar dan tips penting.
+                    </div>
+                </div>
             </div>
         </div>
     </div>

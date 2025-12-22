@@ -15,6 +15,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url('css/style.css') }}">
+    @stack('styles')
 </head>
 <body>
     <!-- Modal Logout -->
@@ -112,5 +113,6 @@
                 : '<i class="bi bi-moon-stars fs-5"></i>';
         });
     </script>
+    @stack('script')
 </body>
 </html>

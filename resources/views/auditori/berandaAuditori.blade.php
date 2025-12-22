@@ -51,23 +51,43 @@
     }
 
     /* ======= RECOMMENDED MATERIAL CARD ======= */
-.recommended-card {
-    transition: 0.25s ease;
-    background: #ffffff;
-}
+    /* Card Materi */
+    .card-materi {
+        transition: all 0.3s ease;
+    }
 
-.recommended-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 22px rgba(0,0,0,0.12);
-}
+    .card-materi:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 32px rgba(13,110,253,.25);
+    }
 
-.icon-box {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    /* Thumbnail Landscape */
+    .img-landscape {
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+    }
+
+    /* Badge */
+    .badge-materi {
+        background: linear-gradient(90deg, #0b5ed7, #0d6efd);
+        color: #fff;
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(13,110,253,.3);
+    }
+
+    /* Button Audio */
+    .btn-play-audio {
+        border-radius: 14px;
+        font-weight: 600;
+        transition: all .25s ease;
+    }
+
+    .btn-play-audio:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(13,110,253,.35);
+    }
 
     /* ======= RESPONSIVE ======= */
     @media (max-width: 576px) {
@@ -147,31 +167,83 @@
     </div>
 
     <!-- ======= MATERI YANG DIREKOMENDASIKAN ======= -->
-     <h5 class="fw-bold mb-3">Materi yang Direkomendasikan</h5>
+    <h5 class="fw-bold mb-3">Materi yang Direkomendasikan</h5>
+    <div class="col-md-4 col-sm-6" data-aos="fade-up">
+        <div class="card h-100 border-0 rounded-4 shadow-sm card-materi">
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card shadow-sm border-0 rounded-4 text-center p-4 bg-light">
+            <!-- Thumbnail -->
+            <div class="position-relative">
+                <img
+                    src="{{ url('img/visual.jpg') }}"
+                    class="card-img-top img-landscape rounded-top-4"
+                    alt="Materi Auditori HTML"
+                >
 
-                <!-- Badge Icon Baru -->
-                <div class="d-inline-flex justify-content-center align-items-center mb-3"
-                     style="
-                        width: 55px;
-                        height: 55px;
-                        background: linear-gradient(135deg, #dfe4ea, #f1f2f6);
-                        border-radius: 15px;
-                        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-                        backdrop-filter: blur(4px);
-                     ">
-                    <i class="bi bi-info-circle text-secondary fs-3"></i>
-                </div>
-
-                <p class="fw-semibold text-secondary mb-1">Belum Ada Rekomendasi</p>
-                <p class="text-muted small mb-0">
-                    Selesaikan materi dan kuis di dalam kelas untuk mendapatkan rekomendasi sesuai dengan gaya belajar Anda!
-                </p>
+                <span class="badge badge-materi position-absolute top-0 start-0 m-3">
+                    🎧 AUDITORI
+                </span>
             </div>
+
+            <!-- Body -->
+            <div class="card-body d-flex flex-column p-4">
+                <h5 class="card-title fw-bold text-primary mb-2">
+                    Tips Gaya Belajar Auditori
+                </h5>
+
+                <p class="card-text text-secondary small flex-grow-1">
+                    Dengarkan penjelasan mengenai cara belajar HTML, aktivitas yang disarankan, urutan belajar yang disarankan, dan tips untuk kamu dengan gaya belajar Auditori!
+                </p>
+
+                <!-- AUDIO -->
+                <audio id="audioPemformatan" src="{{ asset('audio/direkomendasikan.wav') }}"></audio>
+
+                <!-- BUTTON -->
+                <button
+                    class="btn btn-primary btn-play-audio mt-2"
+                    data-audio="audioPemformatan"
+                >
+                    ▶️ Dengarkan Materi
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const buttons = document.querySelectorAll('.btn-play-audio');
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+
+            const audioId = btn.dataset.audio;
+            const audio = document.getElementById(audioId);
+
+            // pause audio lain
+            document.querySelectorAll('audio').forEach(a => {
+                if (a !== audio) {
+                    a.pause();
+                    a.currentTime = 0;
+                }
+            });
+
+            // toggle play
+            if (audio.paused) {
+                audio.play();
+                btn.innerHTML = '⏸️ Hentikan Audio';
+            } else {
+                audio.pause();
+                btn.innerHTML = '▶️ Dengarkan Materi';
+            }
+
+            // reset teks saat audio selesai
+            audio.onended = () => {
+                btn.innerHTML = '▶️ Dengarkan Materi';
+            };
+        });
+    });
+
+});
+</script>
 @endsection

@@ -68,6 +68,31 @@
     justify-content: center;
     align-items: center;
 }
+/* Card Materi */
+    .card-materi {
+        transition: all 0.3s ease;
+    }
+
+    .card-materi:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 32px rgba(13,110,253,.25);
+    }
+
+    /* Thumbnail Landscape */
+    .img-landscape {
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+    }
+
+    /* Badge */
+    .badge-materi {
+        background: linear-gradient(90deg, #0b5ed7, #0d6efd);
+        color: #fff;
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(13,110,253,.3);
+    }
 
     /* ======= RESPONSIVE ======= */
     @media (max-width: 576px) {
@@ -147,29 +172,147 @@
     </div>
 
     <!-- ======= MATERI YANG DIREKOMENDASIKAN ======= -->
-     <h5 class="fw-bold mb-3">Materi yang Direkomendasikan</h5>
+    <h5 class="fw-bold mb-3">Materi yang Direkomendasikan</h5>
+    <div class="col-md-4 col-sm-6" data-aos="fade-up">
+        <div class="card h-100 border-0 rounded-4 shadow-sm card-materi">
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card shadow-sm border-0 rounded-4 text-center p-4 bg-light">
+            <!-- Thumbnail -->
+            <div class="position-relative">
+                <img
+                    src="{{ url('img/visual.jpg') }}"
+                    class="card-img-top img-landscape rounded-top-4"
+                    alt="Materi Kinestetik HTML"
+                >
 
-                <!-- Badge Icon Baru -->
-                <div class="d-inline-flex justify-content-center align-items-center mb-3"
-                     style="
-                        width: 55px;
-                        height: 55px;
-                        background: linear-gradient(135deg, #dfe4ea, #f1f2f6);
-                        border-radius: 15px;
-                        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-                        backdrop-filter: blur(4px);
-                     ">
-                    <i class="bi bi-info-circle text-secondary fs-3"></i>
+                <span class="badge badge-materi position-absolute top-0 start-0 m-3">
+                    ✋ KINESTETIK
+                </span>
+            </div>
+
+            <!-- Body -->
+            <div class="card-body d-flex flex-column p-4">
+                <h5 class="card-title fw-bold text-primary mb-2">
+                    Tips Gaya Belajar Kinestetik
+                </h5>
+
+                <p class="card-text text-secondary small flex-grow-1">
+                    Materi khusus untuk kamu yang belajar dengan cara mencoba
+                    langsung dan melihat hasilnya.
+                </p>
+
+                <button
+                    class="btn btn-primary mt-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalKinestetikHTML"
+                >
+                    📖 Baca Materi
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalKinestetikHTML" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content rounded-4 shadow-lg">
+
+                <!-- Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-primary">
+                        ✋ Belajar HTML untuk Gaya Belajar Kinestetik
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <p class="fw-semibold text-secondary mb-1">Belum Ada Rekomendasi</p>
-                <p class="text-muted small mb-0">
-                    Selesaikan materi dan kuis di dalam kelas untuk mendapatkan rekomendasi sesuai dengan gaya belajar Anda!
-                </p>
+                <!-- Body -->
+                <div class="modal-body small text-secondary lh-lg">
+
+                    <p><strong>Halo teman-teman!</strong></p>
+
+                    <p>
+                        Sekarang, sebelum lanjut membaca, siapkan satu hal <br>
+                        👉 buka laptop atau komputer kamu.
+                        Kalau sudah, tarik kursi, duduk nyaman, dan pastikan kamu siap langsung praktik.
+                    </p>
+
+                    <p>
+                        Belajar HTML untuk gaya kinestetik tidak bisa hanya dibaca atau didengar.
+                        Kamu harus mengetik, mencoba, salah, lalu memperbaiki.
+                        Itulah cara belajar terbaikmu.
+                    </p>
+
+                    <hr>
+
+                    <h6 class="fw-bold text-dark">📌 Cara Belajar yang Direkomendasikan</h6>
+
+                    <p>
+                        Saat belajar HTML, jangan hanya melihat contoh kode.
+                        Ketik ulang semua contoh yang kamu temui.
+                    </p>
+
+                    <p>
+                        Misalnya kamu membaca tentang <code>&lt;h1&gt;</code>.
+                        Jangan lanjut dulu.
+                        Berhenti sejenak, ketik <code>&lt;h1&gt;</code> di editor,
+                        simpan, lalu buka di browser.
+                    </p>
+
+                    <p>
+                        HTML itu bukan untuk dihafal, tapi untuk dicoba langsung.
+                    </p>
+
+                    <hr>
+
+                    <h6 class="fw-bold text-dark">🛠 Aktivitas yang Disarankan</h6>
+
+                    <ol>
+                        <li>Buat file baru bernama <code>index.html</code></li>
+                        <li>Ketik struktur HTML dasar</li>
+                        <li>Tambahkan satu paragraf</li>
+                        <li>Simpan file dan refresh browser</li>
+                        <li>Ubah isinya dan lihat perbedaannya</li>
+                    </ol>
+
+                    <blockquote class="border-start ps-3 fst-italic text-muted">
+                        “Saya paham karena saya mencoba.”
+                    </blockquote>
+
+                    <hr>
+
+                    <h6 class="fw-bold text-dark">⚠️ Tips & Kesalahan Umum</h6>
+
+                    <ul>
+                        <li>Jangan menyalin kode tanpa mengubahnya</li>
+                        <li>Ubah satu bagian kecil setiap kali</li>
+                        <li>Selalu simpan file sebelum refresh</li>
+                    </ul>
+
+                    <p class="fw-semibold">
+                        Setiap error adalah sentuhan belajar.
+                    </p>
+
+                    <hr>
+
+                    <p class="fw-bold text-primary">
+                        HTML itu dibangun dengan tangan.
+                    </p>
+
+                    <p>
+                        Sekarang, kembali ke editor kodenya.
+                        Coba satu hal baru.
+                        <br>
+                        <strong>Happy coding! 💻👐</strong>
+                    </p>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Tutup
+                    </button>
+                </div>
+
             </div>
         </div>
     </div>
