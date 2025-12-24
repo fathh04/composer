@@ -12,6 +12,10 @@ use App\Http\Controllers\TugasSubmissionController;
 use App\Http\Controllers\GuruSubmissionController;
 use App\Models\KuisResult;
 
+Route::get('/perbaikan', function () {
+    return view('perbaikan');
+});
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -86,6 +90,12 @@ Route::middleware('auth')->group(function(){
     Route::post('/submission/save', [CodeSubmissionController::class, 'save'])->name('submission.save');
 });
 
+// =====================
+// ISI KELAS (DETAIL)
+// =====================
+Route::get('/isi-kelas/{style}/{id}',
+    [KelasController::class, 'isiKelasByStyle']
+)->name('isiKelas.byStyle');
 
 Route::get('/isiKelas', function () {
     return view('siswa.isiKelas');

@@ -1,3 +1,6 @@
+@php
+    $score = $score ?? null;
+@endphp
 <style>
     .quiz-card {
         border-left: 6px solid #0d6efd;

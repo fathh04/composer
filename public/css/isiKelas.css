@@ -1,0 +1,329 @@
+/* ==============================
+       GLOBAL PRIMARY THEME
+    ===============================*/
+
+    :root {
+        --primary-start: var(--bs-primary);
+        --primary-end: #004cba; /* versi yang lebih gelap */
+    }
+
+    .kelas-hero {
+        background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+        border-radius: 20px;
+        padding: 40px;
+        color: white;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        text-align: center;
+    }
+
+    .kelas-hero h1 {
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+
+    .kelas-hero p {
+        opacity: .95;
+        margin: 0;
+    }
+
+    /* ==============================
+    WARNING STYLE ALERT (FLOATING)
+    ===============================*/
+    .floating-style-alert {
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        max-width: 360px;
+        z-index: 1040;
+
+        background: linear-gradient(135deg, #fff8e1, #ffecb3);
+        border-left: 6px solid #ffc107;
+        border-radius: 16px;
+        padding: 14px 16px;
+
+        box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+        animation: slideFade .4s ease;
+
+        color: #6c4a00;
+        font-size: 0.85rem;
+    }
+
+    /* Badge warning */
+    .floating-style-alert .badge-warning {
+        background: #ffc107;
+        color: #000;
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+    }
+
+    /* Icon gembok */
+    .floating-style-alert .icon-lock {
+        width: 38px;
+        height: 38px;
+        background: #ffc107;
+        color: #000;
+        border-radius: 12px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    /* Judul */
+    .floating-style-alert h6 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    /* Animasi */
+    @keyframes slideFade {
+        from {
+            opacity: 0;
+            transform: translateX(25px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .nav-link.locked {
+        opacity: .55;
+        cursor: not-allowed;
+    }
+
+    /* ==============================
+       FIX TAB 1 BARIS RESPONSIVE
+    ===============================*/
+
+    /* Wrapper tab utama */
+    .tab-wrapper {
+        background: #ffffff;
+        padding: 10px;
+        border-radius: 50px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        max-width: 900px;
+        margin: 30px auto;
+    }
+
+    /* Pastikan hanya satu baris */
+    .tab-wrapper .nav {
+        flex-wrap: nowrap !important;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    /* Setiap tab selalu menyesuaikan ruang */
+    .tab-wrapper .nav-item {
+        flex: 1;
+        text-align: center;
+        min-width: 0; /* supaya bisa mengecil */
+    }
+
+    /* Tombol tab */
+    .tab-wrapper .nav-link {
+        border-radius: 40px !important;
+        transition: .2s;
+        font-weight: 600;
+        color: var(--bs-primary);
+        border: 1px solid transparent;
+        font-size: 0.9rem;
+        padding: 8px 5px;
+        white-space: normal;
+    }
+
+    /* Tab aktif */
+    .tab-wrapper .nav-link.active {
+        background: var(--bs-primary);
+        color: white !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    /* RESPONSIVE — Kecilkan ukuran pada HP */
+    @media(max-width: 768px) {
+        .tab-wrapper .nav-link {
+            font-size: 0.75rem;
+            padding: 6px 3px;
+        }
+
+        .tab-wrapper .nav-link i {
+            font-size: 0.9rem;
+            margin-right: 2px;
+        }
+    }
+
+    @media(max-width: 480px) {
+        .tab-wrapper .nav-link {
+            font-size: 0.65rem;
+            padding: 5px 2px;
+        }
+
+        .tab-wrapper .nav-link i {
+            font-size: 0.8rem;
+        }
+    }
+
+    /* Animasi tab */
+    .tab-pane {
+        animation: fadeIn .3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==============================
+    EKSPlORE DROPDOWN – PREMIUM
+    ===============================*/
+
+    /* ===== Eksplore Dropdown (Compact) ===== */
+    .eksplore-dropdown {
+        min-width: 230px;   /* ⬅️ sebelumnya 260 */
+        max-width: 280px;   /* ⬅️ sebelumnya 320 */
+        padding: 8px;       /* ⬅️ lebih ramping */
+        border-radius: 12px;
+        box-shadow: 0 10px 24px rgba(0,0,0,.14);
+    }
+
+    .eksplore-dropdown .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;          /* ⬅️ sedikit lebih rapat */
+
+        padding: 8px 12px; /* ⬅️ sebelumnya 10px 14px */
+        border-radius: 9px;
+
+        white-space: normal;
+        line-height: 1.25;
+        font-weight: 500;
+    }
+
+    .eksplore-dropdown .dd-icon {
+        font-size: 1.2rem; /* ⬅️ sedikit diperkecil */
+    }
+
+    .eksplore-dropdown .dd-text {
+        font-size: .9rem;  /* ⬅️ sebelumnya .95 */
+    }
+    /* Wrapper dropdown */
+    .nav-item.dropdown .dropdown-menu {
+        border: none;
+        border-radius: 18px;
+        padding: 10px;
+        margin-top: 10px;
+
+        background: linear-gradient(180deg, #ffffff, #f8f9ff);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        animation: dropdownFade .25s ease;
+    }
+
+    /* Item dropdown */
+    .nav-item.dropdown .dropdown-item {
+        border-radius: 14px;
+        padding: 10px 14px;
+        margin-bottom: 6px;
+
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #333;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        transition: all .2s ease;
+    }
+
+    /* Hover effect */
+    .nav-item.dropdown .dropdown-item:hover {
+        background: var(--bs-primary);
+        color: #fff;
+        transform: translateX(4px);
+    }
+
+    /* Aktif (gaya belajar user) */
+    .nav-item.dropdown .dropdown-item.active {
+        background: linear-gradient(135deg, var(--bs-primary), var(--primary-end));
+        color: #fff;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    }
+
+    /* Icon kanan (check / lock) */
+    .dropdown-item .status-icon {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Animasi dropdown */
+    @keyframes dropdownFade {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    /* ===== Eksplore Floating Alert ===== */
+    .eksplore-alert {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 1040;
+
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+
+        width: 360px;
+        padding: 18px 20px;
+
+        background: linear-gradient(135deg, #fff8e1, #fff3cd);
+        border-radius: 18px;
+        box-shadow: 0 12px 30px rgba(0,0,0,.15);
+
+        opacity: 0;
+        transform: translateY(-20px) scale(.98);
+        pointer-events: none;
+
+        transition: all .35s ease;
+    }
+
+    .eksplore-alert.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    .eksplore-alert-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #ffc107;
+        color: #3a2d00;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .eksplore-alert-content h6 {
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .eksplore-alert-content p {
+        font-size: .9rem;
+        margin-bottom: 0;
+        color: #5a4b00;
+    }
+

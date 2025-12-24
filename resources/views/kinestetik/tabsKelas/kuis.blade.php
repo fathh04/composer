@@ -1,3 +1,7 @@
+@php
+    $score = $score ?? null;
+@endphp
+
 <style>
 /* ================== GLOBAL CARD ================== */
 .quiz-card {

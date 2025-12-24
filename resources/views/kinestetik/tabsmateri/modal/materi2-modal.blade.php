@@ -254,7 +254,7 @@ spasi   dan   baris
 document.addEventListener('DOMContentLoaded', function () {
 
     /* ===== LIVE OUTPUT ===== */
-    const editor = document.getElementById('editorMater2');
+    const editor = document.getElementById('editorMateri2');
     const output = document.getElementById('outputMateri2');
 
     if (editor && output) {

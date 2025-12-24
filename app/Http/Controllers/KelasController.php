@@ -6,6 +6,7 @@ use App\Models\Kelas;
 use App\Models\Materi;
 use App\Models\pengguna;
 use App\Models\KuisResult;
+use App\Models\TugasSubmission;
 use App\Models\TugasGuru;
 use App\Models\FeedbackGuru;
 use Illuminate\Http\Request;
@@ -20,6 +21,35 @@ class KelasController extends Controller
             if (Auth::check()) {
 
                 $user = Auth::user();
+
+                /* ============================================
+                *  STATUS PROGRES BELAJAR SISWA
+                * ============================================ */
+                // ✅ CEK KUIS SELESAI
+                $kuisSelesai = KuisResult::where('pengguna_id', Auth::id())
+                    ->exists();
+
+                // ✅ CEK LIVE CODE SELESAI
+                $livecodeSelesai = TugasSubmission::where('pengguna_id', Auth::id())
+                    ->exists();
+
+                $bolehEksplore = $kuisSelesai && $livecodeSelesai;
+
+                view()->share([
+                    'kuisSelesai'     => $kuisSelesai,
+                    'livecodeSelesai' => $livecodeSelesai,
+                    'bolehEksplore'   => $bolehEksplore,
+                ]);
+
+                /* ============================================
+                *  SCORE KUIS SISWA (GLOBAL)
+                * ============================================ */
+                $score = 0;
+                $cek = KuisResult::where('pengguna_id', $user->id)
+                    ->latest()
+                    ->first();
+                $score = $cek ? (int) $cek->score : 0;
+                view()->share('score', $score);
 
                 /* ============================================
                 *  FEEDBACK GURU
@@ -339,5 +369,33 @@ class KelasController extends Controller
             'rataRataNilai'   => $rataRataNilai,
             'rekomendasiAI'   => $rekomendasiAI,
         ]);
+    }
+
+    public function isiKelasByStyle($style, $id)
+    {
+        $kelas = Kelas::findOrFail($id);
+        $materi = Materi::where('idkelas', $id)->get();
+
+        $cek = KuisResult::where('pengguna_id', Auth::id())->first();
+        $score = $cek->score ?? null;
+
+        $leaderboard = [
+            'visual'     => $this->getLeaderboardByStyle('Visual'),
+            'auditori'   => $this->getLeaderboardByStyle('Auditori'),
+            'kinestetik' => $this->getLeaderboardByStyle('Kinestetik'),
+        ];
+
+        return match ($style) {
+            'visual' =>
+                view('siswa.isiKelas', compact('kelas','materi','leaderboard','score')),
+
+            'auditori' =>
+                view('auditori.isiKelasAuditori', compact('kelas','materi','leaderboard','score')),
+
+            'kinestetik' =>
+                view('kinestetik.isiKelas', compact('kelas','materi','leaderboard','score')),
+
+            default => abort(404)
+        };
     }
 }

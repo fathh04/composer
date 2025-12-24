@@ -1,3 +1,6 @@
+@php
+    $score = $score ?? null;
+@endphp
 <style>
     .quiz-container {
         background: #fff;

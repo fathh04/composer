@@ -1,3 +1,7 @@
+@php
+    $materi = $materi ?? collect();
+@endphp
+
 {{-- === MATERI DARI PENGAJAR === --}}
 <div class="d-flex align-items-center justify-content-between mb-2">
     <h4 class="fw-bold text-primary d-flex align-items-center gap-2">

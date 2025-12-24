@@ -6,6 +6,7 @@
     <div class="row g-4">
         {{-- CARD --}}
         @include('auditori.tabsMateri.materi1')
+        @include('auditori.tabsMateri.materi2')
     </div>
 </div>
 
@@ -13,3 +14,4 @@
 @include('auditori.tabsMateri.modal.materi1-modal')
 @include('auditori.tabsMateri.modal.materi2-modal')
 @include('auditori.tabsMateri.modal.materi3-modal')
+@include('auditori.tabsMateri.modal.materi4-modal')

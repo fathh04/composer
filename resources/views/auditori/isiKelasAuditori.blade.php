@@ -2,120 +2,43 @@
 @section('title', 'Masuk Kelas - HTML5VIRTUAL')
 @section('menuKelas', 'active')
 
+@push('styles')
+<link rel="stylesheet" href="{{ url('css/isiKelas.css') }}">
+@endpush
+
 @section('content')
 
-<style>
-    /* ==============================
-       GLOBAL PRIMARY THEME
-    ===============================*/
-
-    :root {
-        --primary-start: var(--bs-primary);
-        --primary-end: #004cba; /* versi yang lebih gelap */
-    }
-
-    .kelas-hero {
-        background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
-        border-radius: 20px;
-        padding: 40px;
-        color: white;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        text-align: center;
-    }
-
-    .kelas-hero h1 {
-        font-weight: 700;
-        font-size: 1.8rem;
-    }
-
-    .kelas-hero p {
-        opacity: .95;
-        margin: 0;
-    }
-
-    /* ==============================
-       FIX TAB 1 BARIS RESPONSIVE
-    ===============================*/
-
-    /* Wrapper tab utama */
-    .tab-wrapper {
-        background: #ffffff;
-        padding: 10px;
-        border-radius: 50px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        max-width: 900px;
-        margin: 30px auto;
-    }
-
-    /* Pastikan hanya satu baris */
-    .tab-wrapper .nav {
-        flex-wrap: nowrap !important;
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    /* Setiap tab selalu menyesuaikan ruang */
-    .tab-wrapper .nav-item {
-        flex: 1;
-        text-align: center;
-        min-width: 0; /* supaya bisa mengecil */
-    }
-
-    /* Tombol tab */
-    .tab-wrapper .nav-link {
-        border-radius: 40px !important;
-        transition: .2s;
-        font-weight: 600;
-        color: var(--bs-primary);
-        border: 1px solid transparent;
-        font-size: 0.9rem;
-        padding: 8px 5px;
-        white-space: normal;
-    }
-
-    /* Tab aktif */
-    .tab-wrapper .nav-link.active {
-        background: var(--bs-primary);
-        color: white !important;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-
-    /* RESPONSIVE — Kecilkan ukuran pada HP */
-    @media(max-width: 768px) {
-        .tab-wrapper .nav-link {
-            font-size: 0.75rem;
-            padding: 6px 3px;
-        }
-
-        .tab-wrapper .nav-link i {
-            font-size: 0.9rem;
-            margin-right: 2px;
-        }
-    }
-
-    @media(max-width: 480px) {
-        .tab-wrapper .nav-link {
-            font-size: 0.65rem;
-            padding: 5px 2px;
-        }
-
-        .tab-wrapper .nav-link i {
-            font-size: 0.8rem;
-        }
-    }
-
-    /* Animasi tab */
-    .tab-pane {
-        animation: fadeIn .3s ease;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-</style>
-
 <div class="container py-4">
+    @php
+        $user = Auth::user();
+        $userStyle = strtolower(trim($user->gaya_belajar));
+        $isAuditori = $userStyle === 'auditori';
+
+        $bolehEksplore = ($kuisSelesai ?? false) && ($livecodeSelesai ?? false);
+
+        $canEksplore = $isAuditori && $bolehEksplore;
+    @endphp
+
+    @if(!$bolehEksplore)
+    <div id="eksploreAlert" class="eksplore-alert">
+        <div class="eksplore-alert-icon">
+            <i class="bi bi-lock-fill"></i>
+        </div>
+
+        <div class="eksplore-alert-content">
+            <h6>Eksplore Terkunci</h6>
+            <p>
+                Selesaikan <b>Kuis</b> dan <b>Live Code</b>
+                untuk membuka halaman gaya belajar lainnya.
+            </p>
+
+            <button class="btn btn-warning btn-sm rounded-pill px-3 mt-2"
+                    id="eksploreAlertOk">
+                Mengerti
+            </button>
+        </div>
+    </div>
+    @endif
 
     <!-- ==============================
          HEADER / HERO KELAS
@@ -125,10 +48,58 @@
         <p>ID Kelas: {{ $kelas->idkelas }}</p>
     </div>
 
+    {{-- ===== DETEKSI KUNJUNGAN GAYA BELAJAR ===== --}}
+    @php
+        $userStyle = strtolower(Auth::user()->gaya_belajar);
+        $path = request()->path();
+
+        if (str_contains($path, 'visual')) {
+            $visitedStyle = 'visual';
+        } elseif (str_contains($path, 'auditori')) {
+            $visitedStyle = 'auditori';
+        } elseif (str_contains($path, 'kinestetik')) {
+            $visitedStyle = 'kinestetik';
+        } else {
+            $visitedStyle = null;
+        }
+
+        // Route kembali ke gaya belajar asli user
+        $backRoute = route('isiKelas.byStyle', [
+            'style' => $userStyle,
+            'id'    => $kelas->id
+        ]);
+    @endphp
+
+    @if ($visitedStyle && $visitedStyle !== $userStyle)
+    <div class="floating-style-alert">
+
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="icon-lock">
+                <i class="bi bi-lock-fill"></i>
+            </div>
+
+            <div>
+                <span class="badge badge-warning mb-1">Warning</span>
+                <h6 class="mt-1">Akses Terbatas</h6>
+            </div>
+        </div>
+
+        <p class="mb-2">
+            Anda sedang berkunjung di halaman
+            <strong>gaya belajar {{ ucfirst($visitedStyle) }}</strong>.
+        </p>
+
+        <a href="{{ $backRoute }}"
+        class="btn btn-warning btn-sm rounded-pill fw-semibold px-3">
+            <i class="bi bi-arrow-left-circle me-1"></i> Kembali ke gaya belajar Anda
+        </a>
+    </div>
+    @endif
 
     <!-- ==============================
          NAVIGATION TAB
     ===============================-->
+
     <div class="tab-wrapper">
         <ul class="nav nav-pills justify-content-between flex-wrap" id="kelasTab" role="tablist">
 
@@ -141,26 +112,38 @@
             </li>
 
             <li class="nav-item flex-fill text-center" role="presentation">
-                <button class="nav-link w-100"
-                        id="kuis-tab" data-bs-toggle="tab" data-bs-target="#kuis"
-                        type="button" role="tab">
-                    <i class="bi bi-question-circle me-1"></i> Kuis
+                <button
+                    class="nav-link w-100 {{ $isAuditori ? '' : 'locked' }}"
+                    {{ $isAuditori ? 'data-bs-toggle=tab data-bs-target=#kuis' : '' }}
+                    type="button" role="tab"
+                    title="{{ $isAuditori ? '' : 'Hanya untuk gaya belajar auditori' }}"
+                >
+                    <i class="bi {{ $isAuditori ? 'bi-question-circle' : 'bi-lock-fill' }} me-1"></i>
+                    Kuis
                 </button>
             </li>
 
             <li class="nav-item flex-fill text-center" role="presentation">
-                <button class="nav-link w-100"
-                        id="livecode-tab" data-bs-toggle="tab" data-bs-target="#livecode"
-                        type="button" role="tab">
-                    <i class="bi bi-terminal me-1"></i> Live Code
+                <button
+                    class="nav-link w-100 {{ $isAuditori ? '' : 'locked' }}"
+                    {{ $isAuditori ? 'data-bs-toggle=tab data-bs-target=#livecode' : '' }}
+                    type="button" role="tab"
+                    title="{{ $isAuditori ? '' : 'Hanya untuk gaya belajar auditori' }}"
+                >
+                    <i class="bi {{ $isAuditori ? 'bi-terminal' : 'bi-lock-fill' }} me-1"></i>
+                    Live Code
                 </button>
             </li>
 
             <li class="nav-item flex-fill text-center" role="presentation">
-                <button class="nav-link w-100"
-                        id="virtual-tab" data-bs-toggle="tab" data-bs-target="#virtual"
-                        type="button" role="tab">
-                    <i class="bi bi-cpu me-1"></i> Virtual Praktikum
+                <button
+                    class="nav-link w-100 {{ $isAuditori ? '' : 'locked' }}"
+                    {{ $isAuditori ? 'data-bs-toggle=tab data-bs-target=#virtual' : '' }}
+                    type="button" role="tab"
+                    title="{{ $isAuditori ? '' : 'Hanya untuk gaya belajar auditori' }}"
+                >
+                    <i class="bi {{ $isAuditori ? 'bi-cpu' : 'bi-lock-fill' }} me-1"></i>
+                    Virtual Praktikum
                 </button>
             </li>
 
@@ -173,13 +156,55 @@
             </li>
 
             <li class="nav-item flex-fill text-center" role="presentation">
-                <button class="nav-link w-100"
-                        id="feed-tab" data-bs-toggle="tab" data-bs-target="#feed"
-                        type="button" role="tab">
-                    <i class="bi bi-journal-text me-1"></i> Feed Pembelajaran
+                <button
+                    class="nav-link w-100 {{ $isAuditori ? '' : 'locked' }}"
+                    {{ $isAuditori ? 'data-bs-toggle=tab data-bs-target=#feed' : '' }}
+                    type="button" role="tab"
+                    title="{{ $isAuditori ? '' : 'Hanya untuk gaya belajar auditori' }}"
+                >
+                    <i class="bi {{ $isAuditori ? 'bi-journal-text' : 'bi-lock-fill' }} me-1"></i>
+                    Feed Pembelajaran
                 </button>
             </li>
 
+            <li class="nav-item dropdown flex-fill text-center">
+                <a
+                    href="#"
+                    class="nav-link w-100 dropdown-toggle {{ $isAuditori ? '' : 'locked' }}"
+                    id="eksploreBtn"
+                    data-boleh="{{ $bolehEksplore ? '1' : '0' }}"
+                    data-style="{{ $isAuditori ? '1' : '0' }}"
+                    data-bs-toggle="dropdown"
+                    title="{{ $isAuditori ? '' : 'Hanya untuk gaya belajar auditori' }}"
+                >
+                    <i class="bi {{ $isAuditori ? 'bi-globe' : 'bi-lock-fill' }} me-1"></i>
+                    Eksplore
+                </a>
+
+                <ul class="dropdown-menu eksplore-dropdown">
+                    @if($bolehEksplore)
+                        {{-- NORMAL --}}
+                        <li>
+                            <a class="dropdown-item"
+                            href="{{ route('isiKelas.byStyle', ['style' => 'visual', 'id' => $kelas->id]) }}">
+                                🎨 Gaya Belajar Visual
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                            href="{{ route('isiKelas.byStyle', ['style' => 'auditori', 'id' => $kelas->id]) }}">
+                                🎧 Gaya Belajar Auditori
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                            href="{{ route('isiKelas.byStyle', ['style' => 'kinestetik', 'id' => $kelas->id]) }}">
+                                🏃 Gaya Belajar Kinestetik
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
         </ul>
     </div>
 
@@ -215,5 +240,39 @@
 
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const alertBox = document.getElementById('eksploreAlert');
+    const okBtn = document.getElementById('eksploreAlertOk');
+
+    // klik Eksplore
+    document.addEventListener('mousedown', function (e) {
+        const btn = e.target.closest('#eksploreBtn');
+        if (!btn) return;
+
+        const boleh = btn.dataset.boleh === '1';
+
+        if (!boleh) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            if (alertBox) {
+                alertBox.classList.add('show');
+            }
+        }
+    }, true);
+
+    // klik tombol Mengerti
+    if (okBtn) {
+        okBtn.addEventListener('click', function () {
+            alertBox.classList.remove('show');
+        });
+    }
+});
+</script>
+@endpush
 
 @endsection

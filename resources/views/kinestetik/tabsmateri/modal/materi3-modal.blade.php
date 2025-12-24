@@ -377,77 +377,68 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    const projectTabBtn = document.querySelector(
-        '[data-bs-target="#materi3-project"]'
-    );
+    const submitBtn = document.getElementById('submitProject3');
+    const projectEditor = document.querySelector('#materi3-project .project-editor');
+    const resultBox = document.getElementById('projectResult3');
 
-    projectTabBtn.addEventListener('shown.bs.tab', () => {
+    if (!submitBtn) return;
 
-        const submitBtn = document.getElementById('submitProject3');
-        const projectEditor = document.querySelector('.project-editor');
-        const resultBox = document.getElementById('projectResult3');
+    submitBtn.addEventListener('click', () => {
 
-        if (!submitBtn) return;
+        const code = projectEditor.value.toLowerCase();
 
-        submitBtn.onclick = () => {
+        const hasH1 = /<h1>.*<\/h1>/.test(code);
+        const hasUL = /<ul>/.test(code);
+        const hasOL = /<ol>/.test(code);
+        const hasLI = /<li>/.test(code);
 
-            const code = projectEditor.value.toLowerCase();
+        const listTypesUsed = [hasUL, hasOL, hasLI].filter(Boolean).length;
 
-            /* ===== CEK TAG LIST ===== */
-            const hasH1 = /<h1>.*<\/h1>/.test(code);
-            const hasUL = /<ul>/.test(code);
-            const hasOL = /<ol>/.test(code);
-            const hasLI = /<li>/.test(code);
+        const checks = [
+            {
+                label: 'Judul (<h1>)',
+                valid: hasH1,
+                desc: 'Wajib terdapat satu judul utama menggunakan <h1>.'
+            },
+            {
+                label: 'Minimal 2 Tag List HTML',
+                valid: listTypesUsed >= 2,
+                desc: 'Gunakan minimal dua dari tag <ul>, <ol>, dan <li>.'
+            }
+        ];
 
-            const listTypesUsed = [hasUL, hasOL, hasLI].filter(Boolean).length;
+        const allCorrect = checks.every(c => c.valid);
 
-            const checks = [
-                {
-                    label: 'Judul (<h1>)',
-                    valid: hasH1,
-                    desc: 'Wajib terdapat satu judul utama menggunakan <h1>.'
-                },
-                {
-                    label: 'Minimal 2 Tag List HTML',
-                    valid: listTypesUsed >= 2,
-                    desc: 'Gunakan minimal dua dari tag <ul>, <ol>, dan <li>.'
-                }
-            ];
-
-            const allCorrect = checks.every(c => c.valid);
-
-            /* ===== RESET + HEADER ===== */
-            resultBox.innerHTML = `
-                <div class="project-result">
-                    <div class="project-result-header ${allCorrect ? 'success' : 'warning'}">
-                        ${allCorrect ? '🎉 Project Berhasil!' : '⚠️ Masih Perlu Perbaikan'}
-                    </div>
-                    <ul class="project-result-list" id="resultList"></ul>
+        resultBox.innerHTML = `
+            <div class="project-result">
+                <div class="project-result-header ${allCorrect ? 'success' : 'warning'}">
+                    ${allCorrect ? '🎉 Project Berhasil!' : '⚠️ Masih Perlu Perbaikan'}
                 </div>
-            `;
+                <ul class="project-result-list" id="resultList"></ul>
+            </div>
+        `;
 
-            const list = document.getElementById('resultList');
+        const list = document.getElementById('resultList');
 
-            /* ===== LIST ITEM ===== */
-            checks.forEach(item => {
+        checks.forEach(item => {
+            const li = document.createElement('li');
+            li.className = `project-result-item ${item.valid ? 'success' : 'error'}`;
 
-                const li = document.createElement('li');
-                li.className = `project-result-item ${item.valid ? 'success' : 'error'}`;
+            const title = document.createElement('div');
+            title.className = 'title';
+            title.textContent = `${item.valid ? '✅' : '❌'} ${item.label}`;
 
-                const title = document.createElement('strong');
-                title.textContent = `${item.valid ? '✅' : '❌'} ${item.label}`;
+            const desc = document.createElement('div');
+            desc.className = 'desc';
+            desc.textContent = item.desc;
 
-                const desc = document.createElement('div');
-                desc.className = 'desc';
-                desc.textContent = item.desc;
+            li.appendChild(title);
+            li.appendChild(desc);
+            list.appendChild(li);
+        });
 
-                li.appendChild(title);
-                li.appendChild(desc);
-                list.appendChild(li);
-            });
-
-        };
     });
 
 });
 </script>
+

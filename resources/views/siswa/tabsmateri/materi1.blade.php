@@ -4,7 +4,7 @@
         <!-- Thumbnail -->
         <div class="position-relative">
             <img
-                src="{{ url('img/visual.jpg') }}"
+                src="{{ url('img/visual-list.png') }}"
                 class="card-img-top img-landscape rounded-top-4"
                 alt="Pemformatan dan List HTML"
             >
@@ -25,9 +25,9 @@
                 Pemformatan teks, paragraf, dan pembuatan list tersrtuktur
             </p>
 
-            <div class="dropdown dropend">
-                <button class="btn btn-primary dropdown-toggle"
-                        data-bs-toggle="dropdown">
+            <div class="dropdown dropend w-100">
+                <button class="btn btn-primary dropdown-toggle w-100 py-2"
+                    data-bs-toggle="dropdown">
                     📘 Lihat Materi
                 </button>
 
@@ -71,6 +71,7 @@
 }
 
 .card-materi:hover {
+    z-index: 10;
     transform: translateY(-6px);
     box-shadow: 0 12px 28px rgba(13,110,253,.25);
 }

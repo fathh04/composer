@@ -1,3 +1,11 @@
+@php
+    $leaderboard = $leaderboard ?? [
+        'visual' => [],
+        'auditori' => [],
+        'kinestetik' => []
+    ];
+@endphp
+
 <div id="leaderboardSection">
 
 <h3 class="mb-4 text-center text-primary fw-bold" data-aos="zoom-in">

@@ -1,3 +1,8 @@
+@php
+    $rataRataNilai = $rataRataNilai ?? 0;
+    $rekomendasiAI = $rekomendasiAI ?? 'Belum ada rekomendasi saat ini.';
+    $feedbackGuru  = $feedbackGuru ?? collect();
+@endphp
 <div id="feedbackSection">
 <!-- ======================= -->
 <!-- UMPAN BALIK BELAJAR     -->
