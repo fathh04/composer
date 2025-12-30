@@ -7,6 +7,9 @@
         {{-- CARD --}}
         @include('siswa.tabsmateri.materi1')
         @include('siswa.tabsmateri.materi2')
+        @include('siswa.tabsmateri.materi3')
+        @include('siswa.tabsmateri.materi4')
+        @include('siswa.tabsmateri.materi5')
     </div>
 </div>
 
@@ -15,3 +18,8 @@
 @include('siswa.tabsmateri.modal.materi2-modal')
 @include('siswa.tabsmateri.modal.materi3-modal')
 @include('siswa.tabsmateri.modal.materi4-modal')
+@include('siswa.tabsmateri.modal.materi5-modal')
+@include('siswa.tabsmateri.modal.materi6-modal')
+@include('siswa.tabsmateri.modal.materi7-modal')
+@include('siswa.tabsmateri.modal.materi8-modal')
+@include('siswa.tabsmateri.modal.materi9-modal')

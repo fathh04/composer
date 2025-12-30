@@ -74,7 +74,7 @@ SINTAKS BERWARNA
 
 .list-explain li {
     display: flex;
-    align-items: flex-start; 
+    align-items: flex-start;
     gap: 12px;
     padding: 6px 0;
     font-size: 14px;
@@ -82,11 +82,11 @@ SINTAKS BERWARNA
 }
 
 .list-explain span {
-    min-width: 130px;   
+    min-width: 130px;
     color: #0d6efd;
     font-weight: 600;
     font-family: monospace;
-    white-space: nowrap;   
+    white-space: nowrap;
 }
 
 /* ===============================
@@ -224,10 +224,11 @@ LIVE OUTPUT (VERTIKAL)
     align-items: center;
     justify-content: center;
 
-    min-width: 60px;      /* ukuran saat kosong */
+    min-width: 60px;
     min-height: 32px;
+    max-width: 160px;
 
-    padding: 4px 6px;     /* penting agar mengikuti isi */
+    padding: 4px 6px;
     margin: 0 4px;
 
     border: 2px dashed #38bdf8;
@@ -236,12 +237,19 @@ LIVE OUTPUT (VERTIKAL)
     color: #38bdf8;
     vertical-align: middle;
 
+    font-size: inherit;
+    font-family: inherit;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
     transition: all .2s ease;
 }
 
 /* Saat sudah diisi */
 .drop-slot.filled {
-    min-width: unset;    /* ⬅️ biar mengikuti konten */
+    min-width: unset;
     min-height: unset;
 }
 
@@ -268,10 +276,10 @@ LIVE OUTPUT (VERTIKAL)
 }
 
 .code-box h3 {
-    font-size: 14px;      /* atur sesuai kebutuhan */
+    font-size: 14px;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #e5e7eb;       /* biar nyatu dengan code box */
+    color: #e5e7eb;   
 }
 
 /* ===== MINI PROJECT RESULT (COMPACT) ===== */

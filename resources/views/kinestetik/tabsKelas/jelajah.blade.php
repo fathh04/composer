@@ -7,6 +7,9 @@
         {{-- CARD --}}
         @include('kinestetik.tabsmateri.materi1')
         @include('kinestetik.tabsmateri.materi2')
+        @include('kinestetik.tabsmateri.materi3')
+        @include('kinestetik.tabsmateri.materi4')
+        @include('kinestetik.tabsmateri.materi5')
     </div>
 </div>
 
@@ -15,3 +18,8 @@
 @include('kinestetik.tabsmateri.modal.materi2-modal')
 @include('kinestetik.tabsmateri.modal.materi3-modal')
 @include('kinestetik.tabsmateri.modal.materi4-modal')
+@include('kinestetik.tabsmateri.modal.materi5-modal')
+@include('kinestetik.tabsmateri.modal.materi6-modal')
+@include('kinestetik.tabsmateri.modal.materi7-modal')
+@include('kinestetik.tabsmateri.modal.materi8-modal')
+@include('kinestetik.tabsmateri.modal.materi9-modal')
