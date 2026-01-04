@@ -1,234 +1,957 @@
-@php
-    $score = $score ?? null;
-@endphp
-<style>
-    .quiz-card {
-        border-left: 6px solid #0d6efd;
-        border-radius: 14px;
-        padding: 20px;
-        background: #fff;
-        transition: 0.25s;
-    }
-    .option-box {
-        padding: 12px 15px;
-        border: 2px solid #dcdcdc;
-        border-radius: 10px;
-        margin-bottom: 10px;
-        cursor: pointer;
-    }
-    .option-box:hover {
-        border-color: #0d6efd;
-        background: #eff6ff;
-    }
-    .option-box input {
-        margin-right: 8px;
-        transform: scale(1.2);
-    }
+{{-- =========================================
+|  KUIS POSTTEST AUDITORI (FINAL + PAGINATION)
+|========================================= --}}
 
-    .submit-btn {
-        background: #0d6efd;
-        color: white;
-        padding: 12px 22px;
-        border-radius: 10px;
-        border: none;
-        width: 100%;
-        font-size: 18px;
-        margin-top: 20px;
+<style>
+:root{
+    --primary:#0d6efd;
+    --soft:#f0f6ff;
+}
+
+/* ========== CARD POSTTEST ========== */
+.posttest-card{
+    border-radius:20px;
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+
+    /* SHADOW HALUS AGAR TERPISAH DARI LATAR */
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.06),
+        0 1px 3px rgba(0,0,0,.05);
+
+    transition:all .25s ease;
+}
+
+/* HOVER: NAIK SEDIKIT, TAPI TETAP SOFT */
+.posttest-card:hover{
+    transform:translateY(-6px);
+    box-shadow:
+        0 12px 28px rgba(0,0,0,.10),
+        0 4px 10px rgba(0,0,0,.06);
+}
+
+/* ========== BADGE SELESAI ========== */
+.badge-done{
+    background:#eafaf1;
+    color:#198754;
+    font-weight:600;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:.75rem;
+}
+
+/* ========== SCORE BOX ========== */
+.score-box{
+    width:88px;
+    height:88px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:18px;
+    background:#f0f6ff;
+    border:1px solid #dbe7ff;
+    font-size:2.2rem;
+    font-weight:700;
+    color:#0d6efd;
+}
+
+/* BUTTON */
+.posttest-card .btn{
+    border-radius:12px;
+    font-weight:600;
+}
+
+/* ========== CHECK ANIMATION ========== */
+.status-done{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:2px solid #198754;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto;
+    position:relative;
+}
+
+.status-done::after{
+    content:"";
+    width:10px;
+    height:18px;
+    border-right:3px solid #198754;
+    border-bottom:3px solid #198754;
+    transform:rotate(45deg) scale(0);
+    animation:checkDraw .5s ease-out forwards;
+}
+
+@keyframes checkDraw{
+    0%{
+        transform:rotate(45deg) scale(0);
+        opacity:0;
     }
-    .hasil-card {
-        border-radius: 20px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-        padding: 25px;
-        background: #fff;
-        text-align: center;
+    100%{
+        transform:rotate(45deg) scale(1);
+        opacity:1;
     }
+}
+
+/* QUIZ BOX */
+.quiz-container{
+    background:#fff;
+    border-radius:18px;
+    padding:28px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+
+/* QUESTION */
+.quiz-question{
+    margin-bottom:24px;
+    padding:18px 20px;
+    border-left:5px solid var(--primary);
+    background:var(--soft);
+    border-radius:12px;
+}
+
+/* CHOICE */
+.choice{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:8px 0;
+    padding:12px 15px;
+    background:#fff;
+    border:2px solid #d9e6ff;
+    border-radius:12px;
+    cursor:pointer;
+    transition:.2s;
+}
+.choice:hover{ background:#eef4ff; }
+.choice input{ transform:scale(1.2); }
+.choice.selected{
+    background:#d7e8ff;
+    border-color:var(--primary);
+}
+
+/* RESULT */
+.result-score{
+    font-size:3rem;
+    font-weight:700;
+    color:var(--primary);
+}
 </style>
 
 <div class="container py-4">
 
-    <h3 class="fw-bold text-center mb-4 text-primary">🎧 Kuis Tabel HTML (Audio)</h3>
+<!-- ================= PILIH POSTTEST ================= -->
+<div id="pilihPosttest" class="row g-4">
 
-    <!-- ================== START CARD ================== -->
-    <div id="startCard"
-        class="card shadow-lg border-0 mb-4 text-center"
-        style="border-radius: 18px; {{ $score !== null ? 'display:none;' : '' }}">
+@for ($i = 1; $i <= 3; $i++)
+@php $nilai = $hasilPosttest[$i] ?? null; @endphp
+<div class="col-md-4">
+    <div class="card posttest-card border-0 text-center h-100">
+        <div class="card-body d-flex flex-column justify-content-between py-4 px-3">
 
-        <img src="{{ url('img/struktur.jpg') }}"
-            class="card-img-top p-4"
-            style="height: 200px; object-fit: contain;">
+        @if ($nilai !== null)
 
-        <div class="card-body">
-            <h4 class="fw-bold text-primary">Kuis Struktur</h4>
-            <p class="text-muted">Kerjakan 5 soal dan jadilah peringkat pertama!</p>
+            <!-- STATUS CHECK ANIMATION -->
+            <div class="status-done mb-3"></div>
 
-            <button id="startBtn" class="btn btn-primary px-4 py-2 mt-2" style="border-radius:12px;">
-                🎧 Mulai Kuis
+            <!-- TITLE -->
+            <h5 class="fw-bold text-success mb-1">
+                Posttest {{ $i }}
+            </h5>
+
+            <!-- BADGE -->
+            <span class="badge badge-done mx-auto mb-3">
+                Posttest selesai dikerjakan
+            </span>
+
+            <!-- SCORE -->
+            <div class="score-box mx-auto mb-1">
+                {{ $nilai }}
+            </div>
+            <small class="text-muted">Nilai Anda</small>
+
+        @else
+
+            <!-- STATUS BELUM DIKERJAKAN -->
+            <div class="fs-1 mb-2">🎧</div>
+
+            <!-- TITLE -->
+            <h5 class="fw-bold text-primary mb-1">
+                Posttest {{ $i }}
+            </h5>
+
+            <p class="text-muted small mb-3">
+                Kerjakan kuis posttest ke-{{ $i }}
+            </p>
+
+            <button class="btn btn-primary px-4 py-2"
+                    onclick="mulaiKuis({{ $i }})">
+                🚀 Mulai Posttest
             </button>
+
+        @endif
+
         </div>
     </div>
+</div>
+@endfor
+</div>
 
-    <!-- ================== HASIL CARD ================== -->
-    <div id="hasilCard"
-        class="card shadow-lg border-0 mt-4 text-center"
-        style="border-radius:18px; {{ $score !== null ? '' : 'display:none;' }}">
+<!-- ================= QUIZ BOX ================= -->
+<div id="quizBox" style="display:none;" class="mt-5">
+    <div class="quiz-container">
 
-        <div class="card-body p-4">
-            <h3 class="fw-bold text-success">📊 Hasil Kuis Kamu</h3>
+        <h4 class="fw-bold text-center mb-1">
+            🎧 <span id="judulPosttest"></span>
+        </h4>
+        <p class="text-center text-muted mb-4">
+            Halaman <span id="infoHalaman"></span>
+        </p>
+        <audio id="audioPlayer" controls class="w-100 mb-3"></audio>
 
-            <h4 id="hasilText" class="mt-3 mb-3">
-                {{ $score !== null ? "Nilai Kamu: $score" : '' }}
-            </h4>
+        <div id="soalContainer"></div>
 
-            <button class="btn btn-secondary mt-2" onclick="location.reload()">
-                🔄 Kembali
-            </button>
-        </div>
-    </div>
+        <div id="navigasiKuis" class="d-flex justify-content-between mt-4"></div>
 
-    <!-- ================== BOX SOAL ================== -->
-    <div id="quizBox" style="display:none;">
-
-        <!-- Instruksi -->
-        <div class="quiz-card mb-4">
-            <h5 class="fw-bold">📢 Instruksi</h5>
-            <p>Dengarkan audio sebelum menjawab.</p>
-            <audio controls class="w-100">
-                <source src="/audio/intro-tabel-html.mp3" type="audio/mpeg">
-            </audio>
-        </div>
-
-        <!-- ================= SOAL 1 ================= -->
-        <div class="quiz-card mb-4">
-            <h5 class="fw-bold">Soal 1</h5>
-            <audio controls class="w-100 mb-3">
-                <source src="/audio/soal1-tabel-html.mp3" type="audio/mpeg">
-            </audio>
-
-            <p><strong>Pertanyaan:</strong> Tag untuk membuat baris tabel adalah?</p>
-
-            <div class="option-box"><input type="radio" name="s1" value="td"> &lt;td&gt;</div>
-            <div class="option-box"><input type="radio" name="s1" value="th"> &lt;th&gt;</div>
-            <div class="option-box"><input type="radio" name="s1" value="tr"> &lt;tr&gt;</div>
-            <div class="option-box"><input type="radio" name="s1" value="table"> &lt;table&gt;</div>
-        </div>
-
-        <!-- ================= SOAL 2 ================= -->
-        <div class="quiz-card mb-4">
-            <h5 class="fw-bold">Soal 2</h5>
-            <audio controls class="w-100 mb-3">
-                <source src="/audio/soal2-tabel-html.mp3" type="audio/mpeg">
-            </audio>
-
-            <p><strong>Tag header kolom adalah?</strong></p>
-
-            <div class="option-box"><input type="radio" name="s2" value="td"> &lt;td&gt;</div>
-            <div class="option-box"><input type="radio" name="s2" value="th"> &lt;th&gt;</div>
-            <div class="option-box"><input type="radio" name="s2" value="hr"> &lt;hr&gt;</div>
-            <div class="option-box"><input type="radio" name="s2" value="tr"> &lt;tr&gt;</div>
-        </div>
-
-        <!-- ================= SOAL 3 ================= -->
-        <div class="quiz-card mb-4">
-            <h5 class="fw-bold">Soal 3</h5>
-            <audio controls class="w-100 mb-3">
-                <source src="/audio/soal3-tabel-html.mp3" type="audio/mpeg">
-            </audio>
-
-            <p><strong>Tag isi sel tabel adalah?</strong></p>
-
-            <div class="option-box"><input type="radio" name="s3" value="td"> &lt;td&gt;</div>
-            <div class="option-box"><input type="radio" name="s3" value="th"> &lt;th&gt;</div>
-            <div class="option-box"><input type="radio" name="s3" value="tr"> &lt;tr&gt;</div>
-            <div class="option-box"><input type="radio" name="s3" value="body"> &lt;body&gt;</div>
-        </div>
-
-        <!-- ================= SOAL 4 ================= -->
-        <div class="quiz-card mb-4">
-            <h5 class="fw-bold">Soal 4</h5>
-
-            <audio controls class="w-100 mb-3">
-                <source src="/audio/soal4-tabel-html.mp3" type="audio/mpeg">
-            </audio>
-
-            <p><strong>Apa fungsi border="1"?</strong></p>
-
-            <div class="option-box"><input type="radio" name="s4" value="warna"> Mengubah warna teks</div>
-            <div class="option-box"><input type="radio" name="s4" value="font"> Membesarkan font</div>
-            <div class="option-box"><input type="radio" name="s4" value="garis"> Memberi garis tabel</div>
-            <div class="option-box"><input type="radio" name="s4" value="bg"> Menambah background</div>
-        </div>
-
-        <!-- ================= SOAL 5 ================= -->
-        <div class="quiz-card mb-4">
-            <h5 class="fw-bold">Soal 5</h5>
-
-            <audio controls class="w-100 mb-3">
-                <source src="/audio/soal5-tabel-html.mp3" type="audio/mpeg">
-            </audio>
-
-            <p><strong>Struktur tabel yang benar:</strong></p>
-
-            <div class="option-box"><input type="radio" name="s5" value="salah1"> table - th - tr - td</div>
-            <div class="option-box"><input type="radio" name="s5" value="benar"> table - tr - th/td</div>
-            <div class="option-box"><input type="radio" name="s5" value="salah2"> tr - table - td</div>
-            <div class="option-box"><input type="radio" name="s5" value="salah3"> td - tr - table</div>
-        </div>
-
-        <!-- SUBMIT BUTTON -->
-        <button class="submit-btn" onclick="checkAll()">✔ Selesaikan Kuis</button>
     </div>
 </div>
 
+</div>
+
 <script>
-/* ========== MULAI KUIS ========== */
-document.getElementById("startBtn")?.addEventListener("click", () => {
-    document.getElementById("startCard").style.display = "none";
-    document.getElementById("quizBox").style.display = "block";
-});
+let posttestAktif = null;
+let halamanAktif = 1;
+const soalPerHalaman = 5;
+let jawabanUser = {};
 
-/* ========== CEK KUIS ========== */
-function checkAll() {
+/* ================= BANK SOAL AUDITORI ================= */
+const bankSoal = {
+  1:{
+    audio:"/audio/soal1.wav",
+    soal:[
+      {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar.",
+      o:[
+        "Tag &lt;title&gt; diletakkan di dalam &lt;body&gt;",
+        "Tag &lt;title&gt; tidak diberi atribut",
+        "Tag &lt;title&gt; berada di luar &lt;html&gt;",
+        "Tag &lt;title&gt; tidak memiliki teks"
+      ],
+      k:0
+    },
+    {
+      q:"Perhatikan struktur berikut:<pre>&lt;html&gt;\n  &lt;body&gt;\n    &lt;head&gt;&lt;/head&gt;\n  &lt;/body&gt;\n&lt;/html&gt;</pre>Kesalahan utama dari struktur tersebut adalah …",
+      o:[
+        "&lt;head&gt; harus berada sebelum &lt;html&gt;",
+        "&lt;head&gt; tidak boleh kosong",
+        "&lt;head&gt; harus berada di dalam &lt;body&gt;",
+        "&lt;head&gt; harus berada di dalam &lt;html&gt; dan sebelum &lt;body&gt;"
+      ],
+      k:3
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "Menyimpan metadata halaman",
+        "Menampilkan konten yang terlihat oleh pengguna",
+        "Menghubungkan file CSS",
+        "Menentukan judul halaman"
+      ],
+      k:1
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "&lt;br&gt;",
+        "&lt;span&gt;",
+        "&lt;p&gt;",
+        "&lt;strong&gt;"
+      ],
+      k:2
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "Tepat karena &lt;br&gt; memang untuk paragraf",
+        "Kurang tepat, seharusnya menggunakan &lt;p&gt;",
+        "Tepat jika ingin jarak lebih besar",
+        "Tidak berpengaruh pada struktur HTML"
+      ],
+      k:1
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "Memberi jarak antar teks",
+        "Menebalkan teks tanpa makna",
+        "Memberi penekanan makna penting pada teks",
+        "Mengganti fungsi &lt;b&gt;"
+      ],
+      k:2
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "&lt;b&gt;",
+        "&lt;i&gt;",
+        "&lt;strong&gt;",
+        "&lt;span&gt;"
+      ],
+      k:2
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "&lt;ul&gt; dan &lt;li&gt;",
+        "&lt;ol&gt; dan &lt;li&gt;",
+        "&lt;li&gt; dan &lt;ul&gt;",
+        "&lt;dl&gt; dan &lt;dt&gt;"
+      ],
+      k:1
+    },
+    {
+      q:"Manakah perbedaan utama antara &lt;ul&gt; dan &lt;ol&gt;?",
+      o:[
+        "&lt;ul&gt; lebih modern",
+        "&lt;ol&gt; tidak memerlukan &lt;li&gt;",
+        "&lt;ol&gt; menampilkan urutan bernomor",
+        "&lt;ul&gt; hanya untuk teks pendek"
+      ],
+      k:2
+    },
+    {
+      q:"Perhatikan kode berikut:<pre>&lt;ol&gt;\n  &lt;p&gt;Item 1&lt;/p&gt;\n&lt;/ol&gt;</pre>Analisis kesalahannya adalah …",
+      o:[
+        "&lt;ol&gt; harus berisi &lt;li&gt;",
+        "&lt;p&gt; tidak boleh di dalam &lt;ol&gt;",
+        "&lt;ol&gt; tidak boleh memiliki isi",
+        "&lt;p&gt; harus diganti &lt;ul&gt;"
+      ],
+      k:0
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "&lt;ol&gt;",
+        "&lt;ul&gt;",
+        "&lt;li&gt;",
+        "&lt;menu&gt;"
+      ],
+      k:1
+    },
+    {
+      q:"Kesalahan logika dari kode berikut:<pre>&lt;li&gt;Beranda&lt;/li&gt;\n&lt;li&gt;Profil&lt;/li&gt;</pre>",
+      o:[
+        "&lt;li&gt; harus berada di dalam &lt;ul&gt; atau &lt;ol&gt;",
+        "&lt;li&gt; harus memiliki atribut",
+        "&lt;li&gt; hanya boleh satu",
+        "&lt;li&gt; tidak boleh berisi teks"
+      ],
+      k:0
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "&lt;p&gt;",
+        "&lt;br&gt;",
+        "&lt;hr&gt;",
+        "&lt;div&gt;"
+      ],
+      k:1
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "Memisahkan dua artikel",
+        "Membuat paragraf baru",
+        "Membuat baris baru dalam alamat",
+        "Mengelompokkan konten"
+      ],
+      k:2
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "&lt;body&gt;&lt;html&gt;&lt;/html&gt;&lt;/body&gt;",
+        "&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;/body&gt;&lt;/html&gt;",
+        "&lt;head&gt;&lt;html&gt;&lt;body&gt;",
+        "&lt;body&gt;&lt;head&gt;&lt;/head&gt;&lt;/body&gt;"
+      ],
+      k:1
+    },
+    {
+      q:"Evaluasi penggunaan &lt;strong&gt; berikut:<pre>&lt;strong&gt;Judul Artikel&lt;/strong&gt;</pre>Jika digunakan sebagai judul utama, perbaikan terbaik adalah …",
+      o:[
+        "Tetap menggunakan &lt;strong&gt;",
+        "Mengganti dengan &lt;p&gt;",
+        "Mengganti dengan &lt;h1&gt;",
+        "Menambahkan &lt;br&gt;"
+      ],
+      k:2
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "Menyimpan metadata",
+        "Menampilkan isi halaman",
+        "Membungkus seluruh elemen HTML",
+        "Menghubungkan halaman lain"
+      ],
+      k:2
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "Halaman tidak bisa ditampilkan",
+        "Metadata dan judul halaman tidak terdefinisi",
+        "Teks tidak terbaca",
+        "CSS tidak bisa digunakan sama sekali"
+      ],
+      k:1
+    },
+    {
+      q:"Dengarkan audio, lalu pilih jawaban yang benar",
+      o:[
+        "&lt;html&gt; – &lt;body&gt; – &lt;head&gt;",
+        "&lt;head&gt; – &lt;body&gt;",
+        "&lt;html&gt; – &lt;head&gt; – &lt;body&gt;",
+        "&lt;body&gt; – &lt;html&gt;"
+      ],
+      k:2
+    }
+    ]
+  },
 
-    const benar = {
-        s1: "tr",
-        s2: "th",
-        s3: "td",
-        s4: "garis",
-        s5: "benar"
-    };
+  2:{
+    audio:"/audio/soal2.wav",
+    soal:[
+      {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "rowspan=&quot;3&quot;",
+            "span=&quot;3&quot;",
+            "colspan=&quot;3&quot;",
+            "width=&quot;3&quot;"
+        ],
+        k:2
+    },
+    {
+        q:"Perhatikan potongan kode berikut:<pre>&lt;td rowspan=&quot;2&quot;&gt;A&lt;/td&gt;</pre>Analisis fungsi dari atribut tersebut adalah …",
+        o:[
+            "Menggabungkan dua kolom secara horizontal",
+            "Menggabungkan dua baris secara vertikal",
+            "Membuat dua tabel",
+            "Mengatur tinggi sel"
+        ],
+        k:1
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "Jumlah baris bertambah",
+            "Jumlah kolom berkurang menjadi 2",
+            "Sel tersebut mengisi dua kolom",
+            "Tabel menjadi tidak valid"
+        ],
+        k:2
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "Judul tabel memanjang ke samping",
+            "Sel “Total” mencakup beberapa baris",
+            "Mengatur lebar kolom",
+            "Membuat tabel responsif"
+        ],
+        k:1
+    },
+    {
+        q:"Perhatikan struktur tabel berikut:<pre>&lt;table&gt;\n  &lt;tr&gt;\n    &lt;td colspan=&quot;2&quot;&gt;Data&lt;/td&gt;\n    &lt;td&gt;Nilai&lt;/td&gt;\n  &lt;/tr&gt;\n&lt;/table&gt;</pre>Analisis struktur di atas menunjukkan bahwa …",
+        o:[
+            "Tabel memiliki 2 kolom",
+            "Baris tersebut memiliki total 3 kolom",
+            "&lt;td&gt; tidak boleh menggunakan colspan",
+            "Struktur tabel salah"
+        ],
+        k:1
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "Menggunakan &lt;td&gt;",
+            "Tidak menyesuaikan jumlah kolom atau baris lainnya",
+            "Tidak menambahkan &lt;table&gt;",
+            "Menggunakan &lt;tr&gt;"
+        ],
+        k:1
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "Menghapus &lt;table&gt;",
+            "Mengecek jumlah &lt;tr&gt;",
+            "Mengevaluasi keseimbangan kolom pada setiap baris",
+            "Menambahkan &lt;br&gt;"
+        ],
+        k:2
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "&lt;media&gt;",
+            "&lt;picture&gt;",
+            "&lt;img&gt;",
+            "&lt;src&gt;"
+        ],
+        k:2
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "alt",
+            "title",
+            "src",
+            "width"
+        ],
+        k:2
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "Mengatur ukuran gambar",
+            "Menampilkan judul gambar",
+            "Memberikan teks alternatif jika gambar gagal dimuat",
+            "Mempercepat loading halaman"
+        ],
+        k:2
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "&lt;audio autoplay&gt;",
+            "&lt;audio controls&gt;",
+            "&lt;sound controls&gt;",
+            "&lt;media audio&gt;"
+        ],
+        k:1
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "Menampilkan logo",
+            "Menampilkan foto profil",
+            "Menampilkan tutorial langkah-langkah",
+            "Menampilkan ikon"
+        ],
+        k:2
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "&lt;movie&gt;",
+            "&lt;media&gt;",
+            "&lt;video&gt;",
+            "&lt;iframe&gt;"
+        ],
+        k:2
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "Menghapus video",
+            "Menambahkan beberapa &lt;source&gt; dengan format berbeda",
+            "Mengganti &lt;video&gt; menjadi &lt;img&gt;",
+            "Menambahkan &lt;br&gt;"
+        ],
+        k:1
+    },
+    {
+        q:"Perhatikan kode berikut:<pre>&lt;a href=&quot;profil.html&quot;&gt;Profil&lt;/a&gt;</pre>Analisis fungsi dari kode tersebut adalah …",
+        o:[
+            "Menampilkan teks tebal",
+            "Membuka halaman profil.html",
+            "Mengunduh file profil",
+            "Menampilkan gambar"
+        ],
+        k:1
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "Internal link",
+            "Anchor link",
+            "External link",
+            "Local link"
+        ],
+        k:2
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "Menghubungkan ke website lain",
+            "Menghubungkan antar halaman dalam satu website",
+            "Menghubungkan ke email",
+            "Menghubungkan ke file video"
+        ],
+        k:1
+    },
+    {
+        q:"Atribut <code>target=&quot;_blank&quot;</code> pada tag &lt;a&gt; berfungsi untuk …",
+        o:[
+            "Membuka link di halaman yang sama",
+            "Menutup halaman lama",
+            "Membuka link di tab atau jendela baru",
+            "Menyembunyikan link"
+        ],
+        k:2
+    },
+    {
+        q:"Evaluasi penggunaan hyperlink berikut:<pre>&lt;a&gt;Beranda&lt;/a&gt;</pre>Kesalahan utama dari kode tersebut adalah …",
+        o:[
+            "Tidak menggunakan &lt;li&gt;",
+            "Tidak memiliki atribut href",
+            "Tidak berada di dalam &lt;p&gt;",
+            "Tidak menggunakan target"
+        ],
+        k:1
+    },
+    {
+        q:"Dengarkan audio, lalu pilih jawaban yang benar",
+        o:[
+            "Menggunakan tabel",
+            "Menggunakan &lt;br&gt;",
+            "Menggunakan anchor link dengan id",
+            "Menggunakan &lt;iframe&gt;"
+        ],
+        k:2
+    }
+    ]
+  },
 
-    let score = 0;
+  3:{
+    audio:"/audio/posttest3.mp3",
+    soal:[
+      {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "Menampilkan data tabel",
+        "Mengelompokkan elemen input untuk dikirim ke server",
+        "Mengatur tata letak halaman",
+        "Menyimpan data sementara di browser"
+    ],
+    k:1
+    },
 
-    for (let q in benar) {
-        let pilih = document.querySelector('input[name="'+q+'"]:checked');
-        if (pilih && pilih.value === benar[q]) score++;
+    {q:"Perhatikan kode berikut:<pre>&lt;form action=&quot;proses.php&quot; method=&quot;post&quot;&gt;</pre>Fungsi atribut action adalah …",
+    o:[
+        "Menentukan metode pengiriman data",
+        "Menentukan jenis input",
+        "Menentukan tujuan pengiriman data",
+        "Menentukan validasi form"
+    ],
+    k:2
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:["get","post","put","send"],
+    k:1
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "&lt;textarea&gt;",
+        "&lt;input type=&quot;text&quot;&gt;",
+        "&lt;input type=&quot;email&quot;&gt;",
+        "&lt;label&gt;"
+    ],
+    k:1
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "&lt;textarea&gt; tidak bisa diisi teks",
+        "&lt;input&gt; hanya untuk angka",
+        "&lt;textarea&gt; digunakan untuk teks multi-baris",
+        "&lt;textarea&gt; tidak bisa dikirim ke server"
+    ],
+    k:2
+    },
+
+    {q:"Perhatikan kode berikut:<pre>&lt;label for=&quot;nama&quot;&gt;Nama:&lt;/label&gt;\n&lt;input type=&quot;text&quot; id=&quot;nama&quot;&gt;</pre>Fungsi atribut for pada &lt;label&gt; adalah …",
+    o:[
+        "Mengatur style label",
+        "Menghubungkan label dengan input tertentu",
+        "Mengirim data ke server",
+        "Mengatur validasi input"
+    ],
+    k:1
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "Form menjadi lebih berwarna",
+        "Data lebih cepat terkirim",
+        "Meningkatkan aksesibilitas dan kemudahan klik",
+        "Mengurangi ukuran file HTML"
+    ],
+    k:2
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "&lt;input type=&quot;checkbox&quot;&gt;",
+        "&lt;input type=&quot;radio&quot;&gt;",
+        "&lt;select multiple&gt;",
+        "&lt;textarea&gt;"
+    ],
+    k:1
+    },
+
+    {q:"Perhatikan kode berikut:<pre>&lt;select&gt;\n  &lt;option&gt;HTML&lt;/option&gt;\n  &lt;option&gt;CSS&lt;/option&gt;\n&lt;/select&gt;</pre>Fungsi struktur tersebut adalah …",
+    o:[
+        "Menampilkan daftar pilihan dropdown",
+        "Menampilkan checkbox",
+        "Menampilkan radio button",
+        "Menampilkan tabel"
+    ],
+    k:0
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "Radio button",
+        "Dropdown tanpa atribut tambahan",
+        "Checkbox",
+        "Text input"
+    ],
+    k:2
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:["readonly","disabled","required","checked"],
+    k:2
+    },
+
+    {q:"Evaluasi kode berikut:<pre>&lt;input type=&quot;text&quot; disabled&gt;</pre>Dampak atribut disabled adalah …",
+    o:[
+        "Input wajib diisi",
+        "Input tidak bisa diedit dan tidak dikirim ke server",
+        "Input hanya bisa dibaca",
+        "Input otomatis terisi"
+    ],
+    k:1
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "CSS",
+        "JavaScript saja",
+        "Server-side script (PHP, dll)",
+        "&lt;br&gt;"
+    ],
+    k:2
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "&lt;input type=&quot;text&quot;&gt;",
+        "&lt;input type=&quot;mail&quot;&gt;",
+        "&lt;input type=&quot;email&quot;&gt;",
+        "&lt;textarea&gt;"
+    ],
+    k:2
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "Menghilangkan &lt;label&gt;",
+        "Menggunakan placeholder saja",
+        "Menggunakan &lt;label&gt; yang terhubung dengan input",
+        "Menggunakan tabel untuk form"
+    ],
+    k:2
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "Form direset",
+        "Data dikirim sesuai action dan method",
+        "Browser ditutup",
+        "CSS dijalankan"
+    ],
+    k:1
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "&lt;input type=&quot;reset&quot;&gt;",
+        "&lt;button type=&quot;submit&quot;&gt;",
+        "&lt;input type=&quot;button&quot;&gt;",
+        "&lt;label&gt;"
+    ],
+    k:1
+    },
+
+    {q:"Evaluasi kode berikut:<pre>&lt;input type=&quot;submit&quot; value=&quot;Kirim&quot;&gt;</pre>Kesimpulan yang tepat adalah …",
+    o:[
+        "Salah karena tidak menggunakan &lt;button&gt;",
+        "Benar dan berfungsi mengirim form",
+        "Tidak bisa mengirim data",
+        "Hanya untuk tampilan"
+    ],
+    k:1
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "Menempatkan input secara acak",
+        "Mengelompokkan input tanpa label",
+        "Mengelompokkan input secara logis dengan label jelas",
+        "Menggunakan &lt;br&gt; sebanyak mungkin"
+    ],
+    k:2
+    },
+
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    o:[
+        "Meminimalkan input tanpa label",
+        "Mengutamakan tampilan dibanding fungsi",
+        "Mengutamakan aksesibilitas, struktur, dan validasi",
+        "Menghindari atribut HTML bawaan"
+    ],
+    k:2
+    }
+    ]
+  }
+};
+
+/* ================= MULAI ================= */
+function mulaiKuis(pt){
+    posttestAktif = pt;
+    halamanAktif = 1;
+    jawabanUser = {};
+
+    pilihPosttest.style.display = 'none';
+    quizBox.style.display = 'block';
+    judulPosttest.innerText = "Posttest " + pt;
+
+    // 🔊 PLAY AUDIO POSTTEST
+    const audio = bankSoal[posttestAktif].audio;
+    audioPlayer.src = audio;
+    audioPlayer.currentTime = 0;
+    audioPlayer.play();
+
+    renderSoal();
+}
+
+/* ================= RENDER ================= */
+function renderSoal(){
+    soalContainer.innerHTML = '';
+
+    const soal = bankSoal[posttestAktif].soal;
+    const totalHalaman = Math.ceil(soal.length / soalPerHalaman);
+
+    infoHalaman.innerText = halamanAktif + " dari " + totalHalaman;
+
+    const start = (halamanAktif - 1) * soalPerHalaman;
+    const end   = start + soalPerHalaman;
+
+    soal.slice(start,end).forEach((s,i)=>{
+        const indexAsli = start + i;
+
+        let html = `
+        <div class="quiz-question">
+            <h5 class="fw-bold text-primary">
+                Soal ${indexAsli + 1}
+            </h5>
+            <p class="fw-semibold">${s.q}</p>
+        `;
+
+        s.o.forEach((opt,idx)=>{
+            const checked = jawabanUser[indexAsli] === idx ? 'checked' : '';
+            html += `
+            <label class="choice ${checked ? 'selected':''}">
+                <input type="radio" name="q${indexAsli}" value="${idx}" ${checked}>
+                ${opt}
+            </label>`;
+        });
+
+        html += `</div>`;
+        soalContainer.innerHTML += html;
+    });
+
+    document.querySelectorAll('.choice input').forEach(r=>{
+        r.addEventListener('change',function(){
+            jawabanUser[this.name.replace('q','')] = parseInt(this.value);
+            document.querySelectorAll(`input[name="${this.name}"]`)
+                .forEach(x=>x.parentElement.classList.remove('selected'));
+            this.parentElement.classList.add('selected');
+        });
+    });
+
+    renderNavigasi(totalHalaman);
+}
+
+/* ================= NAVIGASI ================= */
+function renderNavigasi(totalHalaman){
+    let html = '';
+
+    if(halamanAktif > 1){
+        html += `<button class="btn btn-outline-secondary"
+                onclick="halamanAktif--; renderSoal()">
+                ⬅️ Sebelumnya
+            </button>`;
+    }else{
+        html += `<div></div>`;
     }
 
-    let nilaiAkhir = score * 20;
+    if(halamanAktif < totalHalaman){
+        html += `<button class="btn btn-primary"
+                onclick="halamanAktif++; renderSoal()">
+                ➡️ Next
+            </button>`;
+    }else{
+        html += `<button class="btn btn-success"
+                onclick="submitKuis()">
+                ✅ Selesaikan Kuis
+            </button>`;
+    }
 
-    fetch("{{ route('kuis.submit') }}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+    navigasiKuis.innerHTML = html;
+}
+
+/* ================= SUBMIT ================= */
+function submitKuis(){
+    let benar = 0;
+    const total = bankSoal[posttestAktif].soal.length;
+
+    bankSoal[posttestAktif].soal.forEach((s,i)=>{
+        if(jawabanUser[i] === s.k) benar++;
+    });
+
+    let nilai = Math.round((benar / total) * 100);
+
+    fetch("{{ route('kuis.submit') }}",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+            "X-CSRF-TOKEN":"{{ csrf_token() }}"
         },
-        body: JSON.stringify({ score: nilaiAkhir })
+        body:JSON.stringify({score:nilai,posttest:posttestAktif})
     })
-    .then(res => res.json())
-    .then(data => {
-
-        if (data.status === "locked") {
-            alert("Kuis sudah pernah dikerjakan.");
-            return;
-        }
-
-        // Tampilkan hasil
-        document.getElementById("quizBox").style.display = "none";
-        document.getElementById("hasilCard").style.display = "block";
-        document.getElementById("hasilText").innerHTML =
-            "Nilai Kamu: <strong>" + nilaiAkhir + "</strong>";
-
-        setTimeout(() => location.reload(), 600);
+    .then(res=>{
+        if(!res.ok) throw "locked";
+        return res.json();
+    })
+    .then(()=>{
+        alert("Kuis berhasil disubmit!");
+        location.reload();
+    })
+    .catch(()=>{
+        alert("Posttest sudah dikerjakan!");
+        location.reload();
     });
 }
 </script>

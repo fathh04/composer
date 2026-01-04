@@ -22,15 +22,105 @@
           <!-- =========================================== -->
 
           <!-- =============== TUGAS BARU =============== -->
-          <h6 class="fw-bold text-primary">🎯 Tugas:</h6>
-          <ol class="modern-list">
-            <li>Buat Judul: <b style="color:#ff9800;">Tabel Sederhana</b></li>
-            <li>Buat paragraf penjelasan singkat</li>
-            <li>Buat tabel sederhana minimal 2 kolom dan 2 baris</li>
-          </ol>
+            <h6 class="fw-bold text-primary">🎯 Tugas:</h6>
+
+            <p class="text-muted small mb-2">
+            Buat halaman HTML sesuai dengan kreativitas Kamu. Ikuti detail tugas dibawah ini!
+            </p>
+
+            <button class="btn btn-outline-primary btn-sm w-100"
+                    data-bs-toggle="modal"
+                    data-bs-target="#tugasModal">
+            📖 Lihat selengkapnya
+            </button>
         </div>
       </div>
     </div>
+    <!-- ================= MODAL TUGAS ================= -->
+    <div class="modal fade" id="tugasModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-card">
+
+        <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold text-primary">
+            🎯 Detail Tugas
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <hr>
+        <div class="modal-body">
+            <ol class="modern-list">
+
+            <li>
+                <b>Studi Kasus</b><br>
+                Buat satu halaman website sederhana bertema
+                <b style="color:#ff9800;">Profil Produk / Profil Sekolah / Profil Diri</b>.
+                Seluruh isi dibuat <u>dalam satu file HTML</u> dan saling terhubung dalam satu halaman.
+            </li>
+
+            <li>
+                <b>Struktur Dasar HTML</b><br>
+                Lanjutkan kode pada editor untuk membuat struktur HTML sederhana
+                menggunakan:
+                <code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>, dan elemen HTML lainnya.
+                Pastikan penulisan tag benar dan rapi.
+            </li>
+
+            <li>
+                <b>Konten Utama Halaman</b><br>
+                Pada halaman yang sama, buat konten berikut:
+                <ul>
+                <li>Judul halaman menggunakan <code>&lt;h1&gt;</code></li>
+                <li>Minimal 2 paragraf penjelasan menggunakan <code>&lt;p&gt;</code></li>
+                <li>1 list (bebas <code>&lt;ul&gt;</code> atau <code>&lt;ol&gt;</code>) berisi minimal 3 item</li>
+                <li>1 gambar menggunakan <code>&lt;img&gt;</code> (boleh dari URL internet)</li>
+                </ul>
+            </li>
+
+            <li>
+                <b>Tabel Informasi</b><br>
+                Tambahkan sebuah tabel sederhana namun terstruktur dengan ketentuan:
+                <ul>
+                <li>Minimal 2 kolom dan 3 baris</li>
+                <li>Menggunakan <code>&lt;th&gt;</code> dan <code>&lt;td&gt;</code></li>
+                <li>Minimal 1 sel menggunakan <code>colspan</code> <u>atau</u> <code>rowspan</code></li>
+                </ul>
+            </li>
+
+            <li>
+                <b>Navigasi dalam Halaman</b><br>
+                Buat navigasi sederhana menggunakan tag <code>&lt;a&gt;</code> dengan ketentuan:
+                <ul>
+                <li>Link menuju bagian tertentu dalam halaman (anchor link)</li>
+                <li>Gunakan atribut <code>id</code> pada bagian tujuan</li>
+                <li>Link dapat diklik dan berpindah ke bagian yang dituju</li>
+                </ul>
+            </li>
+
+            <li>
+                <b>Formulir Sederhana</b><br>
+                Pada bagian akhir halaman, buat sebuah form HTML dengan ketentuan:
+                <ul>
+                <li>Menggunakan tag <code>&lt;form&gt;</code></li>
+                <li>Minimal 3 input (contoh: nama, email, pilihan)</li>
+                <li>Setiap input memiliki <code>&lt;label&gt;</code></li>
+                <li>Terdapat tombol submit</li>
+                </ul>
+            </li>
+
+            </ol>
+        </div>
+
+        <div class="modal-footer border-0">
+            <button class="btn btn-primary" data-bs-dismiss="modal">
+            ✔ Saya Mengerti
+            </button>
+        </div>
+
+        </div>
+    </div>
+    </div>
+    <!-- ================================================= -->
 
     <!-- Kolom kanan -->
     <div class="col-md-9">
@@ -78,21 +168,6 @@
                   <iframe id="preview" style="transform-origin: top left; width:100%; height:100%;"></iframe>
                 </div>
               </div>
-
-              <!-- UPLOAD GAMBAR SETELAH SUBMIT HTML -->
-              <div id="uploadBox" style="display:none;" class="mt-3 p-3 bg-light border rounded">
-                <h5 class="fw-bold">📤 Upload Hasil Preview</h5>
-
-                <form id="UploadForm" action="{{ route('submission.upload') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="submission_id" id="submissionIdInput">
-
-                    <input type="file" name="image" accept="image/*" class="form-control mb-2" required>
-
-                    <button class="btn btn-primary w-100">Kirim Gambar</button>
-                </form>
-              </div>
-
             </div>
           </div>
 
@@ -111,20 +186,7 @@ let editor;
 let editorLocked = false;
 let files = {
   "index.html":
-`<!-- Mulai koding tabel sederhana di sini -->
-<h1>Tabel Sederhana</h1>
-<p>Ini adalah contoh tabel sederhana buatan saya.</p>
-
-<table border="1">
-  <tr>
-    <th>Kolom 1</th>
-    <th>Kolom 2</th>
-  </tr>
-  <tr>
-    <td>Data 1</td>
-    <td>Data 2</td>
-  </tr>
-</table>`
+`<!-- Tuliskan kode HTML di sini -->`
 };
 
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
@@ -143,62 +205,169 @@ require(["vs/editor/editor.main"], function () {
    === FUNGSI BARU: RELOAD STATUS SUBMISSION ============
    ======================================================= */
 function reloadSubmissionStatus() {
-    fetch("{{ route('submission.check', Auth::id()) }}?t=" + Date.now())
-      .then(res => res.json())
-      .then(data => {
-          const badge = document.getElementById("submissionBadge");
+    fetch("{{ route('submission.check', Auth::id()) }}?t=" + Date.now(), {
+        headers: {
+            "Accept": "application/json"
+        }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("HTTP error");
+        return res.json();
+    })
+    .then(data => {
+        const badge = document.getElementById("submissionBadge");
 
-          if (data.exists) {
-              badge.innerHTML =
-                `<span class="badge-status badge-success">🟢 Anda sudah mengumpulkan tugas</span>`;
+        if (data.exists === true) {
+            badge.innerHTML =
+              `<span class="badge-status badge-success">🟢 Anda sudah mengumpulkan tugas</span>`;
 
-              editorLocked = true;
-              editor.updateOptions({ readOnly: true });
+            editorLocked = true;
 
-              runBtn.disabled = true;
-              clearBtn.disabled = true;
-              submitBtn.disabled = true;
-          } else {
-              badge.innerHTML =
-                `<span class="badge-status badge-fail">🔴 Anda belum mengumpulkan tugas</span>`;
-          }
-      })
-      .catch(() => {
-          document.getElementById("submissionBadge").innerHTML =
-            `<span class="badge-status badge-wait">⚠ Tidak bisa mengecek status</span>`;
-      });
+            if (editor) {
+                editor.updateOptions({ readOnly: true });
+            }
+
+            runBtn.disabled = true;
+            clearBtn.disabled = true;
+            submitBtn.disabled = true;
+        } else {
+            badge.innerHTML =
+              `<span class="badge-status badge-fail">🔴 Anda belum mengumpulkan tugas</span>`;
+        }
+    })
+    .catch(err => {
+        console.warn("Status check failed:", err);
+        document.getElementById("submissionBadge").innerHTML =
+          `<span class="badge-status badge-wait">⚠ Status belum siap, refresh halaman</span>`;
+    });
 }
 
 /* === GANTI FETCH AWAL MENJADI PANGGILAN FUNGSI === */
-reloadSubmissionStatus();
+function safeReloadStatus() {
+    if (typeof editor === "undefined") {
+        setTimeout(safeReloadStatus, 300);
+        return;
+    }
+    reloadSubmissionStatus();
+}
 
-/* ---------- Feedback Logic ---------- */
+safeReloadStatus();
+
+/* ---------- Feedback Logic (Project Live Coding) ---------- */
 function checkStudentAnswer(code) {
     const feedback = [];
     const c = code.toLowerCase();
 
-    if (/<h1[^>]*>.*tabel sederhana.*<\/h1>/i.test(code)) {
-        feedback.push({ ok: true, msg: "✔ Judul <b>Tabel Sederhana</b> sudah benar!" });
+    /* =========================
+       1. JUDUL HALAMAN <h1>
+       ========================= */
+    if (/<h1\b[^>]*>.*<\/h1>/i.test(code)) {
+        feedback.push({ ok: true, msg: "✔ Judul halaman (<code>&lt;h1&gt;</code>) ditemukan." });
     } else {
-        feedback.push({ ok: false, msg: "❌ Judul belum benar. Gunakan: <code>&lt;h1&gt;Tabel Sederhana&lt;/h1&gt;</code>" });
+        feedback.push({ ok: false, msg: "❌ Judul halaman belum ada. Gunakan <code>&lt;h1&gt;</code>." });
     }
 
-    if (/<p\b[^>]*>.*?<\/p>/is.test(code)) {
-        feedback.push({ ok: true, msg: "✔ Paragraf sudah dibuat!" });
+    /* =========================
+       2. PARAGRAF (MINIMAL 2)
+       ========================= */
+    const paragrafCount = (code.match(/<p\b[^>]*>[\s\S]*?<\/p>/gi) || []).length;
+    if (paragrafCount >= 2) {
+        feedback.push({ ok: true, msg: `✔ Paragraf ditemukan (${paragrafCount} paragraf).` });
     } else {
-        feedback.push({ ok: false, msg: "❌ Paragraf belum ada. Tambahkan paragraf penjelasan." });
+        feedback.push({ ok: false, msg: "❌ Paragraf kurang. Minimal <b>2 paragraf</b> menggunakan <code>&lt;p&gt;</code>." });
     }
 
+    /* =========================
+       3. LIST (ul / ol) MIN 3 ITEM
+       ========================= */
+    const listMatch = code.match(/<(ul|ol)\b[^>]*>[\s\S]*?<\/\1>/i);
+    if (listMatch) {
+        const liCount = (listMatch[0].match(/<li\b[^>]*>/gi) || []).length;
+        if (liCount >= 3) {
+            feedback.push({ ok: true, msg: `✔ List ditemukan dengan ${liCount} item.` });
+        } else {
+            feedback.push({ ok: false, msg: "❌ List harus berisi minimal <b>3 item</b> (<code>&lt;li&gt;</code>)." });
+        }
+    } else {
+        feedback.push({ ok: false, msg: "❌ List belum ada. Gunakan <code>&lt;ul&gt;</code> atau <code>&lt;ol&gt;</code>." });
+    }
+
+    /* =========================
+       4. GAMBAR <img>
+       ========================= */
+    if (/<img\b[^>]*src\s*=\s*["'][^"']+["']/i.test(code)) {
+        feedback.push({ ok: true, msg: "✔ Gambar (<code>&lt;img&gt;</code>) ditemukan." });
+    } else {
+        feedback.push({ ok: false, msg: "❌ Gambar belum ada. Tambahkan <code>&lt;img src=\"...\"&gt;</code>." });
+    }
+
+    /* =========================
+       5. TABEL
+       ========================= */
     if (/<table\b[^>]*>[\s\S]*<\/table>/i.test(code)) {
-        feedback.push({ ok: true, msg: "✔ Tabel sederhana ditemukan!" });
+        feedback.push({ ok: true, msg: "✔ Tabel ditemukan." });
+
+        const trCount = (code.match(/<tr\b[^>]*>/gi) || []).length;
+        const thCount = (code.match(/<th\b[^>]*>/gi) || []).length;
+        const tdCount = (code.match(/<td\b[^>]*>/gi) || []).length;
+
+        if (trCount >= 3 && thCount >= 1 && tdCount >= 2) {
+            feedback.push({ ok: true, msg: "✔ Struktur tabel sesuai (baris & kolom terpenuhi)." });
+        } else {
+            feedback.push({ ok: false, msg: "❌ Tabel harus memiliki minimal <b>2 kolom</b> dan <b>3 baris</b>." });
+        }
+
+        if (/colspan\s*=\s*["']?\d+["']?|rowspan\s*=\s*["']?\d+["']?/i.test(code)) {
+            feedback.push({ ok: true, msg: "✔ Tabel menggunakan <code>colspan</code> atau <code>rowspan</code>." });
+        } else {
+            feedback.push({ ok: false, msg: "❌ Tabel belum menggunakan <code>colspan</code> atau <code>rowspan</code>." });
+        }
+
     } else {
-        feedback.push({ ok: false, msg: "❌ Tabel belum ada. Tambahkan: <code>&lt;table&gt;...&lt;/table&gt;</code>" });
+        feedback.push({ ok: false, msg: "❌ Tabel belum ada. Tambahkan <code>&lt;table&gt;</code>." });
     }
 
-    if (/<tr>[\s\S]*?<td>.*?<\/td>[\s\S]*?<\/tr>/i.test(code)) {
-        feedback.push({ ok: true, msg: "✔ Tabel memiliki baris & kolom, sudah benar!" });
+    /* =========================
+       6. NAVIGASI ANCHOR LINK
+       ========================= */
+    const anchorLink = code.match(/<a\b[^>]*href\s*=\s*["']#.+?["'][^>]*>/i);
+    const anchorTarget = code.match(/id\s*=\s*["'][^"']+["']/i);
+
+    if (anchorLink && anchorTarget) {
+        feedback.push({ ok: true, msg: "✔ Navigasi anchor link (<code>&lt;a href=\"#...\"&gt;</code>) ditemukan." });
     } else {
-        feedback.push({ ok: false, msg: "❌ Tabel belum berisi baris dan kolom." });
+        feedback.push({ ok: false, msg: "❌ Navigasi belum lengkap. Gunakan <code>&lt;a href=\"#id\"&gt;</code> dan elemen dengan <code>id</code>." });
+    }
+
+    /* =========================
+       7. FORMULIR
+       ========================= */
+    if (/<form\b[^>]*>[\s\S]*<\/form>/i.test(code)) {
+        feedback.push({ ok: true, msg: "✔ Formulir (<code>&lt;form&gt;</code>) ditemukan." });
+
+        const inputCount = (code.match(/<input\b[^>]*>/gi) || []).length;
+        const labelCount = (code.match(/<label\b[^>]*>/gi) || []).length;
+
+        if (inputCount >= 3) {
+            feedback.push({ ok: true, msg: `✔ Input form cukup (${inputCount} input).` });
+        } else {
+            feedback.push({ ok: false, msg: "❌ Form harus memiliki minimal <b>3 input</b>." });
+        }
+
+        if (labelCount >= inputCount) {
+            feedback.push({ ok: true, msg: "✔ Setiap input memiliki <code>&lt;label&gt;</code>." });
+        } else {
+            feedback.push({ ok: false, msg: "❌ Setiap input harus memiliki <code>&lt;label&gt;</code>." });
+        }
+
+        if (/<button\b[^>]*type\s*=\s*["']?submit["']?|<input\b[^>]*type\s*=\s*["']?submit["']?/i.test(code)) {
+            feedback.push({ ok: true, msg: "✔ Tombol submit ditemukan." });
+        } else {
+            feedback.push({ ok: false, msg: "❌ Form belum memiliki tombol submit." });
+        }
+
+    } else {
+        feedback.push({ ok: false, msg: "❌ Formulir belum ada. Tambahkan <code>&lt;form&gt;</code>." });
     }
 
     return feedback;
@@ -241,53 +410,36 @@ document.getElementById("submitBtn").addEventListener('click', function(e){
   .then(res => res.json())
   .then(data => {
       if (data.success) {
-          window.submissionId = data.submission_id;
-          document.getElementById("uploadBox").style.display = "block";
-
           // Setelah submit HTML → cek lagi status
           setTimeout(() => reloadSubmissionStatus(), 600);
       }
   });
 });
 
-/* ---------- Auto-inject submission ID ---------- */
-setInterval(() => {
-    if (window.submissionId) {
-        document.getElementById("submissionIdInput").value = window.submissionId;
-    }
-}, 300);
-
-/* =======================================================
-   === AUTO RELOAD STATUS SETELAH UPLOAD GAMBAR (FINAL) ===
-   ======================================================= */
-const uploadForm = document.getElementById("UploadForm");
-
-if (uploadForm) {
-    uploadForm.addEventListener("submit", function () {
-
-        // Kunci tombol kirim agar tidak double klik
-        const btn = uploadForm.querySelector("button");
-        if (btn) btn.disabled = true;
-
-        // Tunggu proses upload gambar selesai (shared hosting butuh delay)
-        setTimeout(() => {
-
-            // Refresh status badge
-            reloadSubmissionStatus();
-
-            // Sembunyikan box upload setelah berhasil
-            const box = document.getElementById("uploadBox");
-            if (box) box.style.display = "none";
-
-        }, 1200); // 1.2 detik aman untuk server lambat
-    });
-}
-
 /* ---------- Run Preview ---------- */
 document.getElementById("runBtn").addEventListener('click', function() {
   if (editorLocked) return;
+
   files["index.html"] = editor.getValue();
-  const output = `<!doctype html><html><body>${files["index.html"]}</body></html>`;
+
+  const output = `
+    <!doctype html>
+    <html>
+    <head>
+        <base href="about:srcdoc">
+        <style>
+        body {
+            background: #ffffff;
+            margin: 16px;
+            font-family: system-ui, sans-serif;
+        }
+        </style>
+    </head>
+    <body>
+        ${files["index.html"]}
+    </body>
+    </html>`;
+
   document.getElementById("preview").srcdoc = output;
   document.getElementById("output").style.display = "flex";
 });
@@ -298,6 +450,39 @@ document.getElementById("clearBtn").addEventListener('click', function() {
   editor.setValue("");
   document.getElementById("preview").srcdoc = "";
   document.getElementById("output").style.display = "none";
+});
+
+/* ===== PREVIEW ZOOM & FULLSCREEN ===== */
+let scale = 1;
+const preview = document.getElementById("preview");
+
+/* Zoom In */
+document.getElementById("zoomInBtn").addEventListener("click", () => {
+  scale += 0.1;
+  preview.style.transform = `scale(${scale})`;
+});
+
+/* Zoom Out */
+document.getElementById("zoomOutBtn").addEventListener("click", () => {
+  scale = Math.max(0.3, scale - 0.1);
+  preview.style.transform = `scale(${scale})`;
+});
+
+/* Reset Zoom */
+document.getElementById("fitBtn").addEventListener("click", () => {
+  scale = 1;
+  preview.style.transform = "scale(1)";
+});
+
+/* Fullscreen Preview */
+document.getElementById("fsBtn").addEventListener("click", () => {
+  if (preview.requestFullscreen) {
+    preview.requestFullscreen();
+  } else if (preview.webkitRequestFullscreen) {
+    preview.webkitRequestFullscreen();
+  } else if (preview.msRequestFullscreen) {
+    preview.msRequestFullscreen();
+  }
 });
 </script>
 

@@ -10,6 +10,7 @@ class KuisResult extends Model
 
     protected $fillable = [
         'pengguna_id',
+        'posttest',
         'score',
     ];
 }

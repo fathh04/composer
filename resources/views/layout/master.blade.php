@@ -13,10 +13,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url('css/style.css') }}">
     @stack('styles')
-
+    @yield('styles')
     <style>
     /* ===== LOCKED STYLE (TANPA content) ===== */
     .locked {
@@ -106,7 +107,7 @@
                            {{ $isVisual ? '' : 'locked' }}"
                     type="button"
                     {{ $isVisual ? 'data-bs-toggle=dropdown' : '' }}>
-                <img src="{{ url('img/profile.jpg') }}"
+                <img src="{{ url('https://cdn-icons-png.flaticon.com/512/817/817757.png') }}"
                      class="rounded-circle me-2"
                      style="width:32px;height:32px">
                 <span class="fw-semibold d-none d-sm-inline">

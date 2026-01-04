@@ -16,6 +16,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url('css/style.css') }}">
     @stack('styles')
+    @yield('styles')
 
     <style>
     /* ===== LOCKED STYLE ===== */
@@ -108,7 +109,7 @@
                            {{ $isKinestetik ? '' : 'locked' }}"
                     type="button"
                     {{ $isKinestetik ? 'data-bs-toggle=dropdown' : '' }}>
-                <img src="{{ url('img/profile.jpg') }}"
+                <img src="{{ url('https://cdn-icons-png.flaticon.com/512/817/817776.png') }}"
                      class="rounded-circle me-2"
                      style="width:32px;height:32px;object-fit:cover">
                 <span class="fw-semibold d-none d-sm-inline">

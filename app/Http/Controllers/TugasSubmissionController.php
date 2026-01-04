@@ -46,34 +46,6 @@ class TugasSubmissionController extends Controller
     }
 
     // ============================================================
-    // UPLOAD SCREENSHOT
-    // ============================================================
-    public function uploadScreenshot(Request $request)
-    {
-        $request->validate([
-            'submission_id' => 'required|exists:tugas_submissions,id',
-            'image' => 'required|image|max:2048'
-        ]);
-
-        $submission = TugasSubmission::findOrFail($request->submission_id);
-
-        $path = public_path('uploads/screenshots');
-        if (!file_exists($path)) {
-            mkdir($path, 0777, true);
-        }
-
-        $file = $request->file('image');
-        $filename = time() . "-" . $file->getClientOriginalName();
-        $file->move($path, $filename);
-
-        $submission->update([
-            'screenshot' => $filename
-        ]);
-
-        return back()->with('success', 'Tugas berhasil dikumpulkan!');
-    }
-
-    // ============================================================
     // UPLOAD TUGAS PDF (TOMBOL UPLOAD TUGAS)
     // ============================================================
     public function uploadPdf(Request $request, $materi_id)
@@ -156,8 +128,15 @@ class TugasSubmissionController extends Controller
             ->first();
 
         $kuis = KuisResult::where('pengguna_id', $id)
-            ->latest()
-            ->first();
+            ->orderBy('posttest')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return ["posttest_{$item->posttest}" => $item->score];
+            });
+
+        $rataRata = $kuis->count() > 0
+            ? round($kuis->avg())
+            : null;
 
         $kelas = \App\Models\pengguna::find($id)->kelas()->first();
 
@@ -171,15 +150,16 @@ class TugasSubmissionController extends Controller
 
             'html_code' => $submission ? $submission->html_code : 'Belum ada submission.',
 
-            'screenshot' => $submission
-                ? asset('uploads/screenshots/' . $submission->screenshot)
-                : null,
-
             'pdf_file' => $submission && $submission->pdf_file
                 ? asset('storage/' . $submission->pdf_file)
                 : null,
 
-            'quiz_score' => $kuis ? $kuis->score : '-',
+            'quiz' => [
+                'posttest_1' => $kuis['posttest_1'] ?? null,
+                'posttest_2' => $kuis['posttest_2'] ?? null,
+                'posttest_3' => $kuis['posttest_3'] ?? null,
+                'rata_rata'  => $rataRata
+            ],
             'kelas' => $kelas ? $kelas->namaKelas : '-',
 
             'feedback' => $feedback->feedback ?? ""

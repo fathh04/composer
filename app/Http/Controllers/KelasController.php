@@ -23,11 +23,24 @@ class KelasController extends Controller
                 $user = Auth::user();
 
                 /* ============================================
+                *  HASIL POSTTEST SISWA (PER POSTTEST)
+                * ============================================ */
+                $hasilPosttest = KuisResult::where('pengguna_id', $user->id)
+                    ->pluck('score', 'posttest'); // [1 => 80, 2 => 100]
+
+                view()->share('hasilPosttest', $hasilPosttest);
+
+                /* ============================================
                 *  STATUS PROGRES BELAJAR SISWA
                 * ============================================ */
                 // ✅ CEK KUIS SELESAI
-                $kuisSelesai = KuisResult::where('pengguna_id', Auth::id())
-                    ->exists();
+                $totalPosttest = 3;
+
+                $jumlahPosttestSelesai = KuisResult::where('pengguna_id', Auth::id())
+                    ->distinct('posttest')
+                    ->count('posttest');
+
+                $kuisSelesai = $jumlahPosttestSelesai >= $totalPosttest;
 
                 // ✅ CEK LIVE CODE SELESAI
                 $livecodeSelesai = TugasSubmission::where('pengguna_id', Auth::id())
@@ -83,6 +96,19 @@ class KelasController extends Controller
                 }
 
                 view()->share('jumlahKelasGuru', $jumlahKelasGuru);
+                /* ============================================
+                *  TOTAL SISWA DARI SEMUA KELAS GURU
+                * ============================================ */
+                $totalSiswa = 0;
+
+                if (isset($user->role) && strtolower($user->role) === 'guru') {
+                    $totalSiswa = Kelas::where('pengguna_id', $user->id)
+                        ->withCount('pengguna')
+                        ->get()
+                        ->sum('pengguna_count');
+                }
+
+                view()->share('totalSiswa', $totalSiswa);
             }
             else {
                 // jika belum login
@@ -98,17 +124,36 @@ class KelasController extends Controller
 
     public function index()
     {
-        $kelas = Kelas::all();
-        return view('guru.kelasGuru', compact('kelas'));
+        $kelas = Kelas::where('pengguna_id', Auth::id())
+            ->with(['pengguna'])
+            ->withCount('pengguna')
+            ->get();
+
+        $jumlahKelasGuru = $kelas->count();
+
+        // ✅ TOTAL SISWA DARI SEMUA KELAS
+        $totalSiswa = $kelas->sum('pengguna_count');
+
+        return view('guru.kelasGuru', compact(
+            'kelas',
+            'jumlahKelasGuru',
+            'totalSiswa'
+        ));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'idkelas' => 'required|unique:kelas,idkelas',
+            'idkelas'   => 'required|unique:kelas,idkelas',
             'namakelas' => 'required',
             'pelajaran' => 'required',
-            'pengampu' => 'required',
+            'pengampu'  => 'required',
+        ], [
+            'idkelas.required' => 'ID Kelas wajib diisi.',
+            'idkelas.unique'   => 'ID Kelas sudah digunakan, silakan gunakan ID lain.',
+            'namakelas.required' => 'Nama kelas wajib diisi.',
+            'pelajaran.required' => 'Pelajaran wajib diisi.',
+            'pengampu.required' => 'Pengampu wajib diisi.',
         ]);
 
         Kelas::create([
@@ -119,7 +164,10 @@ class KelasController extends Controller
             'pengguna_id' => Auth::id(),
         ]);
 
-        return redirect()->route('kelasGuru')->with('success', 'Kelas berhasil dibuat');
+        return redirect()->route('kelasGuru')->with([
+            'success' => 'Kelas berhasil dibuat',
+            'success_type' => 'create'
+        ]);
     }
 
     public function update(Request $request, $id)
@@ -130,7 +178,9 @@ class KelasController extends Controller
             'pengampu' => 'required',
         ]);
 
-        $kelas = Kelas::findOrFail($id);
+        $kelas = Kelas::where('id', $id)
+            ->where('pengguna_id', Auth::id())
+            ->firstOrFail();
 
         $kelas->update([
             'namaKelas' => $request->namakelas,
@@ -138,27 +188,54 @@ class KelasController extends Controller
             'pengampu' => $request->pengampu,
         ]);
 
-        return redirect()->route('kelasGuru')->with('success', 'Kelas berhasil diperbarui');
+        return redirect()->route('kelasGuru')->with([
+            'success' => 'Kelas berhasil diperbarui',
+            'success_type' => 'update'
+        ]);
     }
 
     public function destroy($id)
     {
-        $kelas = Kelas::findOrFail($id);
+        $kelas = Kelas::where('id', $id)
+            ->where('pengguna_id', Auth::id())
+            ->firstOrFail();
         $kelas->delete();
 
-        return redirect()->route('kelasGuru')->with('success', 'Kelas berhasil dihapus');
+        return redirect()->route('kelasGuru')->with([
+            'success' => 'Kelas berhasil dihapus',
+            'success_type' => 'delete'
+        ]);
     }
 
     // ======================================================
     //          PEMBELAJARAN SISWA UNTUK GURU
     // ======================================================
-    public function pembelajaranSiswa()
+    public function pembelajaranSiswa($id)
     {
-        $visual     = pengguna::where('gaya_belajar', 'Visual')->get();
-        $auditori   = pengguna::where('gaya_belajar', 'Auditori')->get();
-        $kinestetik = pengguna::where('gaya_belajar', 'Kinestetik')->get();
+        // 🔒 pastikan kelas milik guru
+        $kelas = Kelas::where('id', $id)
+            ->where('pengguna_id', Auth::id())
+            ->firstOrFail();
 
-        return view('guru.tabsKelas.feed', compact('visual', 'auditori', 'kinestetik'));
+        // ✅ AMBIL SISWA YANG TERDAFTAR DI KELAS INI SAJA
+        $visual = $kelas->pengguna()
+            ->where('gaya_belajar', 'Visual')
+            ->get();
+
+        $auditori = $kelas->pengguna()
+            ->where('gaya_belajar', 'Auditori')
+            ->get();
+
+        $kinestetik = $kelas->pengguna()
+            ->where('gaya_belajar', 'Kinestetik')
+            ->get();
+
+        return view('guru.tabsKelas.feed', compact(
+            'kelas',
+            'visual',
+            'auditori',
+            'kinestetik'
+        ));
     }
 
     // ======================================================
@@ -168,6 +245,9 @@ class KelasController extends Controller
     {
         $request->validate([
             'idkelas' => 'required|exists:kelas,idkelas',
+        ], [
+            'idkelas.required' => 'ID Kelas wajib diisi.',
+            'idkelas.exists'   => 'ID Kelas tidak ditemukan.',
         ]);
 
         $kelas = Kelas::where('idkelas', $request->idkelas)->firstOrFail();
@@ -181,9 +261,9 @@ class KelasController extends Controller
         $style = strtolower(Auth::user()->gaya_belajar ?? '');
 
         return match ($style) {
-            'visual'    => redirect()->route('beranda')->with('success', 'Kelas berhasil ditambahkan.'),
-            'auditori'  => redirect()->route('berandaAuditori')->with('success', 'Kelas berhasil ditambahkan.'),
-            'kinestetik'=> redirect()->route('berandaKinestetik')->with('success', 'Kelas berhasil ditambahkan.'),
+            'visual'    => redirect()->route('kelas')->with('success', 'Kelas berhasil ditambahkan.'),
+            'auditori'  => redirect()->route('kelasAuditori')->with('success', 'Kelas berhasil ditambahkan.'),
+            'kinestetik'=> redirect()->route('kelasKinestetik')->with('success', 'Kelas berhasil ditambahkan.'),
             default     => redirect()->route('kelas')->with('success', 'Kelas berhasil ditambahkan.'),
         };
     }
@@ -209,21 +289,33 @@ class KelasController extends Controller
 
     public function masukKelas($id)
     {
-        $kelas = Kelas::findOrFail($id);
+        $kelas = Kelas::where('id', $id)
+            ->where('pengguna_id', Auth::id())
+            ->firstOrFail();
+
         $materi = Materi::where('idkelas', $id)->get();
 
         $tugas = TugasGuru::whereHas('materi', function($q) use ($id) {
             $q->where('idkelas', $id);
         })->with('pengguna', 'materi')->get();
 
-        $visual     = pengguna::where('gaya_belajar', 'Visual')->get();
-        $auditori   = pengguna::where('gaya_belajar', 'Auditori')->get();
-        $kinestetik = pengguna::where('gaya_belajar', 'Kinestetik')->get();
+        // ✅ AMBIL SISWA YANG TERDAFTAR DI KELAS INI SAJA
+        $visual = $kelas->pengguna()
+            ->where('gaya_belajar', 'Visual')
+            ->get();
+
+        $auditori = $kelas->pengguna()
+            ->where('gaya_belajar', 'Auditori')
+            ->get();
+
+        $kinestetik = $kelas->pengguna()
+            ->where('gaya_belajar', 'Kinestetik')
+            ->get();
 
         $leaderboard = [
-            'visual'     => $this->getLeaderboardByStyle('Visual'),
-            'auditori'   => $this->getLeaderboardByStyle('Auditori'),
-            'kinestetik' => $this->getLeaderboardByStyle('Kinestetik'),
+            'visual'     => $this->getLeaderboardByStyle($kelas, 'Visual'),
+            'auditori'   => $this->getLeaderboardByStyle($kelas, 'Auditori'),
+            'kinestetik' => $this->getLeaderboardByStyle($kelas, 'Kinestetik'),
         ];
 
         return view('guru.isiKelasGuru', compact(
@@ -247,9 +339,9 @@ class KelasController extends Controller
         $score = $cek->score ?? null;
 
         $leaderboard = [
-            'visual'     => $this->getLeaderboardByStyle('Visual'),
-            'auditori'   => $this->getLeaderboardByStyle('Auditori'),
-            'kinestetik' => $this->getLeaderboardByStyle('Kinestetik'),
+            'visual'     => $this->getLeaderboardByStyle($kelas, 'Visual'),
+            'auditori'   => $this->getLeaderboardByStyle($kelas, 'Auditori'),
+            'kinestetik' => $this->getLeaderboardByStyle($kelas, 'Kinestetik'),
         ];
 
         $style = strtolower(Auth::user()->gaya_belajar ?? '');
@@ -279,21 +371,23 @@ class KelasController extends Controller
     }
 
     // === LEADERBOARD ===
-    public function leaderboard()
+    public function leaderboard($id)
     {
+        $kelas = Kelas::findOrFail($id);
+
         $leaderboard = [
-            'visual' => $this->getLeaderboardByStyle('Visual'),
-            'auditori' => $this->getLeaderboardByStyle('Auditori'),
-            'kinestetik' => $this->getLeaderboardByStyle('Kinestetik')
+            'visual'     => $this->getLeaderboardByStyle($kelas, 'Visual'),
+            'auditori'   => $this->getLeaderboardByStyle($kelas, 'Auditori'),
+            'kinestetik' => $this->getLeaderboardByStyle($kelas, 'Kinestetik'),
         ];
 
-        return view('guru.tabsKelas.leaderboard', compact('leaderboard'));
+        return view('guru.tabsKelas.leaderboard', compact('leaderboard', 'kelas'));
     }
 
     public function leaderboardVisual()
     {
         $leaderboard = [
-            'visual'     => $this->getLeaderboardByStyle('Visual'),
+            'visual'     => $this->getLeaderboardByStyle($kelas, 'Visual'),
         ];
 
         return view('siswa.tabsKelas.leaderboard', compact('leaderboard'));
@@ -302,7 +396,7 @@ class KelasController extends Controller
     public function leaderboardKinestetik()
     {
         $leaderboard = [
-            'kinestetik'     => $this->getLeaderboardByStyle('Kinestetik'),
+            'kinestetik'     => $this->getLeaderboardByStyle($kelas, 'Kinestetik'),
         ];
 
         return view('kinestetik.tabsKelas.leaderboard', compact('leaderboard'));
@@ -311,7 +405,7 @@ class KelasController extends Controller
     public function leaderboardAuditori()
     {
         $leaderboard = [
-            'auditori'     => $this->getLeaderboardByStyle('Auditori'),
+            'auditori'     => $this->getLeaderboardByStyle($kelas, 'Auditori'),
         ];
 
         return view('auditori.tabsKelas.leaderboard', compact('leaderboard'));
@@ -320,19 +414,26 @@ class KelasController extends Controller
     /**
      * Helper: dapatkan leaderboard untuk satu gaya
      */
-    private function getLeaderboardByStyle(string $style)
+    private function getLeaderboardByStyle(Kelas $kelas, string $style)
     {
-        $users = pengguna::where('gaya_belajar', $style)->get();
+        $users = $kelas->pengguna()
+            ->where('gaya_belajar', $style)
+            ->get();
 
-        $rows = $users->map(function($user) {
-            $kuis = KuisResult::where('pengguna_id', $user->id)->latest()->first();
+        $rows = $users->map(function ($user) {
+
+            $avgScore = KuisResult::where('pengguna_id', $user->id)->avg('score');
+            $avgScore = $avgScore ? round($avgScore) : 0;
+
             return [
                 'id'    => $user->id,
                 'name'  => $user->nama,
-                'score' => $kuis ? (int)$kuis->score : 0,
+                'score' => $avgScore,
                 'avatar'=> $user->avatar ?? null,
             ];
-        })->sortByDesc('score')->values();
+        })
+        ->sortByDesc('score')
+        ->values();
 
         return $rows;
     }
@@ -344,9 +445,9 @@ class KelasController extends Controller
     private function getLeaderboard()
     {
         return [
-            'visual'     => $this->getLeaderboardByStyle('Visual'),
-            'auditori'   => $this->getLeaderboardByStyle('Auditori'),
-            'kinestetik' => $this->getLeaderboardByStyle('Kinestetik'),
+            'visual'     => $this->getLeaderboardByStyle($kelas, 'Visual'),
+            'auditori'   => $this->getLeaderboardByStyle($kelas, 'Auditori'),
+            'kinestetik' => $this->getLeaderboardByStyle($kelas, 'Kinestetik'),
         ];
     }
 
@@ -380,9 +481,9 @@ class KelasController extends Controller
         $score = $cek->score ?? null;
 
         $leaderboard = [
-            'visual'     => $this->getLeaderboardByStyle('Visual'),
-            'auditori'   => $this->getLeaderboardByStyle('Auditori'),
-            'kinestetik' => $this->getLeaderboardByStyle('Kinestetik'),
+            'visual'     => $this->getLeaderboardByStyle($kelas, 'Visual'),
+            'auditori'   => $this->getLeaderboardByStyle($kelas, 'Auditori'),
+            'kinestetik' => $this->getLeaderboardByStyle($kelas, 'Kinestetik'),
         ];
 
         return match ($style) {
@@ -397,5 +498,18 @@ class KelasController extends Controller
 
             default => abort(404)
         };
+    }
+
+    public function keluarkanSiswa($kelasId, $siswaId)
+    {
+        // 🔒 Pastikan kelas milik guru yang login
+        $kelas = Kelas::where('id', $kelasId)
+            ->where('pengguna_id', Auth::id())
+            ->firstOrFail();
+
+        // 🔥 Detach siswa dari kelas
+        $kelas->pengguna()->detach($siswaId);
+
+        return back()->with('success', 'Siswa berhasil dikeluarkan dari kelas.');
     }
 }

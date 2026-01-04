@@ -138,4 +138,27 @@ class AuthController extends Controller
 
         return view('kinestetik.profile', compact('user'));
     }
+    public function profileGuru()
+    {
+        $user = Auth::user();
+
+        return view('guru.profile', compact('user'));
+    }
+    public function destroyAccount(Request $request)
+    {
+        $user = Auth::user();
+
+        // Logout dulu
+        Auth::logout();
+
+        // Hapus akun
+        $user->delete();
+
+        // Hapus session
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')
+            ->with('success', 'Akun berhasil dihapus.');
+    }
 }

@@ -49,6 +49,10 @@ class DashboardController extends Controller
     {
         return view('guru.kelasGuru');
     }
+    public function profileGuru()
+    {
+        return view('guru.profile');
+    }
 
     // Petunjuk
     public function petunjukSiswa()

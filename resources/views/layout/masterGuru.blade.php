@@ -15,6 +15,8 @@
 
     <!-- Custom CSS (SAMA DENGAN LAYOUT SISWA) -->
     <link rel="stylesheet" href="{{ url('css/style.css') }}">
+    @stack('styles')
+    @yield('styles')
 </head>
 <body>
 
@@ -75,7 +77,7 @@
 
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2 rounded-3">
                     <li>
-                        <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                        <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('profileGuru') }}">
                             <i class="bi bi-person-circle text-primary"></i> Profile
                         </a>
                     </li>

@@ -29,46 +29,65 @@
         transition: all 0.25s ease;
     }
 
+    /* ===== ACTIVE 3D HALUS ===== */
+    .learning-active {
+        background: linear-gradient(135deg, #dbe7ff, #eef4ff); /* WARNA ASLI */
+        border-color: #bcd4ff;
+
+        transform: translateY(-4px);
+
+        /* Shadow ringan & bersih */
+        box-shadow:
+            0 8px 18px rgba(0,0,0,0.12),
+            inset 0 1px 0 rgba(255,255,255,0.8);
+
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Bayangan bawah tipis */
+    .learning-active::after {
+        content: "";
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: -6px;
+        height: 8px;
+        background: rgba(0,0,0,0.18);
+        filter: blur(8px);
+        border-radius: 50%;
+        z-index: -1;
+    }
+
+    /* Hover tetap natural */
     .learning-box:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.12);
     }
 
-    .learning-box .icon {
-        font-size: 1.8rem;
-        margin-bottom: 6px;
-    }
-
-    /* Aktif */
-    .learning-active {
-        background: linear-gradient(135deg, #dbe7ff, #eef4ff);
-        border-color: #bcd4ff;
-    }
-
-    /* Terkunci */
     .learning-locked {
         opacity: 0.6;
     }
 
     /* ======= RECOMMENDED MATERIAL CARD ======= */
-.recommended-card {
-    transition: 0.25s ease;
-    background: #ffffff;
-}
+    .recommended-card {
+        transition: 0.25s ease;
+        background: #ffffff;
+    }
 
-.recommended-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 22px rgba(0,0,0,0.12);
-}
+    .recommended-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+    }
 
-.icon-box {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-/* Card Materi */
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    /* Card Materi */
     .card-materi {
         transition: all 0.3s ease;
     }
@@ -117,53 +136,194 @@
         transform: translateY(-4px);
         box-shadow: 0 10px 25px rgba(0,0,0,0.12);
     }
+
+    /* ================= HERO HEADER ================= */
+    .hero-header{
+        background: linear-gradient(135deg,#e8f0ff,#f8faff);
+        border-radius: 20px;
+        padding: 28px 30px;
+        box-shadow: 0 10px 26px rgba(0,0,0,.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* decorative blur */
+    .hero-header::after{
+        content:"";
+        position:absolute;
+        width:220px;
+        height:220px;
+        background: radial-gradient(circle,#4f46e5 0%,transparent 70%);
+        top:-80px;
+        right:-80px;
+        opacity:.18;
+    }
+
+    .hero-title{
+        font-size: 1.35rem;
+        font-weight: 800;
+        color:#1e3a8a;
+    }
+
+    .hero-title span{
+        background: linear-gradient(90deg,#2563eb,#4f46e5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle{
+        color:#64748b;
+        font-size:.95rem;
+    }
+
+    .hero-divider{
+        height:3px;
+        width:50px;
+        background:linear-gradient(90deg,#2563eb,#4f46e5);
+        border-radius:10px;
+        margin-top:12px;
+    }
+
+    /* ================= LEARNING PANEL ================= */
+    .learning-panel-header{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:14px;
+    }
+
+    .learning-title{
+        font-size:1.1rem;
+        font-weight:800;
+        color:#1e3a8a;
+    }
+
+    .ai-badge{
+        background: linear-gradient(135deg,#6366f1,#2563eb);
+        color:#fff;
+        padding:6px 14px;
+        border-radius:20px;
+        font-size:12px;
+        font-weight:600;
+        box-shadow:0 6px 14px rgba(99,102,241,.35);
+        display:flex;
+        align-items:center;
+        gap:6px;
+    }
+
+    .ai-badge::before{
+        content:"🤖";
+    }
+
+    /* subtitle */
+    .learning-desc{
+        background:#f1f5ff;
+        border-left:4px solid #2563eb;
+        padding:10px 14px;
+        border-radius:10px;
+        font-size:.9rem;
+        color:#475569;
+        margin-bottom:22px;
+    }
+
+    /* ================= LEARNING BOX ENHANCEMENT ================= */
+    .learning-box .icon{
+        font-size:1.8rem;
+        margin-bottom:6px;
+    }
+
+    .learning-active .icon{
+        animation:pulse 1.8s infinite;
+    }
+
+    @keyframes pulse{
+        0%{transform:scale(1)}
+        50%{transform:scale(1.08)}
+        100%{transform:scale(1)}
+    }
+
+    .learning-locked{
+        position: relative;
+    }
+
+    .learning-locked::after{
+        content: "\F47A"; /* bi-lock-fill */
+        font-family: "Bootstrap-icons";
+        position: absolute;
+        top: 6px;
+        right: 8px;
+
+        font-size: 15px;
+        color: #1e3a8a; /* biru tua elegan */
+        opacity: 0.9;
+
+        background: #e8f0ff;
+        padding: 4px 6px;
+        border-radius: 8px;
+
+        box-shadow: 0 4px 10px rgba(30,58,138,.25);
+    }
 </style>
 
 <div class="container py-4">
 
-    <h1 class="h4 fw-bold mb-1">Selamat Datang, {{ session('user_name') }}</h1>
-    <p class="text-muted mb-4">Ini adalah dashboard utama media pembelajaran Anda.</p>
+    <div class="hero-header mb-4">
 
-    <!-- ======= PANEL GAYA BELAJAR ======= -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+            <div>
+                <div class="hero-title mb-1">
+                    👋 Selamat Datang, <span>{{ session('user_name') }}</span>
+                </div>
+
+                <div class="hero-subtitle">
+                    Dashboard utama Anda
+                </div>
+
+                <div class="hero-divider"></div>
+            </div>
+        </div>
+
+    </div>
+
     <div class="card-panel mb-4">
         <div class="card-body p-4">
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0">Gaya Belajar Anda</h5>
+            <!-- HEADER -->
+            <div class="learning-panel-header">
+                <div class="learning-title">
+                    🎯 Gaya Belajar Anda
+                </div>
 
-                <span class="badge px-3 py-2"
-                    style="background: linear-gradient(135deg,#2563eb,#4f46e5); color:white; box-shadow:0 3px 8px rgba(37,99,235,0.3); border-radius:12px;">
-                    Artificial Intelligence
-                </span>
+                <div class="ai-badge">
+                    AI Prediction
+                </div>
             </div>
 
-            <p class="text-muted mb-4">
+            <!-- DESC -->
+            <div class="learning-desc">
                 Sistem telah memprediksi gaya belajar Anda, Selamat Belajar...
-            </p>
+            </div>
 
+            <!-- BOX -->
             <div class="d-flex flex-wrap justify-content-center gap-3">
 
-                <!-- VISUAL -->
                 <div class="learning-box learning-locked">
                     <div class="icon">🎨</div>
                     <div class="fw-bold text-primary">Visual</div>
                     <small class="text-muted">Terkunci</small>
                 </div>
 
-                <!-- AUDITORI -->
-                <div class="learning-box learning-locked"
-                     style="background:linear-gradient(135deg,#f3eaff,#ebe2ff); border-color:#d9caff;">
+                <div class="learning-box learning-locked">
                     <div class="icon">🎧</div>
-                    <div class="fw-bold" style="color:#6f42c1;">Auditori</div>
+                    <div class="fw-bold text-secondary">Auditori</div>
                     <small class="text-muted">Terkunci</small>
                 </div>
 
-                <!-- KINESTETIK -->
-                <div class="learning-box learning-active"
-                     style="background:linear-gradient(135deg,#e7fff7,#dffcf4); border-color:#b5f0e3;">
+                <div class="learning-box learning-active">
                     <div class="icon">🏃‍♂️</div>
-                    <div class="fw-bold" style="color:#0f766e;">Kinestetik</div>
-                    <small class="text-muted">(Aktif)</small>
+                    <div class="fw-bold text-success">Kinestetik</div>
+                    <small class="text-muted">aktif</small>
                 </div>
 
             </div>

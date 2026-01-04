@@ -35,6 +35,7 @@ Route::post('/signup', [AuthController::class, 'register'])->name('prosesdaftar'
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/profileGuru', [DashboardController::class, 'ProfileGuru'])->name('profileGuru');
 Route::get('/berandaGuru', [DashboardController::class, 'guru'])->name('guru.index');
 Route::post('/materi/store', [MateriController::class, 'store'])->name('materi.store');
 Route::post('/kuis/store', [KuisController::class, 'store'])->name('kuis.store');
@@ -110,8 +111,8 @@ Route::get('/isiKelasGuru', function () {
     return view('guru.isiKelasGuru');
 });
 Route::get('/guru/submission/{id}', [TugasSubmissionController::class, 'getSubmission']);
-Route::get('/pembelajaran-siswa', [KelasController::class, 'pembelajaranSiswa'])
-    ->name('pembelajaran.siswa');
+Route::get('/guru/kelas/{id}/pembelajaran', [KelasController::class, 'pembelajaranSiswa'])
+    ->name('guru.pembelajaranSiswa');
 
 Route::post('/siswa/kelas/tambah', [KelasController::class, 'tambahKelasSiswa'])->name('siswa.kelas.tambah');
 Route::delete('/siswa/kelas/{id}/keluar', [KelasController::class, 'keluarKelasSiswa'])->name('siswa.kelas.keluar');
@@ -132,10 +133,15 @@ Route::get('/kelas/{idkelas}/materi', [MateriController::class, 'indexSiswa'])->
 Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
 Route::get('/profileAuditori', [AuthController::class, 'profileAuditori'])->name('profileAuditori');
 Route::get('/profileKinestetik', [AuthController::class, 'profileKinestetik'])->name('profileKinestetik');
+Route::get('/profileGuru', [AuthController::class, 'profileGuru'])->name('profileGuru');
 
 Route::get('/coba', function () {
     return view('coba');
 });
+
+Route::delete('/hapus-akun', [AuthController::class, 'destroyAccount'])
+    ->name('account.destroy')
+    ->middleware('auth');
 
 //Isi Kelas
 Route::get('/jelajah', [KontenController::class, 'jelajah'])->name('jelajah');
@@ -157,13 +163,18 @@ Route::get('/kuis', [KuisController::class, 'halamanKuis'])->name('kuis.halaman'
 
 Route::post('/submission/save', [TugasSubmissionController::class, 'saveHtml'])->name('submission.save');
 Route::post('/submission/upload', [TugasSubmissionController::class, 'uploadScreenshot'])->name('submission.upload');
-Route::get('/leaderboard', [KelasController::class, 'leaderboard'])->name('leaderboard');
+Route::get('/kelas/{id}/leaderboard', [KelasController::class, 'leaderboard'])
+    ->name('leaderboard');
 
 // Route::post('/guru/feedback', [App\Http\Controllers\GuruSubmissionController::class, 'storeFeedback']);
 Route::post('/guru/feedback', [GuruSubmissionController::class, 'storeFeedback'])
      ->name('guru.feedback');
 Route::get('/guru/submission/{id}', [TugasSubmissionController::class, 'getSubmission']);
 Route::get('/guru/kelas/{id}', [KelasController::class, 'masukKelas'])->name('guru.masukKelas');
+Route::delete(
+    '/guru/kelas/{kelas}/siswa/{siswa}',
+    [KelasController::class, 'keluarkanSiswa']
+)->name('guru.kelas.keluarkanSiswa');
 
 Route::get('/leaderboard/visual', [KelasController::class, 'leaderboardVisual'])
      ->name('leaderboard.visual');

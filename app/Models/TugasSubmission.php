@@ -8,8 +8,7 @@ class TugasSubmission extends Model
     protected $table = 'tugas_submissions';
     protected $fillable = [
         'pengguna_id',
-        'html_code',
-        'screenshot'
+        'html_code'
     ];
 
     public function pengguna()

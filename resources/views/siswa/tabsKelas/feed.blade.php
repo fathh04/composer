@@ -51,7 +51,7 @@
   <div class="card-body p-4">
 
     <h4 class="fw-bold mb-3 text-gradient-primary" data-aos="zoom-in">
-      👨‍🏫 Hasil Feedback Guru
+      👨‍🏫 Hasil Feedback Live Code
     </h4>
 
     @if($feedbackGuru->count() > 0)
