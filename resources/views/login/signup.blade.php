@@ -114,6 +114,10 @@
         .child-btn:active {
             transform: scale(0.97);
         }
+
+        .survey-step {
+            display: block;
+        }
     </style>
 </head>
 
@@ -127,9 +131,20 @@
         <form id="signupForm" method="POST" action="{{ route('prosesdaftar') }}">
             @csrf
 
-            <input type="hidden" name="q1" id="q1">
-            <input type="hidden" name="q2" id="q2">
-            <input type="hidden" name="q3" id="q3">
+            <input type="hidden" name="answers[]" id="q1">
+            <input type="hidden" name="answers[]" id="q2">
+            <input type="hidden" name="answers[]" id="q3">
+            <input type="hidden" name="answers[]" id="q4">
+            <input type="hidden" name="answers[]" id="q5">
+            <input type="hidden" name="answers[]" id="q6">
+            <input type="hidden" name="answers[]" id="q7">
+            <input type="hidden" name="answers[]" id="q8">
+            <input type="hidden" name="answers[]" id="q9">
+            <input type="hidden" name="answers[]" id="q10">
+            <input type="hidden" name="answers[]" id="q11">
+            <input type="hidden" name="answers[]" id="q12">
+            <input type="hidden" name="answers[]" id="q13">
+            <input type="hidden" name="answers[]" id="q14">
 
             <div class="mb-3">
                 <label class="form-label">Nama</label>
@@ -192,65 +207,116 @@
             <div class="modal-body text-center p-4">
 
                 <!-- STEP 1 -->
-                <div id="step-1" class="survey-step">
-                    <h5>Aku lebih suka...</h5>
-
-                    <button class="child-btn answer-q1"
-                        data-value="Saya suka melihat gambar atau diagram">
-                        📘 Melihat gambar / diagram
-                    </button>
-
-                    <button class="child-btn answer-q1"
-                        data-value="Saya suka mendengarkan penjelasan">
-                        🎧 Mendengarkan penjelasan
-                    </button>
-
-                    <button class="child-btn answer-q1"
-                        data-value="Saya suka mempraktikkan langsung">
-                        🤸 Praktik langsung
-                    </button>
+                <div class="survey-step" data-step="1">
+                    <h5>Saya sangat suka...</h5>
+                    <button class="child-btn answer-btn" data-q="1" data-value="Saya sangat suka mencatat">Mencatat</button>
+                    <button class="child-btn answer-btn" data-q="1" data-value="Saya sangat suka bercerita">Bercerita</button>
+                    <button class="child-btn answer-btn" data-q="1" data-value="Sangat sangat suka copy paste jawaban langsung">Menjiplak</button>
                 </div>
 
                 <!-- STEP 2 -->
-                <div id="step-2" class="survey-step d-none">
-                    <h5>Aku lebih mudah memahami dari...</h5>
-
-                    <button class="child-btn answer-q2"
-                        data-value="Saya lebih mudah memahami materi berupa video">
-                        🎬 Video / Visual
-                    </button>
-
-                    <button class="child-btn answer-q2"
-                        data-value="Saya memahami lebih cepat saat mendengar audio">
-                        🔊 Audio
-                    </button>
-
-                    <button class="child-btn answer-q2"
-                        data-value="Saya mudah belajar saat melakukan aktivitas fisik">
-                        🏃 Aktivitas Fisik
-                    </button>
+                <div class="survey-step d-none" data-step="2">
+                    <h5>Saya suka membaca dengan...</h5>
+                    <button class="child-btn answer-btn" data-q="2" data-value="Saya suka membaca dengan cepat">Cepat</button>
+                    <button class="child-btn answer-btn" data-q="2" data-value="Saya suka membaca dengan suara keras">Suara Keras</button>
+                    <button class="child-btn answer-btn" data-q="2" data-value="Saya suka membaca dengan jari sebagai penunjuk">Jari Sebagai Penunjuk</button>
                 </div>
 
                 <!-- STEP 3 -->
-                <div id="step-3" class="survey-step d-none">
-                    <h5>Saat belajar aku biasanya...</h5>
-
-                    <button class="child-btn answer-q3"
-                        data-value="Saya sering membuat catatan visual">
-                        📝 Membuat catatan visual
-                    </button>
-
-                    <button class="child-btn answer-q3"
-                        data-value="Saya sering berbicara sendiri saat belajar">
-                        🗣️ Berbicara sendiri
-                    </button>
-
-                    <button class="child-btn answer-q3"
-                        data-value="Saya sulit duduk diam lama">
-                        😣 Sulit duduk diam
-                    </button>
+                <div class="survey-step d-none" data-step="3">
+                    <h5>Saya paling suka belajar dengan...</h5>
+                    <button class="child-btn answer-btn" data-q="3" data-value="Saya paling suka belajar dengan cara membaca">Membaca</button>
+                    <button class="child-btn answer-btn" data-q="3" data-value="Saya paling suka belajar dengan cara mendengarkan">Mendengarkan</button>
+                    <button class="child-btn answer-btn" data-q="3" data-value="Saya paling suka belajar dengan cara gerakan">Bergerak</button>
                 </div>
 
+                <!-- STEP 4 -->
+                <div class="survey-step d-none" data-step="4">
+                    <h5>Saya mudah mengingat dengan apa yang...</h5>
+                    <button class="child-btn answer-btn" data-q="4" data-value="saya mudah mengingat dengan apa yang saya lihat">Saya Lihat</button>
+                    <button class="child-btn answer-btn" data-q="4" data-value="saya mudah mengingat dengan apa yang saya dengar">Saya Dengar</button>
+                    <button class="child-btn answer-btn" data-q="4" data-value="saya mudah mengingat dengan apa yang saya tulis">Saya Tulis</button>
+                </div>
+
+                <!-- STEP 5 -->
+                <div class="survey-step d-none" data-step="5">
+                    <h5>Apabila mencatat, saya...</h5>
+                    <button class="child-btn answer-btn" data-q="5" data-value="Apabila mencatat, saya banyak catatan yang disertai gambar">Banyak catatan disertai gambar</button>
+                    <button class="child-btn answer-btn" data-q="5" data-value="Apabila mencatat, saya sedikit mencatat karena lebih suka mendengarkan">Sedikit mencatat karena lebih suka mendengarkan</button>
+                    <button class="child-btn answer-btn" data-q="5" data-value="Apabila mencatat, saya banyak catatan namun tidak disertai gambar">Banyak catatan namun tidak disertai gambar</button>
+                </div>
+
+                <!-- STEP 6 -->
+                <div class="survey-step d-none" data-step="6">
+                    <h5>Saya menjawab pertanyaan dengan jawaban...</h5>
+                    <button class="child-btn answer-btn" data-q="6" data-value="Saya menjawab pertanyaan dengan jawaban ya atau tidak">Ya atau Tidak</button>
+                    <button class="child-btn answer-btn" data-q="6" data-value="Saya menjawab pertanyaan dengan jawaban panjang lebar karena saya suka bercerita">Panjang lebar (suka bercerita)</button>
+                    <button class="child-btn answer-btn" data-q="6" data-value="Saya menjawab pertanyaan dengan jawaban yang diikuti dengan gerakan anggota tubuh">Diikuti dengan gerakan anggota tubuh</button>
+                </div>
+
+                <!-- STEP 7 -->
+                <div class="survey-step d-none" data-step="7">
+                    <h5>Saat belajar saya...</h5>
+                    <button class="child-btn answer-btn" data-q="7" data-value="Saat belajar saya tidak mudah terganggu dengan keributan">Tidak mudah terganggu dengan keributan</button>
+                    <button class="child-btn answer-btn" data-q="7" data-value="Saat belajar saya mudah terganggu dengan keributan">Mudah terganggu dengan keributan</button>
+                    <button class="child-btn answer-btn" data-q="7" data-value="Saat belajar saya tidak dapat duduk diam dalam waktu lama">Tidak dapat duduk diam dalam waktu lama</button>
+                </div>
+
+                <!-- STEP 8 -->
+                <div class="survey-step d-none" data-step="8">
+                    <h5>Saya mengingat dengan cara...</h5>
+                    <button class="child-btn answer-btn" data-q="8" data-value="Saya mengingat dengan cara membayangkan">Membayangkan</button>
+                    <button class="child-btn answer-btn" data-q="8" data-value="Saya mengingat dengan cara mengucapkan">Mengucapkan</button>
+                    <button class="child-btn answer-btn" data-q="8" data-value="Saya mengingat dengan cara sambil berjalan dan melihat">Sambil berjalan dan melihat</button>
+                </div>
+
+                <!-- STEP 9 -->
+                <div class="survey-step d-none" data-step="9">
+                    <h5>Saya berbicara lebih suka...</h5>
+                    <button class="child-btn answer-btn" data-q="9" data-value="Saya berbicara lebih suka melihat wajah langsung">Melihat wajah langsung</button>
+                    <button class="child-btn answer-btn" data-q="9" data-value="Saya berbicara lebih suka lewat telepon">Lewat telepon</button>
+                    <button class="child-btn answer-btn" data-q="9" data-value="Saya berbicara lebih suka memperhatikan gerakan tubuh">Memperhatikan gerakan tubuh</button>
+                </div>
+
+                <!-- STEP 10 -->
+                <div class="survey-step d-none" data-step="10">
+                    <h5>Ketika berbicara saya...</h5>
+                    <button class="child-btn answer-btn" data-q="10" data-value="Ketika berbicara saya cepat">Cepat</button>
+                    <button class="child-btn answer-btn" data-q="10" data-value="Ketika berbicara saya intonasi/berirama">Intonasi/berirama</button>
+                    <button class="child-btn answer-btn" data-q="10" data-value="Ketika berbicara saya lambat">Lambat</button>
+                </div>
+
+                <!-- STEP 11 -->
+                <div class="survey-step d-none" data-step="11">
+                    <h5>Cara saya belajar bisanya suka...</h5>
+                    <button class="child-btn answer-btn" data-q="11" data-value="Cara saya belajar bisanya suka mengikuti petunjuk gambar">Mengikuti petunjuk gambar</button>
+                    <button class="child-btn answer-btn" data-q="11" data-value="Cara saya belajar bisanya suka sambil berbicara">Sambil berbicara</button>
+                    <button class="child-btn answer-btn" data-q="11" data-value="Cara saya belajar bisanya suka berbicara sambil menulis">Berbicara sambil menulis</button>
+                </div>
+
+                <!-- STEP 12 -->
+                <div class="survey-step d-none" data-step="12">
+                    <h5>Saya sering mengisi waktu luang dengan...</h5>
+                    <button class="child-btn answer-btn" data-q="12" data-value="Saya sering mengisi waktu luang dengan menonton">Menonton</button>
+                    <button class="child-btn answer-btn" data-q="12" data-value="Saya sering mengisi waktu luang dengan mendengarkan musik">Mendengarkan musik</button>
+                    <button class="child-btn answer-btn" data-q="12" data-value="Saya sering mengisi waktu luang dengan bermain game">Bermain game</button>
+                </div>
+
+                <!-- STEP 13 -->
+                <div class="survey-step d-none" data-step="13">
+                    <h5>Saya lebih mudah memahami pelajaran dengan...</h5>
+                    <button class="child-btn answer-btn" data-q="13" data-value="Saya lebih mudah memahami pelajaran dengan melihat peraga">Melihat peraga</button>
+                    <button class="child-btn answer-btn" data-q="13" data-value="Saya lebih mudah memahami pelajaran dengan berdiskusi">Berdiskusi</button>
+                    <button class="child-btn answer-btn" data-q="13" data-value="Saya lebih mudah memahami pelajaran dengan praktik">Praktik</button>
+                </div>
+
+                <!-- STEP 14 -->
+                <div class="survey-step d-none" data-step="14">
+                    <h5>Saya lebih menyukai...</h5>
+                    <button class="child-btn answer-btn" data-q="14" data-value="Saya lebih menyukai gambar">Gambar</button>
+                    <button class="child-btn answer-btn" data-q="14" data-value="Saya lebih menyukai musik">Musik</button>
+                    <button class="child-btn answer-btn" data-q="14" data-value="Saya lebih menyukai permainan">Permainan</button>
+                </div>
             </div>
         </div>
     </div>
@@ -263,70 +329,67 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     @if(session('showModal'))
-        // 🚀 Modal wajib diisi (tidak bisa ditutup)
-        const modal = new bootstrap.Modal(document.getElementById('surveyModal'), {
-            backdrop: 'static',
-            keyboard: false
-        });
+        const modal = new bootstrap.Modal(
+            document.getElementById('surveyModal'),
+            {
+                backdrop: 'static',
+                keyboard: false
+            }
+        );
         modal.show();
     @endif
 
-    // STEP 1
-    document.querySelectorAll(".answer-q1").forEach(btn => {
+    let currentStep = 1;
+    const totalStep = 14;
+
+    document.querySelectorAll(".answer-btn").forEach(btn => {
         btn.addEventListener("click", function () {
-            document.getElementById("q1").value = this.dataset.value;
-            document.getElementById("step-1").classList.add("d-none");
-            document.getElementById("step-2").classList.remove("d-none");
-        });
-    });
 
-    // STEP 2
-    document.querySelectorAll(".answer-q2").forEach(btn => {
-        btn.addEventListener("click", function () {
-            document.getElementById("q2").value = this.dataset.value;
-            document.getElementById("step-2").classList.add("d-none");
-            document.getElementById("step-3").classList.remove("d-none");
-        });
-    });
+            const q = this.dataset.q;
+            const value = this.dataset.value;
 
-    // STEP 3
-    document.querySelectorAll(".answer-q3").forEach(btn => {
-        btn.addEventListener("click", function () {
-            document.getElementById("q3").value = this.dataset.value;
+            document.getElementById(`q${q}`).value = value;
 
-            document.getElementById('signupForm').action = "{{ route('gayaBelajar.prediksi') }}";
+            document
+                .querySelector(`[data-step="${currentStep}"]`)
+                .classList.add("d-none");
 
-            const emailInput = document.querySelector("input[name='email']");
-            const hiddenEmail = document.createElement("input");
-            hiddenEmail.type = "hidden";
-            hiddenEmail.name = "user_email";
-            hiddenEmail.value = emailInput.value;
-            signupForm.appendChild(hiddenEmail);
+            currentStep++;
 
-            const modalElement = document.getElementById('surveyModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalElement);
-            modalInstance.hide();
+            if (currentStep <= totalStep) {
+                document
+                    .querySelector(`[data-step="${currentStep}"]`)
+                    .classList.remove("d-none");
+            } else {
 
-            document.getElementById("signupForm").submit();
+                document.getElementById('signupForm').action =
+                    "{{ route('gayaBelajar.prediksi') }}";
+
+                const emailInput = document.querySelector("input[name='email']");
+                const hiddenEmail = document.createElement("input");
+                hiddenEmail.type = "hidden";
+                hiddenEmail.name = "user_email";
+                hiddenEmail.value = emailInput.value;
+                document.getElementById('signupForm').appendChild(hiddenEmail);
+
+                document.getElementById('signupForm').submit();
+            }
         });
     });
 
     // Loader khusus siswa
-    document.getElementById('signupForm').addEventListener('submit', function (e) {
+    document.getElementById('signupForm').addEventListener('submit', function () {
 
         const role = document.querySelector("select[name='role']").value;
 
-        // Jika guru ➜ tidak pakai loader
-        if (role === "guru") {
-            return; // langsung submit
-        }
+        if (role === "guru") return;
 
-        // Jika siswa ➜ tampilkan loader
         document.getElementById('loader').style.display = 'block';
         const btn = document.getElementById('submitBtn');
         btn.disabled = true;
         btn.innerText = "Memproses...";
     });
+
 });
 </script>
 

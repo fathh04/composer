@@ -14,9 +14,8 @@ class GayaBelajarController extends Controller
     public function prediksi(Request $request)
     {
         $request->validate([
-            'q1' => 'required|string',
-            'q2' => 'required|string',
-            'q3' => 'required|string',
+            'answers' => 'required|array|min:14',
+            'answers.*' => 'required|string',
             'user_email' => 'required|email'
         ]);
 
@@ -31,7 +30,7 @@ class GayaBelajarController extends Controller
         /* ------------------------------------------------------
          * Menggabungkan jawaban user
          * ------------------------------------------------------ */
-        $answers = strtolower(trim($request->q1 . ' ' . $request->q2 . ' ' . $request->q3));
+        $answers = strtolower(implode(' ', $request->answers));
 
         /* ------------------------------------------------------
          * 1) Embedding user
@@ -46,15 +45,22 @@ class GayaBelajarController extends Controller
         }
 
         /* ------------------------------------------------------
-         * 2) Load dataset + embedding dataset
+         * 2) Load dataset + embedding dataset (AKTIFKAN KEMBALI APABILA DATASET SUDAH ADA)
          * ------------------------------------------------------ */
-        $datasetRows = $this->loadDataset();
-        $datasetEmbedding = $this->loadOrCreateDatasetEmbedding($datasetRows);
+        // $datasetRows = $this->loadDataset();
+        // $datasetEmbedding = $this->loadOrCreateDatasetEmbedding($datasetRows);
 
         /* ------------------------------------------------------
-         * 3) Prediksi similarity
+         * 3) Prediksi similarity (AKTIKAN KEMBALI APABILA DATASET SUDAH ADA)
          * ------------------------------------------------------ */
-        $datasetPrediction = $this->predictFromSimilarity($userEmbedding, $datasetEmbedding);
+        // $datasetPrediction = $this->predictFromSimilarity($userEmbedding, $datasetEmbedding);
+
+        /* ------------------------------------------------------
+         * Kode Sementara ketika dataset nonAktif (NonAktifkan KEMBALI APABILA DATASET SUDAH ADA)
+         * ------------------------------------------------------ */
+        $datasetPrediction = count($this->loadDataset()) >= 20
+            ? $this->predictFromSimilarity($userEmbedding, $this->loadOrCreateDatasetEmbedding($this->loadDataset()))
+            : null;
 
         /* ------------------------------------------------------
          * 4) Hard-rule
@@ -66,24 +72,41 @@ class GayaBelajarController extends Controller
          * ------------------------------------------------------ */
         $llm = $this->llmValidation($datasetPrediction, $rulePrediction, $answers);
 
-        if ($llm) {
-            $label = ucfirst(strtolower($llm['label']));
-            if (in_array($label, ['Visual','Auditori','Kinestetik'])) {
-                return $this->finalize($user, $label, $llm['alasan'], $llm['rekomendasi']);
-            }
+        // AKTIFKAN KEMBALI APABILA DATASET SUDAH ADA
+        // if ($llm) {
+        //     $label = ucfirst(strtolower($llm['label']));
+        //     if (in_array($label, ['Visual','Auditori','Kinestetik'])) {
+        //         return $this->finalize($user, $label, $llm['alasan'], $llm['rekomendasi']);
+        //     }
+        // }
+
+        // nonAktifkan ketika dataset sudah ada
+        if ($llm && in_array($llm['label'], ['Visual','Auditori','Kinestetik'])) {
+            return $this->finalize(
+                $user,
+                $llm['label'],
+                $llm['alasan'],
+                $llm['rekomendasi']
+            );
         }
 
         /* ------------------------------------------------------
          * 6) Fallback Akhir
          * ------------------------------------------------------ */
-        if ($datasetPrediction === $rulePrediction) {
-            $label = ucfirst($datasetPrediction);
-        } else {
-            $label = ucfirst($datasetPrediction);
-        }
+        // AKTIFKAN KEMBALI KETIKA DATASET SUDAH ADA
+        // if ($datasetPrediction === $rulePrediction) {
+        //     $label = ucfirst($datasetPrediction);
+        // } else {
+        //     $label = ucfirst($datasetPrediction);
+        // }
 
+        // $detail = $this->getDetail($label);
+
+        // return $this->finalize($user, $label, $detail['alasan'], $detail['rekom']);
+
+        //Nonaktifkan ketika dataset sudah ada
+        $label = ucfirst($rulePrediction);
         $detail = $this->getDetail($label);
-
         return $this->finalize($user, $label, $detail['alasan'], $detail['rekom']);
     }
 
@@ -100,15 +123,15 @@ class GayaBelajarController extends Controller
         $lines = array_map('trim', file($path));
 
         foreach ($lines as $i => $line) {
-            if ($i === 0 && str_contains($line, 'learning_style')) continue;
+            if ($i === 0) continue;
             if ($line === '') continue;
 
             $p = str_getcsv($line);
-            if (count($p) < 4) continue;
+            if (count($p) < 2) continue;
 
             $rows[] = [
                 "label" => strtolower($p[0]),
-                "text"  => strtolower($p[1] . " " . $p[2] . " " . $p[3])
+                "text"  => strtolower($p[1])
             ];
         }
 
@@ -168,7 +191,16 @@ class GayaBelajarController extends Controller
     {
         $v = ['melihat','gambar','diagram','video','warna','catatan','mind map'];
         $a = ['mendengar','audio','diskusi','berbicara','lisan','penjelasan'];
-        $k = ['praktik','gerak','aktivitas','fisik','menyentuh','simulasi','eksperimen'];
+        $k = [
+                'gerak','gerakan','bergerak',
+                'praktik','praktek',
+                'aktivitas','aktif',
+                'fisik','tubuh','anggota tubuh',
+                'menyentuh','sentuh','jari',
+                'berjalan','duduk','diam',
+                'simulasi','eksperimen',
+                'bermain','game','permainan'
+            ];
 
         $score = ['visual'=>0,'auditori'=>0,'kinestetik'=>0];
 
@@ -207,7 +239,7 @@ class GayaBelajarController extends Controller
             Anda adalah model klasifikasi gaya belajar.
             Konteks:
             - Prediksi dataset: $datasetPrediction
-            - Prediksi rule: $rulePrediction
+            - Prediksi rule (utama): $rulePrediction
 
             Jawaban user:
             $answers
