@@ -326,7 +326,7 @@
                 <button
                     class="btn btn-primary mt-2"
                     data-bs-toggle="modal"
-                    data-bs-target="#modalVideoAuditori"
+                    data-bs-target="#modalVideoVisual"
                 >
                     ▶️ Tonton Materi
                 </button>
@@ -334,7 +334,7 @@
 
         </div>
     </div>
-    <div class="modal fade" id="modalVideoAuditori" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalVideoVisual" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content rounded-4 shadow-lg overflow-hidden">
 
@@ -351,12 +351,20 @@
 
                     <div class="ratio ratio-16x9">
                         <video
-                            id="videoAuditori"
+                            id="videoVisual"
+                            class="w-100 rounded-4"
                             controls
                             preload="metadata"
+                            playsinline
+                            controlsList="nodownload"
                         >
+                            <!-- FORMAT UTAMA (PALING AMAN) -->
                             <source src="{{ url('video/visual.mp4') }}" type="video/mp4">
-                            Browser Anda tidak mendukung video.
+
+                            <!-- FALLBACK (UNTUK BROWSER LAMA / FIREFOX LAWAS) -->
+                            <source src="{{ url('video/visual.webm') }}" type="video/webm">
+
+                            Browser Anda tidak mendukung pemutaran video HTML5.
                         </video>
                     </div>
 
@@ -370,3 +378,48 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const modal = document.getElementById('modalVideoVisual');
+    if (!modal) return;
+
+    /* ==============================
+       STOP SEMUA VIDEO DI MODAL
+    ============================== */
+    function stopAllVideos() {
+        modal.querySelectorAll('video').forEach(video => {
+            video.pause();
+            video.currentTime = 0;
+        });
+    }
+
+    /* ==============================
+       MODAL DITUTUP
+    ============================== */
+    modal.addEventListener('hidden.bs.modal', stopAllVideos);
+
+    /* ==============================
+       PINDAH TAB (JIKA ADA TAB)
+    ============================== */
+    document.querySelectorAll('[data-bs-toggle="pill"], [data-bs-toggle="tab"]')
+        .forEach(tab => {
+            tab.addEventListener('shown.bs.tab', stopAllVideos);
+        });
+
+    /* ==============================
+       TAB BROWSER TIDAK AKTIF
+    ============================== */
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopAllVideos();
+        }
+    });
+
+});
+</script>
+@endpush
+
+

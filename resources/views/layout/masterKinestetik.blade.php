@@ -76,15 +76,14 @@
     </div>
 
     <div class="menu-item {{ $isKinestetik ? '' : 'locked' }}"
-         @if($isKinestetik) onclick="location.href='{{ route('kelasKinestetik') }}'" @endif>
-        <i class="bi bi-grid"></i><span>Kelas</span>
-    </div>
-
-    <div class="menu-item {{ $isKinestetik ? '' : 'locked' }}"
          @if($isKinestetik) onclick="location.href='{{ route('CPdanTPKinestetik') }}'" @endif>
         <i class="bi bi-check2-circle"></i><span>CP & TP</span>
     </div>
 
+    <div class="menu-item {{ $isKinestetik ? '' : 'locked' }}"
+         @if($isKinestetik) onclick="location.href='{{ route('kelasKinestetik') }}'" @endif>
+        <i class="bi bi-grid"></i><span>Kelas</span>
+    </div>
 </div>
 
 <!-- ================= NAVBAR ================= -->

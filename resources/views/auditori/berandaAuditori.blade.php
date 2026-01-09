@@ -355,7 +355,22 @@
                 </p>
 
                 <!-- AUDIO -->
-                <audio id="audioPemformatan" src="{{ url('audio/direkomendasikan.wav') }}"></audio>
+                <audio
+                    id="audioPemformatan"
+                    preload="metadata"
+                    playsinline
+                >
+                    <!-- FORMAT UTAMA (PALING AMAN) -->
+                    <source src="{{ url('audio/direkomendasikan.mp3') }}" type="audio/mpeg">
+
+                    <!-- FALLBACK -->
+                    <source src="{{ url('audio/direkomendasikan.ogg') }}" type="audio/ogg">
+
+                    <!-- OPSI TERAKHIR -->
+                    <source src="{{ url('audio/direkomendasikan.wav') }}" type="audio/wav">
+
+                    Browser Anda tidak mendukung pemutaran audio HTML5.
+                </audio>
 
                 <!-- BUTTON -->
                 <button

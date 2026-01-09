@@ -218,22 +218,55 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* ===== LIVE OUTPUT ===== */
+    const modal = document.getElementById('modalMateri6');
+    if (!modal) return;
+
     const editor = document.getElementById('editorMateri6');
     const output = document.getElementById('outputMateri6');
 
-    if (editor && output) {
-        const updatePreview = () => output.srcdoc = editor.value;
-        editor.addEventListener('input', updatePreview);
-        updatePreview();
+    /* ==============================
+       LIVE PREVIEW
+    ============================== */
+    function updatePreview() {
+        if (editor && output) {
+            output.srcdoc = editor.value;
+        }
     }
 
-    /* ===== FULLSCREEN (PER MODAL) ===== */
-    const modal = document.getElementById('modalMateri6');
+    editor?.addEventListener('input', updatePreview);
+    updatePreview();
+
+    /* ==============================
+       STOP SEMUA MEDIA
+    ============================== */
+    function stopAllMedia() {
+
+        // audio & video di modal
+        modal.querySelectorAll('audio, video').forEach(media => {
+            media.pause();
+            media.currentTime = 0;
+        });
+
+        // audio & video di iframe live preview
+        try {
+            const iframeDoc =
+                output?.contentDocument ||
+                output?.contentWindow?.document;
+
+            iframeDoc?.querySelectorAll('audio, video').forEach(media => {
+                media.pause();
+                media.currentTime = 0;
+            });
+        } catch (e) {}
+    }
+
+    /* ==============================
+       FULLSCREEN
+    ============================== */
     const fullscreenBtn = modal.querySelector('.btn-fullscreen');
     const fullscreenTarget = modal.querySelector('.modal-dialog');
 
-    fullscreenBtn.addEventListener('click', () => {
+    fullscreenBtn?.addEventListener('click', () => {
         if (!document.fullscreenElement) {
             fullscreenTarget.requestFullscreen();
         } else {
@@ -242,19 +275,42 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.addEventListener('fullscreenchange', () => {
-        fullscreenBtn.textContent =
-            document.fullscreenElement ? '⤫' : '⛶';
+        if (fullscreenBtn) {
+            fullscreenBtn.textContent =
+                document.fullscreenElement ? '⤫' : '⛶';
+        }
     });
 
-    /* ===== STOP VIDEO + EXIT FULLSCREEN ===== */
+    /* ==============================
+       EVENT KONTROL MODAL & TAB
+    ============================== */
+
+    // pindah tab (Audio / Code / Live)
+    modal.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', stopAllMedia);
+    });
+
+    // modal ditutup
     modal.addEventListener('hidden.bs.modal', () => {
+        stopAllMedia();
+
         if (document.fullscreenElement) {
             document.exitFullscreen();
         }
+
         modal.querySelectorAll('iframe').forEach(i => i.src = i.src);
     });
 
-    /* ===== DRAG & DROP ===== */
+    // pindah tab browser
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopAllMedia();
+        }
+    });
+
+    /* ==============================
+       DRAG & DROP
+    ============================== */
 
     let draggedItem = null;
 
@@ -264,20 +320,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    /* SLOT */
     document.querySelectorAll('.drop-slot').forEach(slot => {
 
         slot.addEventListener('dragover', e => e.preventDefault());
 
         slot.addEventListener('drop', e => {
             e.preventDefault();
-
-            if (slot.children.length > 0) return;
+            if (!draggedItem || slot.children.length > 0) return;
 
             slot.appendChild(draggedItem);
             slot.classList.add('filled');
 
-            // ⬇️ bikin slot menyesuaikan ukuran item
             slot.style.width = draggedItem.offsetWidth + 12 + 'px';
             slot.style.height = draggedItem.offsetHeight + 6 + 'px';
 
@@ -296,18 +349,18 @@ document.addEventListener('DOMContentLoaded', function () {
     /* KEMBALIKAN KE DAFTAR */
     const source = document.getElementById('dragSource6');
 
-    source.addEventListener('dragover', e => e.preventDefault());
+    source?.addEventListener('dragover', e => e.preventDefault());
 
-    source.addEventListener('drop', e => {
+    source?.addEventListener('drop', e => {
         e.preventDefault();
+        if (!draggedItem) return;
+
         source.appendChild(draggedItem);
 
         document.querySelectorAll('.drop-slot').forEach(slot => {
-            if (slot.contains(draggedItem)) {
-                slot.classList.remove('filled', 'correct', 'wrong');
-                slot.style.width = '';
-                slot.style.height = '';
-            }
+            slot.classList.remove('filled', 'correct', 'wrong');
+            slot.style.width = '';
+            slot.style.height = '';
         });
 
         checkResult();
@@ -317,8 +370,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const slots = document.querySelectorAll('.drop-slot');
         const filled = [...slots].every(s => s.children.length > 0);
         const correct = [...slots].every(s => s.classList.contains('correct'));
-
         const feedback = document.getElementById('dragFeedback6');
+
+        if (!feedback) return;
 
         if (filled && correct) {
             feedback.className = 'alert alert-success small mt-3';
@@ -331,18 +385,23 @@ document.addEventListener('DOMContentLoaded', function () {
             feedback.textContent = 'Lengkapi semua kotak dengan benar.';
         }
     }
+
+    /* ==============================
+       SHUFFLE ITEM
+    ============================== */
     const container = document.getElementById('dragSource6');
+    if (container) {
         const items = Array.from(container.children);
 
-        // Fisher-Yates Shuffle
         for (let i = items.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [items[i], items[j]] = [items[j], items[i]];
         }
 
-        // masukkan kembali ke container
         items.forEach(item => container.appendChild(item));
-    });
+    }
+
+});
 </script>
 
 <script>

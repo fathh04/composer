@@ -22,7 +22,7 @@
             </h5>
 
             <p class="card-text text-secondary small flex-grow-1">
-                Pemformatan teks, paragraf, dan pembuatan list tersrtuktur
+                Pemformatan teks, paragraf, dan pembuatan list terstruktur
             </p>
 
             <div class="dropdown dropend w-100">

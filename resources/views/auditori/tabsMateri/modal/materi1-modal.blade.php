@@ -75,8 +75,23 @@
                                         </div>
                                     </div>
 
-                                    <audio controls class="w-100 mb-3">
-                                        <source src="{{ url('audio/Performatan Teks.wav') }}" type="audio/mpeg">
+                                    <audio
+                                        id="materiAudio1"
+                                        class="w-100 mb-3"
+                                        controls
+                                        preload="metadata"
+                                        playsinline
+                                    >
+                                        <!-- FORMAT UTAMA (PALING AMAN) -->
+                                        <source src="{{ url('audio/Performatan-Teks.mp3') }}" type="audio/mpeg">
+
+                                        <!-- FALLBACK -->
+                                        <source src="{{ url('audio/Performatan-Teks.ogg') }}" type="audio/ogg">
+
+                                        <!-- OPSI TERAKHIR -->
+                                        <source src="{{ url('audio/Performatan-Teks.wav') }}" type="audio/wav">
+
+                                        Browser Anda tidak mendukung pemutaran audio.
                                     </audio>
 
                                     <details class="transcript">
@@ -149,8 +164,21 @@
                                                     🎧 Walkthrough Kode
                                                 </button>
 
-                                                <audio id="walkthroughAudio1" preload="none">
-                                                    <source src="/audio/Performatan Teks-materi2.wav" type="audio/mpeg">
+                                                <audio
+                                                    id="walkthroughAudio1"
+                                                    preload="metadata"
+                                                    playsinline
+                                                >
+                                                    <!-- FORMAT UTAMA (PALING AMAN) -->
+                                                    <source src="/audio/Performatan Teks-materi2.mp3" type="audio/mpeg">
+
+                                                    <!-- FALLBACK -->
+                                                    <source src="/audio/Performatan Teks-materi2.ogg" type="audio/ogg">
+
+                                                    <!-- OPSI TERAKHIR -->
+                                                    <source src="/audio/Performatan Teks-materi2.wav" type="audio/wav">
+
+                                                    Browser Anda tidak mendukung pemutaran audio.
                                                 </audio>
                                             </div>
 
@@ -247,10 +275,16 @@ dan <span class="tag">&lt;mark&gt;</span>ditandai<span class="tag">&lt;/mark&gt;
     </div>
 </div>
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* ===== LIVE OUTPUT ===== */
+    const modal = document.getElementById('modalMateri1');
+    if (!modal) return;
+
+    /* ==============================
+       LIVE OUTPUT
+    ============================== */
     const editor = document.getElementById('editorMateri1');
     const output = document.getElementById('outputMateri1');
 
@@ -260,12 +294,13 @@ document.addEventListener('DOMContentLoaded', function () {
         updatePreview();
     }
 
-    /* ===== FULLSCREEN (PER MODAL) ===== */
-    const modal = document.getElementById('modalMateri1');
+    /* ==============================
+       FULLSCREEN
+    ============================== */
     const fullscreenBtn = modal.querySelector('.btn-fullscreen');
     const fullscreenTarget = modal.querySelector('.modal-dialog');
 
-    fullscreenBtn.addEventListener('click', () => {
+    fullscreenBtn?.addEventListener('click', () => {
         if (!document.fullscreenElement) {
             fullscreenTarget.requestFullscreen();
         } else {
@@ -278,13 +313,43 @@ document.addEventListener('DOMContentLoaded', function () {
             document.fullscreenElement ? '⤫' : '⛶';
     });
 
-    /* ===== STOP VIDEO + EXIT FULLSCREEN ===== */
+    /* ==============================
+       AUDIO CONTROL
+    ============================== */
+    const audios = modal.querySelectorAll('audio');
+
+    function stopAllAudio() {
+        audios.forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0;
+        });
+    }
+
+    // stop audio saat tab pindah
+    modal.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', stopAllAudio);
+    });
+
+    // stop audio saat modal ditutup
     modal.addEventListener('hidden.bs.modal', () => {
+        stopAllAudio();
+
         if (document.fullscreenElement) {
             document.exitFullscreen();
         }
+
         modal.querySelectorAll('iframe').forEach(i => i.src = i.src);
+    });
+
+    // stop audio saat pindah tab browser
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopAllAudio();
+        }
     });
 
 });
 </script>
+@endpush
+
+

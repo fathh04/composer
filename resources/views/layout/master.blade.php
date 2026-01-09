@@ -76,13 +76,13 @@
     </div>
 
     <div class="menu-item {{ $isVisual ? '' : 'locked' }}"
-         @if($isVisual) onclick="location.href='{{ route('kelas') }}'" @endif>
-        <i class="bi bi-grid"></i><span>Kelas</span>
+         @if($isVisual) onclick="location.href='{{ route('CPdanTP') }}'" @endif>
+        <i class="bi bi-check2-circle"></i><span>CP & TP</span>
     </div>
 
     <div class="menu-item {{ $isVisual ? '' : 'locked' }}"
-         @if($isVisual) onclick="location.href='{{ route('CPdanTP') }}'" @endif>
-        <i class="bi bi-check2-circle"></i><span>CP & TP</span>
+         @if($isVisual) onclick="location.href='{{ route('kelas') }}'" @endif>
+        <i class="bi bi-grid"></i><span>Kelas</span>
     </div>
 </div>
 

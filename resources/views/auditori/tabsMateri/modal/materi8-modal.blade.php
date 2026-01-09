@@ -75,8 +75,23 @@
                                         </div>
                                     </div>
 
-                                    <audio controls class="w-100 mb-3">
-                                        <source src="{{ url('audio/hyperlink.wav') }}" type="audio/mpeg">
+                                    <audio
+                                        id="materiAudio8"
+                                        controls
+                                        class="w-100 mb-3"
+                                        preload="metadata"
+                                        playsinline
+                                    >
+                                        <!-- FORMAT UTAMA -->
+                                        <source src="{{ url('audio/hyperlink.mp3') }}" type="audio/mpeg">
+
+                                        <!-- FALLBACK -->
+                                        <source src="{{ url('audio/hyperlink.ogg') }}" type="audio/ogg">
+
+                                        <!-- OPSI TERAKHIR -->
+                                        <source src="{{ url('audio/hyperlink.wav') }}" type="audio/wav">
+
+                                        Browser Anda tidak mendukung pemutaran audio HTML5.
                                     </audio>
 
                                     <details class="transcript">
@@ -127,8 +142,21 @@
                                                     🎧 Walkthrough Kode
                                                 </button>
 
-                                                <audio id="walkthroughAudio8" preload="none">
-                                                    <source src="/audio/hyperlink-kode.wav" type="audio/mpeg">
+                                                <audio
+                                                    id="walkthroughAudio8"
+                                                    preload="metadata"
+                                                    playsinline
+                                                >
+                                                    <!-- FORMAT UTAMA -->
+                                                    <source src="/audio/hyperlink-kode.mp3" type="audio/mpeg">
+
+                                                    <!-- FALLBACK -->
+                                                    <source src="/audio/hyperlink-kode.ogg" type="audio/ogg">
+
+                                                    <!-- OPSI TERAKHIR -->
+                                                    <source src="/audio/hyperlink-kode.wav" type="audio/wav">
+
+                                                    Browser Anda tidak mendukung pemutaran audio HTML5.
                                                 </audio>
                                             </div>
 <pre class="code-box"><code>
@@ -249,10 +277,16 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* ===== LIVE OUTPUT ===== */
+    const modal = document.getElementById('modalMateri8');
+    if (!modal) return;
+
+    /* ==============================
+       LIVE OUTPUT
+    ============================== */
     const editor = document.getElementById('editorMateri8');
     const output = document.getElementById('outputMateri8');
 
@@ -262,12 +296,13 @@ document.addEventListener('DOMContentLoaded', function () {
         updatePreview();
     }
 
-    /* ===== FULLSCREEN (PER MODAL) ===== */
-    const modal = document.getElementById('modalMateri8');
+    /* ==============================
+       FULLSCREEN
+    ============================== */
     const fullscreenBtn = modal.querySelector('.btn-fullscreen');
     const fullscreenTarget = modal.querySelector('.modal-dialog');
 
-    fullscreenBtn.addEventListener('click', () => {
+    fullscreenBtn?.addEventListener('click', () => {
         if (!document.fullscreenElement) {
             fullscreenTarget.requestFullscreen();
         } else {
@@ -280,13 +315,41 @@ document.addEventListener('DOMContentLoaded', function () {
             document.fullscreenElement ? '⤫' : '⛶';
     });
 
-    /* ===== STOP VIDEO + EXIT FULLSCREEN ===== */
+    /* ==============================
+       AUDIO CONTROL
+    ============================== */
+    const audios = modal.querySelectorAll('audio');
+
+    function stopAllAudio() {
+        audios.forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0;
+        });
+    }
+
+    // stop audio saat tab pindah
+    modal.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', stopAllAudio);
+    });
+
+    // stop audio saat modal ditutup
     modal.addEventListener('hidden.bs.modal', () => {
+        stopAllAudio();
+
         if (document.fullscreenElement) {
             document.exitFullscreen();
         }
+
         modal.querySelectorAll('iframe').forEach(i => i.src = i.src);
+    });
+
+    // stop audio saat pindah tab browser
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopAllAudio();
+        }
     });
 
 });
 </script>
+@endpush

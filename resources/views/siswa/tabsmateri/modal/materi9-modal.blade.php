@@ -73,14 +73,8 @@
                             <div class="tab-pane fade show active" id="materi9-video">
                                 <div class="ratio ratio-16x9 mb-3">
                                     <iframe
-                                        src="https://www.youtube.com/embed/CBuFc2nGEDo?si=MEopqdBuXRvNFgUp
-                                            ?rel=0
-                                            &modestbranding=1
-                                            &controls=1
-                                            &fs=1"
-                                        class="w-100 rounded-4"
-                                        style="aspect-ratio:16/9"
-                                        loading="lazy"
+                                        class="w-100 rounded-4 yt-video"
+                                        src="https://www.youtube.com/embed/CBuFc2nGEDo?rel=0&modestbranding=1&controls=1"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowfullscreen>
                                     </iframe>
@@ -269,25 +263,78 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* ===== LIVE OUTPUT ===== */
+    const modal = document.getElementById('modalMateri9');
+    if (!modal) return;
+
     const editor = document.getElementById('editorMateri9');
     const output = document.getElementById('outputMateri9');
 
-    if (editor && output) {
-        const updatePreview = () => output.srcdoc = editor.value;
-        editor.addEventListener('input', updatePreview);
-        updatePreview();
+    /* ==============================
+       LIVE PREVIEW
+    ============================== */
+    function updatePreview() {
+        if (editor && output) {
+            output.srcdoc = editor.value;
+        }
     }
 
-    /* ===== FULLSCREEN (PER MODAL) ===== */
-    const modal = document.getElementById('modalMateri9');
+    editor?.addEventListener('input', updatePreview);
+    updatePreview();
+
+    /* ==============================
+       STOP YOUTUBE
+    ============================== */
+    function stopYouTubeVideos() {
+        modal.querySelectorAll('iframe[src*="youtube.com"]').forEach(iframe => {
+            iframe.contentWindow?.postMessage(
+                JSON.stringify({
+                    event: 'command',
+                    func: 'pauseVideo',
+                    args: []
+                }),
+                '*'
+            );
+        });
+    }
+
+    /* ==============================
+       STOP SEMUA MEDIA
+    ============================== */
+    function stopAllMedia() {
+
+        // audio & video HTML biasa
+        modal.querySelectorAll('audio, video').forEach(media => {
+            media.pause();
+            media.currentTime = 0;
+        });
+
+        // audio & video di iframe live preview
+        try {
+            const iframeDoc =
+                output?.contentDocument ||
+                output?.contentWindow?.document;
+
+            iframeDoc?.querySelectorAll('audio, video').forEach(media => {
+                media.pause();
+                media.currentTime = 0;
+            });
+        } catch (e) {}
+
+        // YouTube
+        stopYouTubeVideos();
+    }
+
+    /* ==============================
+       FULLSCREEN
+    ============================== */
     const fullscreenBtn = modal.querySelector('.btn-fullscreen');
     const fullscreenTarget = modal.querySelector('.modal-dialog');
 
-    fullscreenBtn.addEventListener('click', () => {
+    fullscreenBtn?.addEventListener('click', () => {
         if (!document.fullscreenElement) {
             fullscreenTarget.requestFullscreen();
         } else {
@@ -296,17 +343,66 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.addEventListener('fullscreenchange', () => {
-        fullscreenBtn.textContent =
-            document.fullscreenElement ? '⤫' : '⛶';
+        if (fullscreenBtn) {
+            fullscreenBtn.textContent =
+                document.fullscreenElement ? '⤫' : '⛶';
+        }
     });
 
-    /* ===== STOP VIDEO + EXIT FULLSCREEN ===== */
+    /* ==============================
+       EVENT KONTROL
+    ============================== */
+
+    // pindah tab (pill)
+    modal.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', stopAllMedia);
+    });
+
+    // modal ditutup
     modal.addEventListener('hidden.bs.modal', () => {
+        stopAllMedia();
+
         if (document.fullscreenElement) {
             document.exitFullscreen();
         }
-        modal.querySelectorAll('iframe').forEach(i => i.src = i.src);
+    });
+
+    // tab browser tidak aktif
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopAllMedia();
+        }
     });
 
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    function stopYouTubeVideos() {
+        document.querySelectorAll('iframe[src*="youtube.com"]').forEach(iframe => {
+            iframe.src = iframe.src; // reset = stop video
+        });
+    }
+
+    // pindah tab bootstrap
+    document.querySelectorAll('[data-bs-toggle="pill"], [data-bs-toggle="tab"]').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', stopYouTubeVideos);
+    });
+
+    // modal ditutup
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', stopYouTubeVideos);
+    });
+
+    // tab browser tidak aktif
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopYouTubeVideos();
+        }
+    });
+
+});
+</script>
+@endpush

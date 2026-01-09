@@ -139,6 +139,46 @@
     font-weight:700;
     color:var(--primary);
 }
+
+/* ================= LOCKED POSTTEST ================= */
+.locked-card {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.lock-icon {
+    font-size: 3rem;
+    color: #0d6efd;
+    animation: lockPulse 1.8s infinite;
+}
+
+/* SHAKE EFFECT */
+.animate-lock {
+    animation: shake 0.4s ease-in-out;
+}
+
+/* PULSE ICON */
+@keyframes lockPulse {
+    0% { transform: scale(1); opacity: .7; }
+    50% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: .7; }
+}
+
+/* SHAKE CARD */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-4px); }
+    100% { transform: translateX(0); }
+}
+
+/* OPTIONAL HOVER GLOW */
+.posttest-card:has(.locked-card):hover {
+    box-shadow: 0 0 25px rgba(13,110,253,.25);
+    transform: scale(1.02);
+}
+
 </style>
 
 <div class="container py-4">
@@ -147,38 +187,38 @@
 <div id="pilihPosttest" class="row g-4">
 
 @for ($i = 1; $i <= 3; $i++)
-@php $nilai = $hasilPosttest[$i] ?? null; @endphp
+@php
+    $nilai = $hasilPosttest[$i] ?? null;
+    $bolehBuka = $i === 1 || isset($hasilPosttest[$i - 1]);
+@endphp
+
 <div class="col-md-4">
     <div class="card posttest-card border-0 text-center h-100">
         <div class="card-body d-flex flex-column justify-content-between py-4 px-3">
 
+        {{-- ================= SUDAH DIKERJAKAN ================= --}}
         @if ($nilai !== null)
 
-            <!-- STATUS CHECK ANIMATION -->
             <div class="status-done mb-3"></div>
 
-            <!-- TITLE -->
             <h5 class="fw-bold text-success mb-1">
                 Posttest {{ $i }}
             </h5>
 
-            <!-- BADGE -->
             <span class="badge badge-done mx-auto mb-3">
                 Posttest selesai dikerjakan
             </span>
 
-            <!-- SCORE -->
             <div class="score-box mx-auto mb-1">
                 {{ $nilai }}
             </div>
             <small class="text-muted">Nilai Anda</small>
 
-        @else
+        {{-- ================= TERBUKA ================= --}}
+        @elseif ($bolehBuka)
 
-            <!-- STATUS BELUM DIKERJAKAN -->
             <div class="fs-1 mb-2">🎧</div>
 
-            <!-- TITLE -->
             <h5 class="fw-bold text-primary mb-1">
                 Posttest {{ $i }}
             </h5>
@@ -192,11 +232,33 @@
                 🚀 Mulai Posttest
             </button>
 
+        {{-- ================= TERKUNCI ================= --}}
+        @else
+
+            <div class="locked-card animate-lock">
+
+                <i class="bi bi-lock-fill lock-icon mb-2"></i>
+
+                <h5 class="fw-bold text-muted mb-1">
+                    Posttest {{ $i }}
+                </h5>
+
+                <p class="text-muted small mb-3">
+                    Selesaikan Posttest ke-{{ $i - 1 }} terlebih dahulu
+                </p>
+
+                <button class="btn btn-outline-primary px-4 py-2" disabled>
+                    <i class="bi bi-lock-fill me-1"></i> Terkunci
+                </button>
+
+            </div>
+
         @endif
 
         </div>
     </div>
 </div>
+
 @endfor
 </div>
 
@@ -219,6 +281,30 @@
     </div>
 </div>
 
+<!-- MODAL SOAL BELUM DIJAWAB -->
+<div class="modal fade" id="modalSoalKosong" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">⚠️ Soal Belum Dijawab</h5>
+        <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-2">
+          Silakan kerjakan soal berikut terlebih dahulu:
+        </p>
+
+        <div id="listSoalKosong"
+             class="d-flex flex-wrap gap-2">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -226,6 +312,23 @@ let posttestAktif = null;
 let halamanAktif = 1;
 const soalPerHalaman = 5;
 let jawabanUser = {};
+
+function semuaSoalTerjawab(){
+    const totalSoal = bankSoal[posttestAktif].soal.length;
+    return Object.keys(jawabanUser).length === totalSoal;
+}
+
+function getSoalBelumDijawab(){
+    const total = bankSoal[posttestAktif].soal.length;
+    let kosong = [];
+
+    for(let i = 0; i < total; i++){
+        if(jawabanUser[i] === undefined){
+            kosong.push(i);
+        }
+    }
+    return kosong;
+}
 
 /* ================= BANK SOAL AUDITORI ================= */
 const bankSoal = {
@@ -632,7 +735,7 @@ const bankSoal = {
   },
 
   3:{
-    audio:"/audio/posttest3.mp3",
+    audio:"/audio/soal3.wav",
     soal:[
       {q:"Dengarkan audio, lalu pilih jawaban yang benar",
     o:[
@@ -888,6 +991,9 @@ function renderSoal(){
             document.querySelectorAll(`input[name="${this.name}"]`)
                 .forEach(x=>x.parentElement.classList.remove('selected'));
             this.parentElement.classList.add('selected');
+            renderNavigasi(Math.ceil(
+                bankSoal[posttestAktif].soal.length / soalPerHalaman
+            )); //tambah ini
         });
     });
 
@@ -914,7 +1020,7 @@ function renderNavigasi(totalHalaman){
             </button>`;
     }else{
         html += `<button class="btn btn-success"
-                onclick="submitKuis()">
+                onclick="handleSubmitKuis()">
                 ✅ Selesaikan Kuis
             </button>`;
     }
@@ -954,4 +1060,50 @@ function submitKuis(){
         location.reload();
     });
 }
+
+/* ================= MODAL ================= */
+function tampilkanSoalKosong(){
+    const list = getSoalBelumDijawab();
+    const container = document.getElementById('listSoalKosong');
+    container.innerHTML = '';
+
+    list.forEach(i => {
+        const nomor = i + 1;
+        const halaman = Math.ceil(nomor / soalPerHalaman);
+
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline-danger btn-sm';
+        btn.textContent = `Soal ${nomor}`;
+        btn.onclick = () => {
+            halamanAktif = halaman;
+            renderSoal();
+
+            bootstrap.Modal.getInstance(
+                document.getElementById('modalSoalKosong')
+            ).hide();
+
+            setTimeout(() => {
+                document
+                  .querySelector(`input[name="q${i}"]`)
+                  ?.closest('.quiz-question')
+                  ?.scrollIntoView({ behavior:'smooth', block:'center' });
+            }, 200);
+        };
+
+        container.appendChild(btn);
+    });
+
+    new bootstrap.Modal(
+        document.getElementById('modalSoalKosong')
+    ).show();
+}
+
+function handleSubmitKuis(){
+    if(!semuaSoalTerjawab()){
+        tampilkanSoalKosong();
+        return;
+    }
+    submitKuis();
+}
+
 </script>

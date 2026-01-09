@@ -75,8 +75,23 @@
                                         </div>
                                     </div>
 
-                                    <audio controls class="w-100 mb-3">
-                                        <source src="{{ url('audio/tabel.wav') }}" type="audio/mpeg">
+                                    <audio
+                                        id="materiAudio4"
+                                        controls
+                                        class="w-100 mb-3"
+                                        preload="metadata"
+                                        playsinline
+                                    >
+                                        <!-- FORMAT UTAMA -->
+                                        <source src="{{ url('audio/tabel.mp3') }}" type="audio/mpeg">
+
+                                        <!-- FALLBACK -->
+                                        <source src="{{ url('audio/tabel.ogg') }}" type="audio/ogg">
+
+                                        <!-- OPSI TERAKHIR -->
+                                        <source src="{{ url('audio/tabel.wav') }}" type="audio/wav">
+
+                                        Browser Anda tidak mendukung pemutaran audio HTML5.
                                     </audio>
 
                                     <details class="transcript">
@@ -138,8 +153,21 @@
                                                     🎧 Walkthrough Kode
                                                 </button>
 
-                                                <audio id="walkthroughAudio4" preload="none">
-                                                    <source src="/audio/materi4-kode.wav" type="audio/mpeg">
+                                                <audio
+                                                    id="walkthroughAudio4"
+                                                    preload="metadata"
+                                                    playsinline
+                                                >
+                                                    <!-- FORMAT UTAMA (PALING AMAN) -->
+                                                    <source src="/audio/materi4-kode.mp3" type="audio/mpeg">
+
+                                                    <!-- FALLBACK -->
+                                                    <source src="/audio/materi4-kode.ogg" type="audio/ogg">
+
+                                                    <!-- OPSI TERAKHIR -->
+                                                    <source src="/audio/materi4-kode.wav" type="audio/wav">
+
+                                                    Browser Anda tidak mendukung pemutaran audio.
                                                 </audio>
                                             </div>
 
@@ -226,7 +254,7 @@
                                             </ul>
 
                                             <div class="alert alert-info mt-3 small">
-                                                💡 <strong>Catatan:</strong><br>  
+                                                💡 <strong>Catatan:</strong><br>
                                                 Untuk mengatur teks ataupun gambar dalam baris dan kolom, digunakanlah <b>pemformatan Tabel</b>
                                             </div>
                                         </div>
@@ -321,10 +349,16 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* ===== LIVE OUTPUT ===== */
+    const modal = document.getElementById('modalMateri4');
+    if (!modal) return;
+
+    /* ==============================
+       LIVE OUTPUT
+    ============================== */
     const editor = document.getElementById('editorMateri4');
     const output = document.getElementById('outputMateri4');
 
@@ -334,12 +368,13 @@ document.addEventListener('DOMContentLoaded', function () {
         updatePreview();
     }
 
-    /* ===== FULLSCREEN (PER MODAL) ===== */
-    const modal = document.getElementById('modalMateri4');
+    /* ==============================
+       FULLSCREEN
+    ============================== */
     const fullscreenBtn = modal.querySelector('.btn-fullscreen');
     const fullscreenTarget = modal.querySelector('.modal-dialog');
 
-    fullscreenBtn.addEventListener('click', () => {
+    fullscreenBtn?.addEventListener('click', () => {
         if (!document.fullscreenElement) {
             fullscreenTarget.requestFullscreen();
         } else {
@@ -352,13 +387,41 @@ document.addEventListener('DOMContentLoaded', function () {
             document.fullscreenElement ? '⤫' : '⛶';
     });
 
-    /* ===== STOP VIDEO + EXIT FULLSCREEN ===== */
+    /* ==============================
+       AUDIO CONTROL
+    ============================== */
+    const audios = modal.querySelectorAll('audio');
+
+    function stopAllAudio() {
+        audios.forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0;
+        });
+    }
+
+    // stop audio saat tab pindah
+    modal.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', stopAllAudio);
+    });
+
+    // stop audio saat modal ditutup
     modal.addEventListener('hidden.bs.modal', () => {
+        stopAllAudio();
+
         if (document.fullscreenElement) {
             document.exitFullscreen();
         }
+
         modal.querySelectorAll('iframe').forEach(i => i.src = i.src);
+    });
+
+    // stop audio saat pindah tab browser
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopAllAudio();
+        }
     });
 
 });
 </script>
+@endpush

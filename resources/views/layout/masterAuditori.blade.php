@@ -76,15 +76,14 @@
     </div>
 
     <div class="menu-item {{ $isAuditori ? '' : 'locked' }}"
-         @if($isAuditori) onclick="location.href='{{ route('kelasAuditori') }}'" @endif>
-        <i class="bi bi-grid"></i><span>Kelas</span>
-    </div>
-
-    <div class="menu-item {{ $isAuditori ? '' : 'locked' }}"
          @if($isAuditori) onclick="location.href='{{ route('CPdanTPAuditori') }}'" @endif>
         <i class="bi bi-check2-circle"></i><span>CP & TP</span>
     </div>
 
+    <div class="menu-item {{ $isAuditori ? '' : 'locked' }}"
+         @if($isAuditori) onclick="location.href='{{ route('kelasAuditori') }}'" @endif>
+        <i class="bi bi-grid"></i><span>Kelas</span>
+    </div>
 </div>
 
 <!-- ================= NAVBAR ================= -->

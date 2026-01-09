@@ -75,10 +75,24 @@
                                         </div>
                                     </div>
 
-                                    <audio controls class="w-100 mb-3">
-                                        <source src="{{ url('audio/video.wav') }}" type="audio/mpeg">
-                                    </audio>
+                                    <audio
+                                        id="materiAudio5"
+                                        controls
+                                        class="w-100 mb-3"
+                                        preload="metadata"
+                                        playsinline
+                                    >
+                                        <!-- FORMAT UTAMA -->
+                                        <source src="{{ url('audio/video.mp3') }}" type="audio/mpeg">
 
+                                        <!-- FALLBACK -->
+                                        <source src="{{ url('audio/video.ogg') }}" type="audio/ogg">
+
+                                        <!-- OPSI TERAKHIR -->
+                                        <source src="{{ url('audio/video.wav') }}" type="audio/wav">
+
+                                        Browser Anda tidak mendukung pemutaran audio.
+                                    </audio>
                                     <details class="transcript">
                                         <summary>📝 Lihat transkrip audio</summary>
                                         <p class="small text-secondary mt-2">
@@ -126,9 +140,22 @@
                                                     🎧 Walkthrough Kode
                                                 </button>
 
-                                                <audio id="walkthroughAudio5" preload="none">
-                                                    <source src="/audio/video-kode.wav" type="audio/mpeg">
-                                                </audio>
+                                                <audio
+                                                        id="walkthroughAudio5"
+                                                        preload="metadata"
+                                                        playsinline
+                                                    >
+                                                        <!-- FORMAT UTAMA -->
+                                                        <source src="/audio/video-kode.mp3" type="audio/mpeg">
+
+                                                        <!-- FALLBACK -->
+                                                        <source src="/audio/video-kode.ogg" type="audio/ogg">
+
+                                                        <!-- OPSI TERAKHIR -->
+                                                        <source src="/audio/video-kode.wav" type="audio/wav">
+
+                                                        Browser Anda tidak mendukung audio HTML5.
+                                                    </audio>
                                             </div>
 <pre class="code-box"><code>
 <span class="tag">&lt;h1&gt;</span>Tag Video HTML<span class="tag">&lt;/h1&gt;</span>
@@ -243,25 +270,54 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* ===== LIVE OUTPUT ===== */
+    const modal = document.getElementById('modalMateri5');
+    if (!modal) return;
+
     const editor = document.getElementById('editorMateri5');
     const output = document.getElementById('outputMateri5');
 
-    if (editor && output) {
-        const updatePreview = () => output.srcdoc = editor.value;
-        editor.addEventListener('input', updatePreview);
-        updatePreview();
+    /* ==============================
+       LIVE PREVIEW
+    ============================== */
+    function updatePreview() {
+        output.srcdoc = editor.value;
     }
 
-    /* ===== FULLSCREEN (PER MODAL) ===== */
-    const modal = document.getElementById('modalMateri5');
+    editor?.addEventListener('input', updatePreview);
+    updatePreview();
+
+    /* ==============================
+       STOP SEMUA MEDIA
+    ============================== */
+    function stopAllMedia() {
+
+        // audio + video di modal
+        modal.querySelectorAll('audio, video').forEach(media => {
+            media.pause();
+            media.currentTime = 0;
+        });
+
+        // audio + video di iframe (LIVE)
+        try {
+            const iframeDoc = output?.contentDocument || output?.contentWindow?.document;
+            iframeDoc?.querySelectorAll('audio, video').forEach(media => {
+                media.pause();
+                media.currentTime = 0;
+            });
+        } catch (e) {}
+    }
+
+    /* ==============================
+       FULLSCREEN
+    ============================== */
     const fullscreenBtn = modal.querySelector('.btn-fullscreen');
     const fullscreenTarget = modal.querySelector('.modal-dialog');
 
-    fullscreenBtn.addEventListener('click', () => {
+    fullscreenBtn?.addEventListener('click', () => {
         if (!document.fullscreenElement) {
             fullscreenTarget.requestFullscreen();
         } else {
@@ -270,17 +326,39 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.addEventListener('fullscreenchange', () => {
-        fullscreenBtn.textContent =
-            document.fullscreenElement ? '⤫' : '⛶';
+        if (fullscreenBtn) {
+            fullscreenBtn.textContent =
+                document.fullscreenElement ? '⤫' : '⛶';
+        }
     });
 
-    /* ===== STOP VIDEO + EXIT FULLSCREEN ===== */
+    /* ==============================
+       EVENT KONTROL
+    ============================== */
+
+    // pindah tab (Audio / Code / Live)
+    modal.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', stopAllMedia);
+    });
+
+    // modal ditutup
     modal.addEventListener('hidden.bs.modal', () => {
+        stopAllMedia();
+
         if (document.fullscreenElement) {
             document.exitFullscreen();
         }
+
         modal.querySelectorAll('iframe').forEach(i => i.src = i.src);
+    });
+
+    // pindah tab browser
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopAllMedia();
+        }
     });
 
 });
 </script>
+@endpush

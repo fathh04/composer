@@ -185,6 +185,44 @@
  border-color:var(--primary);
 }
 
+/* ================= LOCKED POSTTEST ================= */
+.locked-card {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.lock-icon {
+    font-size: 3rem;
+    color: #0d6efd;
+    animation: lockPulse 1.8s infinite;
+}
+
+/* SHAKE EFFECT */
+.animate-lock {
+    animation: shake 0.4s ease-in-out;
+}
+
+/* PULSE ICON */
+@keyframes lockPulse {
+    0% { transform: scale(1); opacity: .7; }
+    50% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: .7; }
+}
+
+/* SHAKE CARD */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-4px); }
+    100% { transform: translateX(0); }
+}
+
+/* OPTIONAL GLOW */
+.posttest-card:has(.locked-card):hover {
+    box-shadow: 0 0 25px rgba(13,110,253,.25);
+    transform: scale(1.02);
+}
 
 </style>
 
@@ -194,38 +232,38 @@
 <div id="pilihPosttest" class="row g-4">
 
 @for ($i = 1; $i <= 3; $i++)
-@php $nilai = $hasilPosttest[$i] ?? null; @endphp
+@php
+    $nilai = $hasilPosttest[$i] ?? null;
+    $bolehBuka = $i === 1 || isset($hasilPosttest[$i - 1]);
+@endphp
+
 <div class="col-md-4">
     <div class="card posttest-card border-0 text-center h-100">
         <div class="card-body d-flex flex-column justify-content-between py-4 px-3">
 
+        {{-- ================= SUDAH DIKERJAKAN ================= --}}
         @if ($nilai !== null)
 
-            <!-- STATUS CHECK ANIMATION -->
             <div class="status-done mb-3"></div>
 
-            <!-- TITLE -->
             <h5 class="fw-bold text-success mb-1">
                 Posttest {{ $i }}
             </h5>
 
-            <!-- BADGE -->
             <span class="badge badge-done mx-auto mb-3">
                 Posttest selesai dikerjakan
             </span>
 
-            <!-- SCORE -->
             <div class="score-box mx-auto mb-1">
                 {{ $nilai }}
             </div>
             <small class="text-muted">Nilai Anda</small>
 
-        @else
+        {{-- ================= BELUM DIKERJAKAN & TERBUKA ================= --}}
+        @elseif ($bolehBuka)
 
-            <!-- STATUS BELUM DIKERJAKAN -->
             <div class="fs-1 mb-2">🧩</div>
 
-            <!-- TITLE -->
             <h5 class="fw-bold text-primary mb-1">
                 Posttest {{ $i }}
             </h5>
@@ -239,11 +277,33 @@
                 🚀 Mulai Posttest
             </button>
 
+        {{-- ================= TERKUNCI ================= --}}
+        @else
+
+            <div class="locked-card animate-lock">
+
+                <i class="bi bi-lock-fill lock-icon mb-2"></i>
+
+                <h5 class="fw-bold text-muted mb-1">
+                    Posttest {{ $i }}
+                </h5>
+
+                <p class="text-muted small mb-3">
+                    Selesaikan Posttest ke-{{ $i - 1 }} terlebih dahulu
+                </p>
+
+                <button class="btn btn-outline-primary px-4 py-2" disabled>
+                    <i class="bi bi-lock-fill me-1"></i> Terkunci
+                </button>
+
+            </div>
+
         @endif
 
         </div>
     </div>
 </div>
+
 @endfor
 </div>
 
@@ -265,6 +325,30 @@
     </div>
 </div>
 
+<!-- MODAL SOAL BELUM DIJAWAB -->
+<div class="modal fade" id="modalSoalKosong" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">⚠️ Soal Belum Dijawab</h5>
+        <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-2">
+          Silakan kerjakan soal berikut terlebih dahulu:
+        </p>
+
+        <div id="listSoalKosong"
+             class="d-flex flex-wrap gap-2">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -273,6 +357,32 @@ let halamanAktif = 1;
 const soalPerHalaman = 5;
 let skorSoal = {};
 let jawabanUser = {};
+let jawabanPraktik = {};
+let statusSoal = {};
+let jawabanDrag = {};
+
+function semuaSoalTerjawab(){
+  const total = bankSoal[posttestAktif].soal.length;
+
+  for(let i=0;i<total;i++){
+    if(statusSoal[i] !== true){
+      return false;
+    }
+  }
+  return true;
+}
+
+function getSoalBelumDijawab(){
+  let kosong = [];
+  const total = bankSoal[posttestAktif].soal.length;
+
+  for(let i=0;i<total;i++){
+    if(statusSoal[i] !== true){
+      kosong.push(i);
+    }
+  }
+  return kosong;
+}
 
 /* ================= BANK SOAL ================= */
 const bankSoal = {
@@ -378,7 +488,7 @@ const bankSoal = {
 
 {
  judul:"Praktik pemformatan teks HTML",
- render:()=>`
+ render:(index)=>`
  <div class="row g-4">
   <div class="col-md-5">
    <div class="alert alert-info small">
@@ -393,27 +503,30 @@ const bankSoal = {
    </div>
   </div>
   <div class="col-md-7">
-   <textarea id="jawabanTeks"
+   <textarea
     class="form-control font-monospace"
     rows="12"
-    placeholder="Tulis kode HTML di sini..."></textarea>
+    placeholder="Tulis kode HTML di sini..."
+    oninput="isiPraktik(${index}, this.value)"
+    >${jawabanPraktik[index] || ''}</textarea>
   </div>
  </div>
  `,
- cek:()=>{
-  const kode=document.getElementById("jawabanTeks")?.value||"";
-  if(!kode.match(/<h[1-3]/i)) return false;
-  if(!kode.includes("<p")) return false;
+ cek:(index)=>{
+    const kode = jawabanPraktik[index] || "";
 
-  let f=0;
-  if(kode.match(/<(b|strong)>/i)) f++;
-  if(kode.match(/<(i|em)>/i)) f++;
-  if(kode.match(/<u>/i)) f++;
-  if(f<2) return false;
+    if(!kode.match(/<h[1-3]/i)) return false;
+    if(!kode.includes("<p")) return false;
 
-  if(!kode.match(/<(br|hr)/i)) return false;
-  return true;
- }
+    let f=0;
+    if(/<(b|strong)>/i.test(kode)) f++;
+    if(/<(i|em)>/i.test(kode)) f++;
+    if(/<u>/i.test(kode)) f++;
+    if(f<2) return false;
+
+    if(!/<(br|hr)/i.test(kode)) return false;
+    return true;
+    }
 },
 
 /* =====================================================
@@ -422,7 +535,7 @@ const bankSoal = {
 
 {
  judul:"Praktik membuat list terstruktur HTML",
- render:()=>`
+ render:(index)=>`
  <div class="row g-4">
   <div class="col-md-5">
    <div class="alert alert-info small">
@@ -437,27 +550,24 @@ const bankSoal = {
    </div>
   </div>
   <div class="col-md-7">
-   <textarea id="jawabanList"
+   <textarea
     class="form-control font-monospace"
     rows="12"
-    placeholder="Tulis kode HTML di sini..."></textarea>
+    placeholder="Tulis kode HTML di sini..."
+    oninput="isiPraktik(${index}, this.value)"
+    >${jawabanPraktik[index] || ''}</textarea>
   </div>
  </div>
  `,
- cek:()=>{
-  const kode = document.getElementById("jawabanList")?.value || "";
+ cek:(index)=>{
+ const kode = jawabanPraktik[index] || "";
 
-  // wajib ada ul dan ol
-  if(!/<ul/i.test(kode)) return false;
-  if(!/<ol/i.test(kode)) return false;
+ if(!/<ul/i.test(kode)) return false;
+ if(!/<ol/i.test(kode)) return false;
+ if((kode.match(/<li/gi)||[]).length < 3) return false;
+ if(!/<ul>[\s\S]*<(ul|ol)/i.test(kode)) return false;
 
-  // minimal 3 li
-  if((kode.match(/<li/gi) || []).length < 3) return false;
-
-  // nested list (BENAR)
-  if(!/<ul>[\s\S]*<li>[\s\S]*<(ul|ol)/i.test(kode)) return false;
-
-  return true;
+ return true;
 }
 
 }
@@ -705,13 +815,20 @@ const bankSoal = {
 
  </div>
  `,
- cek:()=>{
-  let ok = true;
-  document.querySelectorAll('.zone').forEach(z=>{
-    if(z.textContent.trim() !== z.dataset.answer) ok = false;
-  });
-  return ok;
- }
+    cek:(index)=>{
+        const data = jawabanDrag[index];
+        if(!data) return false;
+
+        const soalBox =
+            document.querySelectorAll('.quiz-question')
+            [index % soalPerHalaman];
+
+        const zones = soalBox.querySelectorAll('.zone');
+
+        return [...zones].every((z, zi)=>{
+            return data[zi] === z.dataset.answer;
+        });
+    }
 },
 
 /* ================= SOAL 2 : TABEL (DRAG SLOT) ================= */
@@ -755,10 +872,10 @@ const bankSoal = {
 
  </div>
  `,
- cek:()=>{
-  const z=document.querySelector('.zone');
-  return z && z.textContent.trim()===z.dataset.answer;
- }
+    cek:()=>{
+        const z=document.querySelector('.zone');
+        return z && z.textContent.trim()===z.dataset.answer;
+    }
 }
 
 ]},
@@ -936,7 +1053,7 @@ const bankSoal = {
     },
     {
     judul:"Praktik langsung membuat Form HTML",
-    render:()=>`
+    render:(index)=>`
     <div class="row g-4">
 
     <!-- INSTRUKSI -->
@@ -955,41 +1072,33 @@ const bankSoal = {
 
     <!-- CODE EDITOR -->
     <div class="col-md-7">
-    <textarea id="jawabanForm"
+    <textarea
         class="form-control font-monospace"
         rows="12"
-        placeholder="Tulis kode HTML di sini..."></textarea>
+        placeholder="Tulis kode HTML di sini..."
+        oninput="isiPraktik(${index}, this.value)"
+        >${jawabanPraktik[index] || ''}</textarea>
     </div>
 
     </div>
     `,
-    cek:()=>{
-    const kode = document.getElementById("jawabanForm")?.value || "";
+        cek:(index)=>{
+            const kode = jawabanPraktik[index] || "";
 
-    // Cek form
-    if(!kode.includes("<form") || !kode.includes("</form>")) return false;
+            if(!kode.includes("<form")) return false;
 
-    // Cek label
-    const jumlahLabel = (kode.match(/<label/gi) || []).length;
-    if(jumlahLabel < 3) return false;
+            if((kode.match(/<label/gi)||[]).length < 3) return false;
 
-    // Cek input berbeda
-    let jenis = 0;
-    if(kode.includes('type="text"')) jenis++;
-    if(kode.includes('type="email"')) jenis++;
-    if(
-        kode.includes('type="radio"') ||
-        kode.includes('type="checkbox"') ||
-        kode.includes("<select")
-    ) jenis++;
+            let jenis=0;
+            if(/type="text"/i.test(kode)) jenis++;
+            if(/type="email"/i.test(kode)) jenis++;
+            if(/radio|checkbox|<select/i.test(kode)) jenis++;
+            if(jenis < 3) return false;
 
-    if(jenis < 3) return false;
+            if(!/submit/i.test(kode)) return false;
 
-    // Cek submit
-    if(!kode.includes('type="submit"') && !kode.includes("<button")) return false;
-
-    return true;
-    }
+            return true;
+        }
     },
     /* ================= SOAL : INTEGRASI KONSEP HTML (DRAG SLOT) ================= */
     {
@@ -1113,15 +1222,30 @@ function renderSoal(){
   }
 
   // ================= PRAKTIK =================
-  else if(s.render){
-   soalContainer.innerHTML+=`
-   <div class="quiz-question">
+ else if(s.render){
+    const index = start + i;
+
+    soalContainer.innerHTML+=`
+    <div class="quiz-question">
     <h5 class="fw-bold text-primary">
-     Soal ${start+i+1} — ${s.judul}
+    Soal ${index + 1} — ${s.judul}
     </h5>
-    ${s.render()}
-   </div>`;
-  }
+    ${s.render(index)}
+    </div>`;
+        setTimeout(()=>{
+            if(jawabanDrag[index]){
+            const zones = document
+                .querySelectorAll('.quiz-question')[i]
+                .querySelectorAll('.zone');
+
+            zones.forEach((z,zi)=>{
+                if(jawabanDrag[index][zi]){
+                z.textContent = jawabanDrag[index][zi];
+                }
+            });
+            }
+        },0);
+    }
 
  });
 
@@ -1135,12 +1259,33 @@ function aktifkanDrag(){
   i.addEventListener('dragstart',()=>i.classList.add('dragging'));
   i.addEventListener('dragend',()=>i.classList.remove('dragging'));
  });
- document.querySelectorAll('.zone,.drop-zone').forEach(z=>{
-  z.addEventListener('dragover',e=>{
-   e.preventDefault();
-   z.appendChild(document.querySelector('.dragging'));
+
+ document.querySelectorAll('.zone').forEach((z,zoneIndex)=>{
+  z.addEventListener('dragover',e=>e.preventDefault());
+
+  z.addEventListener('drop',()=>{
+    const dragged = document.querySelector('.dragging');
+    if(!dragged) return;
+
+    const soalBox = z.closest('.quiz-question');
+    const soalIndex = [...document.querySelectorAll('.quiz-question')]
+      .indexOf(soalBox)
+      + (halamanAktif-1)*soalPerHalaman;
+
+    z.textContent = dragged.dataset.code;
+
+    // ✅ SIMPAN KE STATE
+    if(!jawabanDrag[soalIndex]) jawabanDrag[soalIndex] = {};
+    jawabanDrag[soalIndex][zoneIndex] = dragged.dataset.code;
+
   });
  });
+}
+
+function getIndexSoalAktif(){
+  const all = document.querySelectorAll('.quiz-question');
+  const aktif = [...all].findIndex(q=>q.contains(document.activeElement));
+  return (halamanAktif-1)*soalPerHalaman + (aktif >=0 ? aktif : 0);
 }
 
 /* ================= NAVIGASI ================= */
@@ -1156,7 +1301,7 @@ function renderNav(total){
           onclick="simpan(); halamanAktif++; renderSoal()">➡️ Next</button>`;
  }else{
   html+=`<button class="btn btn-success"
-          onclick="submitKuis()">✅ Selesaikan Kuis</button>`;
+          onclick="handleSubmitKuis()">✅ Selesaikan Kuis</button>`;
  }
  navigasiKuis.innerHTML=html;
 }
@@ -1170,25 +1315,48 @@ function simpan(){
  soalAktif.forEach((s, i)=>{
   const index = start + i;
 
-  // PILIHAN GANDA
-  // PILIHAN GANDA
-    if(s.q){
-        skorSoal[index] =
-        jawabanUser[index] === s.k ? 1 : 0;
-    }
-
-  // PRAKTIK
-  else if(s.cek){
-   skorSoal[index] = s.cek() ? 1 : 0;
+  /* ================= PILIHAN GANDA ================= */
+  if(s.q){
+    const terjawab = jawabanUser[index] !== undefined;
+    statusSoal[index] = terjawab;
+    skorSoal[index] = jawabanUser[index] === s.k ? 1 : 0;
   }
+
+  /* ================= PRAKTIK ================= */
+    else if(s.cek){
+        // ===== PRAKTIK TEXTAREA =====
+        if(s.render && s.render.toString().includes('textarea')){
+            const isi = (jawabanPraktik[index] || '').trim();
+            statusSoal[index] = isi !== '';
+            skorSoal[index] = isi !== '' && s.cek(index) ? 1 : 0;
+        }
+
+        // ===== PRAKTIK DRAG =====
+        else{
+            const data = jawabanDrag[index];
+            if(!data){
+            statusSoal[index] = false;
+            skorSoal[index] = 0;
+            return;
+            }
+
+            const soalBox =
+            document.querySelectorAll('.quiz-question')[i];
+            const totalZone = soalBox.querySelectorAll('.zone').length;
+
+            const lengkap = Object.keys(data).length === totalZone;
+
+            statusSoal[index] = lengkap;
+            skorSoal[index] = lengkap && s.cek(index) ? 1 : 0;
+        }
+    }
  });
 }
 
 function pilihJawaban(noSoal, idx){
-  jawabanUser[noSoal] = idx;
-  renderSoal(); // refresh agar class selected aktif
+ jawabanUser[noSoal]=idx;
+ statusSoal[noSoal]=true;
 }
-
 
 /* ================= SUBMIT ================= */
 function submitKuis(){
@@ -1208,5 +1376,55 @@ function submitKuis(){
  .then(r=>{if(!r.ok)throw'locked';return r.json();})
  .then(()=>{alert("Kuis berhasil disubmit!");location.reload();})
  .catch(()=>{alert("Posttest sudah dikerjakan!");location.reload();});
+}
+
+function tampilkanSoalKosong(){
+  const list = getSoalBelumDijawab();
+  const container = document.getElementById('listSoalKosong');
+  container.innerHTML = '';
+
+  list.forEach(i=>{
+    const nomor = i + 1;
+    const halaman = Math.ceil(nomor / soalPerHalaman);
+
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-outline-danger btn-sm';
+    btn.textContent = `Soal ${nomor}`;
+    btn.onclick = ()=>{
+      halamanAktif = halaman;
+      renderSoal();
+
+      bootstrap.Modal
+        .getInstance(document.getElementById('modalSoalKosong'))
+        .hide();
+
+      setTimeout(()=>{
+        document
+          .querySelectorAll('.quiz-question')[i % soalPerHalaman]
+          ?.scrollIntoView({behavior:'smooth', block:'center'});
+      },200);
+    };
+
+    container.appendChild(btn);
+  });
+
+  new bootstrap.Modal(
+    document.getElementById('modalSoalKosong')
+  ).show();
+}
+
+function handleSubmitKuis(){
+  simpan(); // ← WAJIB
+
+  if(!semuaSoalTerjawab()){
+    tampilkanSoalKosong();
+    return;
+  }
+
+  submitKuis();
+}
+
+function isiPraktik(index, value){
+  jawabanPraktik[index] = value;
 }
 </script>
