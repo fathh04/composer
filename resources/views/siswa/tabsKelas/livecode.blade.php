@@ -136,13 +136,14 @@
           <div class="flex-grow-1 d-flex flex-column">
 
             <!-- Toolbar -->
-            <div class="toolbar d-flex align-items-center px-3">
-              <span class="fw-bold text-primary">💻 HTML Editor</span>
-              <div class="ms-auto">
-                <button id="runBtn" type="button" class="btn-run">▶ Run</button>
-                <button id="clearBtn" type="button" class="btn-clear">🗑</button>
-                <button id="submitBtn" type="button" class="btn-submit">📤 Kirim</button>
-              </div>
+            <div class="toolbar px-2">
+                <span class="toolbar-title fw-bold text-primary">💻 HTML Editor</span>
+
+                <div class="toolbar-actions ms-auto">
+                    <button id="runBtn" type="button" class="btn-run">▶</button>
+                    <button id="clearBtn" type="button" class="btn-clear">🗑</button>
+                    <button id="submitBtn" type="button" class="btn-submit">📤</button>
+                </div>
             </div>
 
             <!-- FEEDBACK OTOMATIS -->
@@ -487,114 +488,158 @@ document.getElementById("fsBtn").addEventListener("click", () => {
 </script>
 
 <style>
-/* ===== BADGE STATUS ===== */
-.badge-status {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-}
-.badge-success {
-  background: #e8f5e9;
-  color: #2e7d32;
-  border: 1px solid #a5d6a7;
-}
-.badge-fail {
-  background: #ffebee;
-  color: #c62828;
-  border: 1px solid #ef9a9a;
-}
-.badge-wait {
-  background: #fff3cd;
-  color: #775700;
-  border: 1px solid #ffe49c;
+    /* ===== BADGE STATUS ===== */
+    .badge-status {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    }
+    .badge-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+    }
+    .badge-fail {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+    }
+    .badge-wait {
+    background: #fff3cd;
+    color: #775700;
+    border: 1px solid #ffe49c;
+    }
+
+    /* ======= Layout & Visuals ======= */
+    .glass-card {
+    background: rgba(255,255,255,0.96);
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.6);
+    backdrop-filter: blur(8px);
+    }
+
+    /* ================= TOOLBAR RESPONSIVE ================= */
+.toolbar{
+    height:46px;
+    background:#fafafa;
+    border-bottom:1px solid #e6e6e6;
+    display:flex;
+    align-items:center;
+    padding:0 8px;
+    overflow:hidden;
 }
 
-/* ======= Layout & Visuals ======= */
-.glass-card {
-  background: rgba(255,255,255,0.96);
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  border: 1px solid rgba(255,255,255,0.6);
-  backdrop-filter: blur(8px);
+.toolbar-title{
+    white-space:nowrap;
 }
 
-/* Toolbar */
-.toolbar {
-  height: 46px;
-  background: #fafafa;
-  border-bottom: 1px solid #e6e6e6;
-  display:flex;
-  align-items:center;
-}
-.btn-run, .btn-clear, .btn-submit {
-  border: none;
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight:600;
-}
-.btn-run { background:#4CAF50; }
-.btn-clear { background:#f44336; margin-left:8px; }
-.btn-submit { background:#2196F3; margin-left:8px; }
-
-/* File sidebar */
-.file-sidebar {
-  width: 150px;
-  background: #f0f4ff;
-  border-right: 1px solid #e6e9f8;
-  display:flex;
-  flex-direction:column;
-  padding:10px 8px;
-}
-.file-tab {
-  padding:10px;
-  margin:6px 4px;
-  background:#4f8ef7;
-  color:#fff;
-  border-radius:8px;
-  text-align:left;
-  font-weight:700;
+.toolbar-actions{
+    display:flex;
+    gap:6px;
+    flex-shrink:0;
 }
 
-/* Editor + preview */
-#editor { width:100%; height:50vh; }
-#output { display:flex; flex-direction:column; height:40vh; border-top:1px solid #e6e6e6; }
-.cmd-header { height:44px; display:flex; align-items:center; padding:0 12px; background:#fff; border-bottom:1px solid #eee; }
-.preview-wrap { flex:1; overflow:auto; background:#fff; }
-
-#preview { width:100%; height:100%; border: none; transform-origin: top left; transition: transform .12s ease-in-out; }
-
-.zoom-btn {
-  background:#f1f5f9;
-  border:1px solid #d1d9e6;
-  padding:4px 8px;
-  margin-left:6px;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:700;
+.btn-run,
+.btn-clear,
+.btn-submit{
+    border:none;
+    color:#fff;
+    width:36px;
+    height:32px;
+    padding:0;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
-.zoom-btn:hover { background:#e6eef9; }
 
-/* Feedback box */
-.feedback-box {
-  display:none;
-  background: #fff7e6;
-  border-left: 5px solid #ff9800;
-  padding: 12px 16px;
-  margin: 10px;
-  border-radius: 10px;
-  font-size: 14px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-}
-.feedback-ok { color: #0f5132; background: rgba(16,185,129,0.04); padding:6px; border-radius:6px; margin-bottom:6px; }
-.feedback-fail { color: #7a1f1f; background: rgba(244,63,94,0.04); padding:6px; border-radius:6px; margin-bottom:6px; }
+.btn-run{background:#4CAF50;}
+.btn-clear{background:#f44336;}
+.btn-submit{background:#2196F3;}
 
-@media (max-width: 768px) {
-  .file-sidebar { display:none; }
-  #editor { height:40vh; }
-  #output { height:50vh; }
-}
+    /* File sidebar */
+    .file-sidebar {
+    width: 150px;
+    background: #f0f4ff;
+    border-right: 1px solid #e6e9f8;
+    display:flex;
+    flex-direction:column;
+    padding:10px 8px;
+    }
+    .file-tab {
+    padding:10px;
+    margin:6px 4px;
+    background:#4f8ef7;
+    color:#fff;
+    border-radius:8px;
+    text-align:left;
+    font-weight:700;
+    }
+
+    /* Editor + preview */
+    #editor { width:100%; height:50vh; }
+    #output { display:flex; flex-direction:column; height:40vh; border-top:1px solid #e6e6e6; }
+    .cmd-header { height:44px; display:flex; align-items:center; padding:0 12px; background:#fff; border-bottom:1px solid #eee; }
+    .preview-wrap { flex:1; overflow:auto; background:#fff; }
+
+    #preview { width:100%; height:100%; border: none; transform-origin: top left; transition: transform .12s ease-in-out; }
+
+    .zoom-btn {
+    background:#f1f5f9;
+    border:1px solid #d1d9e6;
+    padding:4px 8px;
+    margin-left:6px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:700;
+    }
+    .zoom-btn:hover { background:#e6eef9; }
+
+    /* Feedback box */
+    .feedback-box {
+    display:none;
+    background: #fff7e6;
+    border-left: 5px solid #ff9800;
+    padding: 12px 16px;
+    margin: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+    .feedback-ok { color: #0f5132; background: rgba(16,185,129,0.04); padding:6px; border-radius:6px; margin-bottom:6px; }
+    .feedback-fail { color: #7a1f1f; background: rgba(244,63,94,0.04); padding:6px; border-radius:6px; margin-bottom:6px; }
+
+    @media (max-width: 768px) {
+        .file-sidebar { display:none; }
+        #editor { height:40vh; }
+        #output { height:50vh; }
+        }
+
+        @media (max-width: 768px){
+
+        /* Toolbar selalu 1 baris */
+        .toolbar{
+            flex-wrap:nowrap;
+        }
+
+        /* Sembunyikan judul */
+        .toolbar-title{
+            display:none;
+        }
+
+        /* Tombol lebih kecil */
+        .btn-run,
+        .btn-clear,
+        .btn-submit{
+            width:32px;
+            height:30px;
+            font-size:13px;
+        }
+    }
 </style>

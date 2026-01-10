@@ -258,6 +258,68 @@
 
         box-shadow: 0 4px 10px rgba(30,58,138,.25);
     }
+
+    /* ================= LEARNING ROW RESPONSIVE ================= */
+    .learning-row{
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        flex-wrap: nowrap;   /* PENTING: anti turun */
+    }
+
+    /* Biar tidak melar atau aneh */
+    .learning-box{
+        flex: 0 0 auto;
+    }
+
+    @media (max-width: 768px){
+        .learning-box{
+            width: 115px;
+            padding: 14px 10px;
+        }
+
+        .learning-box .icon{
+            font-size: 1.6rem;
+        }
+    }
+    @media (max-width: 576px){
+        .learning-row{
+            gap: 10px;
+        }
+
+        .learning-box{
+            width: 95px;
+            padding: 10px 8px;
+            border-radius: 12px;
+        }
+
+        .learning-box .icon{
+            font-size: 1.35rem;
+        }
+
+        .learning-box small{
+            font-size: 11px;
+        }
+    }
+
+    @media (max-width: 400px){
+        .learning-row{
+            gap: 8px;
+        }
+
+        .learning-box{
+            width: 85px;
+            padding: 8px 6px;
+        }
+
+        .learning-box .icon{
+            font-size: 1.2rem;
+        }
+
+        .learning-box .fw-bold{
+            font-size: 13px;
+        }
+    }
 </style>
 
 <div class="container py-4">
@@ -301,7 +363,7 @@
             </div>
 
             <!-- BOX -->
-            <div class="d-flex flex-wrap justify-content-center gap-3">
+             <div class="learning-row d-flex justify-content-center gap-3">
 
                 <div class="learning-box learning-locked">
                     <div class="icon">🎨</div>

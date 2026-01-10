@@ -100,8 +100,6 @@
     <!-- ==============================
          NAVIGATION TAB
     ===============================-->
-
-
     <div class="tab-wrapper">
         <ul class="nav nav-pills justify-content-between flex-wrap" id="kelasTab" role="tablist">
 
@@ -109,7 +107,8 @@
                 <button class="nav-link active w-100"
                         id="jelajah-tab" data-bs-toggle="tab" data-bs-target="#jelajah"
                         type="button" role="tab">
-                    <i class="bi bi-search me-1"></i> Jelajah
+                    <i class="bi bi-search"></i>
+                    <span class="tab-text">Jelajah</span>
                 </button>
             </li>
 
@@ -120,8 +119,8 @@
                     type="button" role="tab"
                     title="{{ $isVisual ? '' : 'Hanya untuk gaya belajar visual' }}"
                 >
-                    <i class="bi {{ $isVisual ? 'bi-question-circle' : 'bi-lock-fill' }} me-1"></i>
-                    Kuis
+                    <i class="bi {{ $isVisual ? 'bi-question-circle' : 'bi-lock-fill' }}"></i>
+                    <span class="tab-text">Kuis</span>
                 </button>
             </li>
 
@@ -132,8 +131,8 @@
                     type="button" role="tab"
                     title="{{ $isVisual ? '' : 'Hanya untuk gaya belajar visual' }}"
                 >
-                    <i class="bi {{ $isVisual ? 'bi-terminal' : 'bi-lock-fill' }} me-1"></i>
-                    Live Code
+                    <i class="bi {{ $isVisual ? 'bi-terminal' : 'bi-lock-fill' }}"></i>
+                    <span class="tab-text">Live Code</span>
                 </button>
             </li>
 
@@ -144,8 +143,8 @@
                     type="button" role="tab"
                     title="{{ $isVisual ? '' : 'Hanya untuk gaya belajar visual' }}"
                 >
-                    <i class="bi {{ $isVisual ? 'bi-cpu' : 'bi-lock-fill' }} me-1"></i>
-                    Virtual Praktikum
+                    <i class="bi {{ $isVisual ? 'bi-cpu' : 'bi-lock-fill' }}"></i>
+                    <span class="tab-text">Virtual Praktikum</span>
                 </button>
             </li>
 
@@ -153,7 +152,8 @@
                 <button class="nav-link w-100"
                         id="leaderboard-tab" data-bs-toggle="tab" data-bs-target="#leaderboard"
                         type="button" role="tab">
-                    <i class="bi bi-trophy me-1"></i> Leaderboard
+                    <i class="bi bi-trophy"></i>
+                    <span class="tab-text">Leaderboard</span>
                 </button>
             </li>
 
@@ -164,8 +164,8 @@
                     type="button" role="tab"
                     title="{{ $isVisual ? '' : 'Hanya untuk gaya belajar visual' }}"
                 >
-                    <i class="bi {{ $isVisual ? 'bi-journal-text' : 'bi-lock-fill' }} me-1"></i>
-                    Feed Pembelajaran
+                    <i class="bi {{ $isVisual ? 'bi-journal-text' : 'bi-lock-fill' }}"></i>
+                    <span class="tab-text">Feed Pembelajaran</span>
                 </button>
             </li>
 
@@ -179,8 +179,8 @@
                     data-bs-toggle="dropdown"
                     title="{{ $isVisual ? '' : 'Hanya untuk gaya belajar visual' }}"
                 >
-                    <i class="bi {{ $isVisual ? 'bi-globe' : 'bi-lock-fill' }} me-1"></i>
-                    Eksplore
+                    <i class="bi {{ $isVisual ? 'bi-globe' : 'bi-lock-fill' }}"></i>
+                    <span class="tab-text">Eksplore</span>
                 </a>
 
                 <ul class="dropdown-menu eksplore-dropdown">
@@ -189,19 +189,22 @@
                         <li>
                             <a class="dropdown-item"
                             href="{{ route('isiKelas.byStyle', ['style' => 'visual', 'id' => $kelas->id]) }}">
-                                🎨 Gaya Belajar Visual
+                                <i class="bi bi-palette-fill dd-icon"></i>
+                                <span class="dd-text">Gaya Belajar Visual</span>
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item"
                             href="{{ route('isiKelas.byStyle', ['style' => 'auditori', 'id' => $kelas->id]) }}">
-                                🎧 Gaya Belajar Auditori
+                                <i class="bi bi-headphones dd-icon"></i>
+                                <span class="dd-text">Gaya Belajar Auditori</span>
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item"
                             href="{{ route('isiKelas.byStyle', ['style' => 'kinestetik', 'id' => $kelas->id]) }}">
-                                🏃 Gaya Belajar Kinestetik
+                                <i class="bi bi-person-walking dd-icon"></i>
+                                <span class="dd-text">Gaya Belajar Kinestetik</span>
                             </a>
                         </li>
                     @endif
@@ -209,7 +212,6 @@
             </li>
         </ul>
     </div>
-
 
     <!-- ==============================
          TAB CONTENT

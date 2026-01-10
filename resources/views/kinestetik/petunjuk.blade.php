@@ -50,7 +50,9 @@
                     </h2>
                     <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionPetunjuk">
                         <div class="accordion-body">
-                            Masuk ke kelas anda untuk memulai pembelajaran.
+                            -> Tambahkan kelas Anda dengan masuk ke menu Kelas <br>
+                            -> Mintalah id kelas ke guru mata pelajaran Anda <br>
+                            -> Masuklah ke dalam kelas berdasarkan id yang telah diberikan guru Anda <br>
                         </div>
                     </div>
                 </div>
@@ -64,7 +66,7 @@
                     </h2>
                     <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionPetunjuk">
                         <div class="accordion-body">
-                            Mulailah pembelajaran melalui fitur yang telah disediakan.
+                            Setelah kelas berhasil ditambahkan, Mulailah pembelajaran melalui fitur yang telah disediakan.
                         </div>
                     </div>
                 </div>

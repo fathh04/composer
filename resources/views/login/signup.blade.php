@@ -118,7 +118,73 @@
         .survey-step {
             display: block;
         }
-    </style>
+
+        /* ======================
+        RESPONSIVE
+        ====================== */
+
+        /* Tablet & HP */
+        @media (max-width: 991px) {
+            .signup-wrapper {
+                flex-direction: column;
+                max-width: 100%;
+            }
+
+            .signup-logo {
+                order: -1;
+                text-align: center;
+                padding: 30px 20px;
+            }
+
+            .signup-logo img {
+                width: 120px;
+            }
+
+            .signup-form {
+                padding: 30px 25px;
+            }
+        }
+
+            /* HP kecil */
+            @media (max-width: 576px) {
+                body {
+                    padding: 10px;
+                }
+
+                .signup-form h3 {
+                    font-size: 1.4rem;
+                }
+
+                .signup-form {
+                    padding: 25px 20px;
+                }
+
+                .form-label {
+                    font-size: 0.9rem;
+                }
+
+                .btn-signup {
+                    font-size: 0.95rem;
+                    padding: 12px;
+                }
+
+                /* Modal survey */
+                .modal-dialog {
+                    margin: 15px;
+                }
+
+                .survey-step h5 {
+                    font-size: 1rem;
+                }
+
+                .child-btn {
+                    width: 100%;
+                    max-width: 100%;
+                    font-size: 14px;
+                    padding: 12px;
+                }
+            }
+            </style>
 </head>
 
 <body>
@@ -322,6 +388,41 @@
     </div>
 </div>
 
+<!-- MODAL EMAIL SUDAH TERDAFTAR -->
+<div class="modal fade" id="emailExistModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+
+            <div class="mb-3">
+                <div class="mx-auto d-flex align-items-center justify-content-center"
+                     style="width:70px;height:70px;border-radius:50%;background:#ffe2e2;">
+                    <i class="bi bi-exclamation-triangle-fill text-danger fs-2"></i>
+                </div>
+            </div>
+
+            <h5 class="fw-bold text-danger mb-2">
+                Email Sudah Terdaftar
+            </h5>
+
+            <p class="mb-3">
+                Email yang Anda masukkan sudah digunakan.<br>
+                Silakan login atau gunakan email lain.
+            </p>
+
+            <div class="d-flex gap-2 justify-content-center">
+                <a href="{{ route('login') }}" class="btn btn-primary rounded-pill px-4">
+                    Login
+                </a>
+                <button class="btn btn-outline-secondary rounded-pill px-4"
+                        data-bs-dismiss="modal">
+                    Ganti Email
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -398,6 +499,19 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('.modal-backdrop').forEach(e => e.remove());
     document.body.classList.remove('modal-open');
     document.body.style.overflow = 'auto';
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    @if ($errors->has('email'))
+        const emailModal = new bootstrap.Modal(
+            document.getElementById('emailExistModal')
+        );
+        emailModal.show();
+    @endif
+
 });
 </script>
 

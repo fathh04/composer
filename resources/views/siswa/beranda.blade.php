@@ -226,6 +226,151 @@
         box-shadow: 0 4px 10px rgba(30,58,138,.25);
     }
 
+    @media (max-width: 992px) {
+
+        .hero-header{
+            padding: 22px 22px;
+            border-radius: 18px;
+        }
+
+        .hero-title{
+            font-size: 1.2rem;
+        }
+
+        .hero-subtitle{
+            font-size: .9rem;
+        }
+
+        .learning-box{
+            width: 120px;
+            padding: 14px 10px;
+            border-radius: 12px;
+        }
+
+        .learning-box .icon{
+            font-size: 1.6rem;
+        }
+
+        .learning-title{
+            font-size: 1rem;
+        }
+
+        .learning-desc{
+            font-size: .85rem;
+            padding: 8px 12px;
+        }
+    }
+    @media (max-width: 576px) {
+
+        body{
+            font-size: 14px;
+        }
+
+        /* HERO */
+        .hero-header{
+            padding: 18px 16px;
+            border-radius: 16px;
+        }
+
+        .hero-title{
+            font-size: 1.05rem;
+            line-height: 1.3;
+        }
+
+        .hero-subtitle{
+            font-size: .85rem;
+        }
+
+        .hero-divider{
+            width: 40px;
+            height: 3px;
+        }
+
+        /* LEARNING PANEL */
+        .learning-panel-header{
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .ai-badge{
+            font-size: 11px;
+            padding: 5px 12px;
+        }
+
+        .learning-desc{
+            font-size: .8rem;
+            margin-bottom: 16px;
+        }
+
+        /* LEARNING BOX */
+        .learning-box{
+            width: 95px;
+            padding: 10px 6px;
+            border-radius: 10px;
+        }
+
+        .learning-box .icon{
+            font-size: 1.35rem;
+        }
+
+        .learning-box small{
+            font-size: 11px;
+        }
+
+        .learning-active{
+            transform: translateY(-2px);
+        }
+
+        .learning-active::after{
+            left: 12px;
+            right: 12px;
+            bottom: -4px;
+            height: 6px;
+        }
+
+        /* CARD */
+        .card-panel{
+            border-radius: 16px;
+        }
+
+        .recommended-card:hover,
+        .card-materi:hover{
+            transform: translateY(-3px);
+        }
+    }
+
+    @media (max-width: 400px) {
+
+        .hero-title{
+            font-size: .95rem;
+        }
+
+        .learning-box{
+            width: 85px;
+            padding: 8px 6px;
+        }
+
+        .learning-box .icon{
+            font-size: 1.2rem;
+        }
+
+        .learning-box .fw-bold{
+            font-size: 13px;
+        }
+
+        .learning-desc{
+            font-size: .75rem;
+        }
+    }
+
+    /* ================= LEARNING ROW (SELALU HORIZONTAL) ================= */
+    .learning-row{
+        display: flex;
+        flex-wrap: nowrap;      /* PENTING: tidak turun */
+        justify-content: center;
+        gap: 16px;
+    }
 </style>
 
 <div class="container py-4">
@@ -269,7 +414,7 @@
             </div>
 
             <!-- BOX -->
-            <div class="d-flex flex-wrap justify-content-center gap-3">
+            <div class="learning-row d-flex justify-content-center gap-3">
 
                 <div class="learning-box learning-active">
                     <div class="icon">🎨</div>

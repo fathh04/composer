@@ -59,9 +59,9 @@
         <a class="navbar-brand fw-bold text-gradient">HTMLVirtual</a>
 
         <div class="ms-auto d-flex align-items-center gap-2">
-            <button id="toggleTheme" class="btn btn-light rounded-circle shadow-sm">
+            {{-- <button id="toggleTheme" class="btn btn-light rounded-circle shadow-sm">
                 <i class="bi bi-moon-stars fs-5"></i>
-            </button>
+            </button> --}}
 
             <div class="dropdown">
                 <button class="btn btn-light rounded-pill d-flex align-items-center px-2 py-1 shadow-sm"
@@ -110,12 +110,12 @@
             sidebar.classList.toggle('active');
         });
 
-        toggleTheme.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            toggleTheme.innerHTML = body.classList.contains('dark-mode')
-                ? '<i class="bi bi-sun fs-5"></i>'
-                : '<i class="bi bi-moon-stars fs-5"></i>';
-        });
+        // toggleTheme.addEventListener('click', () => {
+        //     body.classList.toggle('dark-mode');
+        //     toggleTheme.innerHTML = body.classList.contains('dark-mode')
+        //         ? '<i class="bi bi-sun fs-5"></i>'
+        //         : '<i class="bi bi-moon-stars fs-5"></i>';
+        // });
     </script>
 
 </body>

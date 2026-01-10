@@ -26,7 +26,7 @@ class AuthController extends Controller
             $user = pengguna::where('email', $request->email)->first();
 
             if (!$user) {
-                return back()->withErrors(['email' => 'Email tidak ditemukan dalam database.']);
+                return back()->withErrors(['email' => 'Email tidak ditemukan.']);
             }
 
             if (!Hash::check($request->password, $user->password)) {

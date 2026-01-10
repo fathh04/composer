@@ -327,3 +327,250 @@
         color: #5a4b00;
     }
 
+    /* =================================
+    RESPONSIVE GLOBAL ADJUSTMENT
+    ================================= */
+
+    /* ===== TABLET ===== */
+    @media (max-width: 991px) {
+
+        /* Hero */
+        .kelas-hero {
+            padding: 30px 24px;
+            border-radius: 16px;
+        }
+
+        .kelas-hero h1 {
+            font-size: 1.5rem;
+        }
+
+        /* Floating warning alert */
+        .floating-style-alert {
+            right: 12px;
+            top: 80px;
+            max-width: 320px;
+            font-size: 0.8rem;
+        }
+
+        .eksplore-alert {
+            top: 18px;
+            right: 16px;
+            width: 300px;
+            padding: 14px 16px;
+            border-radius: 16px;
+        }
+
+        .eksplore-alert-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+
+        .eksplore-alert-content p {
+            font-size: 0.85rem;
+        }
+
+        /* Tab wrapper */
+        .tab-wrapper {
+            padding: 8px;
+            margin: 20px 12px;
+        }
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 576px) {
+
+        /* Hero */
+        .kelas-hero {
+            padding: 22px 18px;
+            border-radius: 14px;
+        }
+
+        .kelas-hero h1 {
+            font-size: 1.25rem;
+        }
+
+        .kelas-hero p {
+            font-size: 0.85rem;
+        }
+
+        /* Floating alert jadi full-width */
+        .floating-style-alert {
+            left: 12px;
+            right: 12px;
+            top: auto;
+            bottom: 16px;
+            max-width: none;
+            border-radius: 14px;
+        }
+
+        .eksplore-alert {
+            top: 14px;
+            right: 12px;
+            left: auto;
+
+            width: 240px;          /* ⬅️ diperkecil */
+            padding: 10px 12px;
+            gap: 10px;
+
+            border-radius: 14px;
+        }
+
+        .eksplore-alert-icon {
+            width: 34px;
+            height: 34px;
+            font-size: 1rem;
+        }
+
+        .eksplore-alert-content h6 {
+            font-size: 0.8rem;
+        }
+
+        .eksplore-alert-content p {
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+
+        /* Dropdown menu */
+        .nav-item.dropdown .dropdown-menu {
+            width: 100%;
+            min-width: unset;
+            max-width: unset;
+            border-radius: 14px;
+            margin-top: 6px;
+        }
+
+        .eksplore-dropdown {
+            min-width: 100%;
+            max-width: 100%;
+            padding: 6px;
+        }
+
+        .eksplore-dropdown .dropdown-item {
+            padding: 8px 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Icon */
+        .eksplore-dropdown .dd-icon {
+            font-size: 1.1rem;
+        }
+    }
+
+    /* ===== EXTRA SMALL (HP KECIL) ===== */
+    @media (max-width: 400px) {
+
+        .kelas-hero h1 {
+            font-size: 1.1rem;
+        }
+
+        .tab-wrapper .nav-link {
+            font-size: 0.6rem;
+            padding: 4px 2px;
+        }
+
+        .floating-style-alert h6,
+        .eksplore-alert-content h6 {
+            font-size: 0.8rem;
+        }
+
+         .eksplore-alert {
+            width: 210px;
+            padding: 8px 10px;
+        }
+
+        .eksplore-alert-content p {
+            font-size: 0.7rem;
+        }
+    }
+
+    /* ==========================
+    TAB ICON ONLY (MOBILE)
+    ========================== */
+    @media (max-width: 576px) {
+
+        /* Sembunyikan teks */
+        .tab-wrapper .tab-text {
+            display: none;
+        }
+
+        /* Rapikan icon */
+        .tab-wrapper .nav-link i {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        /* Tengah sempurna */
+        .tab-wrapper .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+        }
+    }
+
+    /* ==========================
+   EKSPlORE DROPDOWN – BI ICON
+   ========================== */
+
+    .eksplore-dropdown .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Icon */
+    .eksplore-dropdown .dd-icon {
+        font-size: 1.2rem;
+        color: var(--bs-primary);
+        flex-shrink: 0;
+    }
+
+    /* Text */
+    .eksplore-dropdown .dd-text {
+        line-height: 1.35;
+    }
+
+    /* Hover */
+    .eksplore-dropdown .dropdown-item:hover .dd-icon {
+        color: #fff;
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 576px) {
+
+        .nav-item.dropdown .dropdown-menu {
+            width: calc(100vw - 24px);
+            left: 12px !important;
+            right: 12px !important;
+            transform: none !important;
+        }
+
+        .eksplore-dropdown {
+            min-width: 100%;
+            max-width: 100%;
+            padding: 6px;
+            border-radius: 14px;
+        }
+
+        .eksplore-dropdown .dropdown-item {
+            padding: 10px 12px;
+            font-size: 0.8rem;
+        }
+
+        .eksplore-dropdown .dd-icon {
+            font-size: 1.15rem;
+        }
+    }
+
+    /* HP kecil */
+    @media (max-width: 400px) {
+        .eksplore-dropdown .dropdown-item {
+            font-size: 0.75rem;
+            padding: 8px 10px;
+        }
+
+        .eksplore-dropdown .dd-icon {
+            font-size: 1.05rem;
+        }
+    }
