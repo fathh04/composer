@@ -137,7 +137,7 @@
                                             </ul>
 
                                             <div class="alert alert-info mt-3 small">
-                                                💡 <strong>Catatan:</strong><br>  
+                                                💡 <strong>Catatan:</strong><br>
                                                 Untuk mengatur teks ataupun gambar dalam baris dan kolom, digunakanlah <b>pemformatan Tabel</b>
                                             </div>
 
@@ -439,94 +439,88 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    const submitBtn = document.getElementById('submitProject4');
-    const projectEditor = document.querySelector('.project-editor');
-    const resultBox = document.getElementById('projectResult4');
+    const projectTabBtn = document.querySelector(
+        '[data-bs-target="#materi4-project"]'
+    );
 
-    if (!submitBtn) return;
+    projectTabBtn.addEventListener('shown.bs.tab', () => {
 
-    submitBtn.addEventListener('click', () => {
+        const projectTab = document.getElementById('materi4-project');
+        const submitBtn = document.getElementById('submitProject4');
+        const projectEditor = projectTab.querySelector('.project-editor');
+        const resultBox = document.getElementById('projectResult4');
 
-        const code = projectEditor.value.toLowerCase();
+        if (!submitBtn) return;
 
-        const checks = [
-            {
-                label: 'Judul (<h1>)',
-                valid: /<h1>.*<\/h1>/.test(code),
-                descOk: 'Judul utama sudah menggunakan tag <h1> dengan benar.',
-                descFail: 'Tambahkan judul utama menggunakan tag <h1>...</h1>.'
-            },
-            {
-                label: 'Tabel (<table>)',
-                valid: /<table[\s\S]*?>[\s\S]*?<\/table>/.test(code),
-                descOk: 'Struktur tabel sudah menggunakan tag <table>.',
-                descFail: 'Buat tabel menggunakan tag <table>...</table>.'
-            },
-            {
-                label: 'Minimal 2 baris (<tr>)',
-                valid: (code.match(/<tr/g) || []).length >= 2,
-                descOk: 'Jumlah baris tabel sudah memenuhi syarat.',
-                descFail: 'Tambahkan minimal 2 baris tabel menggunakan <tr>.'
-            },
-            {
-                label: 'Minimal 3 kolom (<td> / <th>)',
-                valid: (code.match(/<(td|th)>/g) || []).length >= 3,
-                descOk: 'Jumlah kolom tabel sudah mencukupi.',
-                descFail: 'Tambahkan minimal 3 kolom menggunakan <td> atau <th>.'
-            },
-            {
-                label: 'Minimal 3 atribut tabel',
-                valid: (
-                    code.match(/(border|width|cellpadding|cellspacing|align|bgcolor)=/g) || []
-                ).length >= 3,
-                descOk: 'Atribut tabel sudah digunakan dengan baik.',
-                descFail: 'Gunakan minimal 3 atribut tabel (contoh: border, width, cellpadding).'
-            }
-        ];
+        submitBtn.onclick = () => {
 
-        const allCorrect = checks.every(item => item.valid);
+            const code = projectEditor.value.toLowerCase();
 
-        /* ===== KERANGKA HASIL ===== */
-        resultBox.innerHTML = `
-            <div class="project-result">
-                <div class="project-result-header ${allCorrect ? 'success' : 'warning'}">
-                    ${allCorrect ? '🎉 Project Berhasil!' : '⚠️ Project Perlu Perbaikan'}
+            const checks = [
+                {
+                    label: 'Judul (&lt;h1&gt;)',
+                    valid: /<h1\b[^>]*>[\s\S]*?<\/h1>/.test(code),
+                    ok: 'Judul utama sudah menggunakan &lt;h1&gt;.',
+                    fail: 'Tambahkan judul menggunakan tag &lt;h1&gt;.'
+                },
+                {
+                    label: 'Tabel (&lt;table&gt;)',
+                    valid: /<table[\s\S]*?>[\s\S]*?<\/table>/.test(code),
+                    ok: 'Tag &lt;table&gt; sudah digunakan.',
+                    fail: 'Tambahkan struktur tabel dengan &lt;table&gt;.'
+                },
+                {
+                    label: 'Minimal 2 baris (&lt;tr&gt;)',
+                    valid: (code.match(/<tr/g) || []).length >= 2,
+                    ok: 'Jumlah baris tabel sudah cukup.',
+                    fail: 'Tambahkan minimal 2 baris menggunakan &lt;tr&gt;.'
+                },
+                {
+                    label: 'Minimal 3 kolom (&lt;td&gt; / &lt;th&gt;)',
+                    valid: (code.match(/<(td|th)>/g) || []).length >= 3,
+                    ok: 'Jumlah kolom tabel sudah memenuhi.',
+                    fail: 'Tambahkan minimal 3 kolom tabel.'
+                },
+                {
+                    label: 'Minimal 3 atribut tabel',
+                    valid: (code.match(/(border|width|cellpadding|cellspacing|align|bgcolor)=/g) || []).length >= 3,
+                    ok: 'Atribut tabel sudah lengkap.',
+                    fail: 'Gunakan minimal 3 atribut tabel.'
+                }
+            ];
+
+            const allCorrect = checks.every(c => c.valid);
+
+            resultBox.innerHTML = `
+                <div class="project-result">
+                    <div class="project-result-header ${allCorrect ? 'success' : 'warning'}">
+                        ${allCorrect ? '🎉 Project Berhasil!' : '⚠️ Project Perlu Perbaikan'}
+                    </div>
+
+                    <ul class="project-result-list" id="resultList"></ul>
+
+                    <div class="project-result-footer ${allCorrect ? 'success' : 'warning'}">
+                        ${allCorrect
+                            ? 'Mantap! Semua kriteria terpenuhi 👏'
+                            : 'Ikuti arahan perbaikan di atas ya 💡'}
+                    </div>
                 </div>
+            `;
 
-                <ul class="project-result-list" id="resultList"></ul>
+            const list = document.getElementById('resultList');
 
-                <div class="project-result-footer ${allCorrect ? 'success' : 'warning'}">
-                    ${
-                        allCorrect
-                            ? 'Mantap! Semua kriteria sudah terpenuhi 👏'
-                            : 'Perhatikan poin yang bertanda ❌ dan ikuti arahannya ya 💡'
-                    }
-                </div>
-            </div>
-        `;
+            checks.forEach(item => {
+                const li = document.createElement('li');
+                li.className = `project-result-item ${item.valid ? 'success' : 'error'}`;
 
-        const list = document.getElementById('resultList');
+                li.innerHTML = `
+                    <div class="title">${item.valid ? '✅' : '❌'} ${item.label}</div>
+                    <div class="desc">${item.valid ? item.ok : item.fail}</div>
+                `;
 
-        /* ===== DETAIL HASIL ===== */
-        checks.forEach(item => {
-
-            const li = document.createElement('li');
-            li.className = `project-result-item ${item.valid ? 'success' : 'error'}`;
-
-            const title = document.createElement('div');
-            title.className = 'title';
-            title.textContent = `${item.valid ? '✅' : '❌'} ${item.label}`;
-
-            const desc = document.createElement('div');
-            desc.className = 'desc';
-            desc.textContent = item.valid ? item.descOk : item.descFail;
-
-            li.appendChild(title);
-            li.appendChild(desc);
-            list.appendChild(li);
-        });
-
+                list.appendChild(li);
+            });
+        };
     });
-
 });
 </script>

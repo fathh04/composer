@@ -79,7 +79,7 @@
                                         id="materiAudio9"
                                         controls
                                         class="w-100 mb-3"
-                                        preload="metadata"
+                                        preload="auto"
                                         playsinline
                                     >
                                         <!-- FORMAT UTAMA (PALING AMAN) -->
@@ -144,7 +144,7 @@
 
                                                 <audio
                                                     id="walkthroughAudio9"
-                                                    preload="metadata"
+                                                    preload="auto"
                                                     playsinline
                                                 >
                                                     <!-- FORMAT UTAMA -->

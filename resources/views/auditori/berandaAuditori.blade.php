@@ -419,7 +419,7 @@
                 <!-- AUDIO -->
                 <audio
                     id="audioPemformatan"
-                    preload="metadata"
+                    preload="auto"
                     playsinline
                 >
                     <!-- FORMAT UTAMA (PALING AMAN) -->

@@ -79,7 +79,7 @@
                                         id="materiAudio8"
                                         controls
                                         class="w-100 mb-3"
-                                        preload="metadata"
+                                        preload="auto"
                                         playsinline
                                     >
                                         <!-- FORMAT UTAMA -->
@@ -144,7 +144,7 @@
 
                                                 <audio
                                                     id="walkthroughAudio8"
-                                                    preload="metadata"
+                                                    preload="auto"
                                                     playsinline
                                                 >
                                                     <!-- FORMAT UTAMA -->

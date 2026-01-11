@@ -74,11 +74,29 @@
 
         /* Modal Style */
         .modal-content {
+            position: relative;
             border-radius: 25px !important;
-            background: rgba(255, 255, 255, 0.25) !important;
-            backdrop-filter: blur(12px);
+            background: #ffffff; /* solid, tidak transparan */
             border: 2px solid rgba(255, 255, 255, 0.3);
             animation: popUp 0.25s ease;
+            overflow: hidden;
+        }
+
+        /* Layer blur */
+        .modal-content::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.4); /* hanya untuk blur */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 0;
+        }
+
+        /* Pastikan isi modal di atas blur */
+        .modal-content > * {
+            position: relative;
+            z-index: 1;
         }
 
         @keyframes popUp {
@@ -87,7 +105,7 @@
         }
 
         .survey-step h5 {
-            color: #ffffff;
+            color: #000;
             font-weight: 700;
             font-size: 1.2rem;
             margin-bottom: 25px;

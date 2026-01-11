@@ -318,7 +318,7 @@
 
     <div class="hero-header mb-4">
 
-         <div class="learning-row d-flex justify-content-center gap-3">
+           <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
             <div>
                 <div class="hero-title mb-1">
@@ -355,7 +355,7 @@
             </div>
 
             <!-- BOX -->
-            <div class="d-flex flex-wrap justify-content-center gap-3">
+            <div class="learning-row d-flex justify-content-center gap-3">
 
                 <div class="learning-box learning-locked">
                     <div class="icon">🎨</div>

@@ -79,17 +79,17 @@
                                         id="materiAudio2"
                                         class="w-100 mb-3"
                                         controls
-                                        preload="metadata"
+                                        preload="auto"
                                         playsinline
                                     >
                                         <!-- FORMAT UTAMA (PALING AMAN) -->
-                                        <source src="{{ url('audio/pemformatan paragraf.mp3') }}" type="audio/mpeg">
+                                        <source src="{{ url('audio/pemformatan-paragraf.mp3') }}" type="audio/mpeg">
 
                                         <!-- FALLBACK -->
-                                        <source src="{{ url('audio/pemformatan paragraf.ogg') }}" type="audio/ogg">
+                                        <source src="{{ url('audio/pemformatan-paragraf.ogg') }}" type="audio/ogg">
 
                                         <!-- OPSI TERAKHIR -->
-                                        <source src="{{ url('audio/pemformatan paragraf.wav') }}" type="audio/wav">
+                                        <source src="{{ url('audio/pemformatan-paragraf.wav') }}" type="audio/wav">
 
                                         Browser Anda tidak mendukung pemutaran audio.
                                     </audio>
@@ -150,7 +150,7 @@
 
                                                 <audio
                                                     id="walkthroughAudio2"
-                                                    preload="metadata"
+                                                    preload="auto"
                                                     playsinline
                                                 >
                                                     <!-- FORMAT UTAMA -->
@@ -340,25 +340,38 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* ==============================
-       AUDIO CONTROL
+    AUDIO CONTROL
     ============================== */
     const audios = modal.querySelectorAll('audio');
 
-    function stopAllAudio() {
+    // pause semua audio (TANPA reset time)
+    function pauseAllAudio() {
         audios.forEach(audio => {
             audio.pause();
-            audio.currentTime = 0;
         });
     }
 
+    // paksa load audio saat tab Audio dibuka
+    const audioTabBtn = modal.querySelector(
+        '[data-bs-target="#materi2-audio"]'
+    );
+
+    audioTabBtn?.addEventListener('shown.bs.tab', () => {
+        const audio = document.getElementById('materiAudio2');
+        audio?.load();
+    });
+
     // stop audio saat tab pindah
     modal.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
-        tab.addEventListener('shown.bs.tab', stopAllAudio);
+        tab.addEventListener('shown.bs.tab', pauseAllAudio);
     });
 
     // stop audio saat modal ditutup
     modal.addEventListener('hidden.bs.modal', () => {
-        stopAllAudio();
+        audios.forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0; // reset cuma saat modal ditutup
+        });
 
         if (document.fullscreenElement) {
             document.exitFullscreen();
@@ -370,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // stop audio saat pindah tab browser
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-            stopAllAudio();
+            pauseAllAudio();
         }
     });
 

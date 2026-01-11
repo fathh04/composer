@@ -402,22 +402,22 @@ document.addEventListener('DOMContentLoaded', function () {
             const checks = [
                 {
                     label: 'Judul (<h1>)',
-                    valid: /<h1>.*<\/h1>/.test(code),
+                    valid: /<h1\b[^>]*>[\s\S]*?<\/h1>/.test(code),
                     desc: 'Tag <h1> digunakan sebagai judul halaman.'
                 },
                 {
                     label: 'Minimal 2 paragraf (<p>)',
-                    valid: (code.match(/<p>/g) || []).length >= 2,
+                    valid: (code.match(/<p\b[^>]*>/g) || []).length >= 2,
                     desc: 'Gunakan minimal dua paragraf.'
                 },
                 {
                     label: 'Pindah baris / pemisah (<br> / <hr>)',
-                    valid: /<br\s*\/?>|<hr\s*\/?>/.test(code),
+                    valid: /<br\b[^>]*>|<hr\b[^>]*>/.test(code),
                     desc: 'Gunakan tag pindah baris atau pemisah.'
                 },
                 {
                     label: 'Pemformatan lanjutan',
-                    valid: /text-align|<blockquote>|<pre>/.test(code),
+                    valid: /text-align\s*:|<blockquote\b|<pre\b/.test(code),
                     desc: 'Gunakan text-align, blockquote, atau pre.'
                 }
             ];

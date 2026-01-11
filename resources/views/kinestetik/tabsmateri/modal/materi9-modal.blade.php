@@ -48,7 +48,7 @@
                             <!-- =========================
                             2. MATERI & PRAKTIK (DRAG DROP - FORM HTML)
                             ========================= -->
-                            <div class="tab-pane fade" id="materi9-praktik">
+                            <div class="tab-pane fade show active" id="materi9-praktik">
 
                                 <p class="text-secondary small">
                                     Pelajari fungsi setiap tag dan atribut Form HTML, lalu lengkapi kode berikut
@@ -248,109 +248,87 @@ Pesan:
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    /* =========================
+    DRAG & DROP MATERI 9
+    ========================= */
 
-    /* ===== LIVE OUTPUT ===== */
-    const editor = document.getElementById('editorMateri9');
-    const output = document.getElementById('outputMateri9');
+    /* 🔧 INIT DRAG & DROP (DIPANGGIL SAAT TAB AKTIF) */
+    function initDragDropMateri9() {
 
-    if (editor && output) {
-        const updatePreview = () => output.srcdoc = editor.value;
-        editor.addEventListener('input', updatePreview);
-        updatePreview();
+        const praktikTab = document.getElementById('materi9-praktik');
+        if (!praktikTab) return;
+
+        let draggedItem = null;
+
+        /* DRAG ITEM */
+        praktikTab.querySelectorAll('.drag-item').forEach(item => {
+            item.addEventListener('dragstart', () => {
+                draggedItem = item;
+            });
+        });
+
+        /* DROP SLOT */
+        praktikTab.querySelectorAll('.drop-slot').forEach(slot => {
+
+            slot.addEventListener('dragover', e => e.preventDefault());
+
+            slot.addEventListener('drop', e => {
+                e.preventDefault();
+                if (!draggedItem || slot.children.length > 0) return;
+
+                slot.appendChild(draggedItem);
+                slot.classList.add('filled');
+
+                if (draggedItem.dataset.code === slot.dataset.answer) {
+                    slot.classList.add('correct');
+                    slot.classList.remove('wrong');
+                } else {
+                    slot.classList.add('wrong');
+                    slot.classList.remove('correct');
+                }
+
+                checkResultMateri9();
+            });
+        });
+
+        /* KEMBALIKAN KE DAFTAR */
+        const source = document.getElementById('dragSource9');
+
+        source.addEventListener('dragover', e => e.preventDefault());
+
+        source.addEventListener('drop', e => {
+            e.preventDefault();
+            if (!draggedItem) return;
+
+            source.appendChild(draggedItem);
+
+            praktikTab.querySelectorAll('.drop-slot').forEach(slot => {
+                if (slot.contains(draggedItem)) {
+                    slot.classList.remove('filled', 'correct', 'wrong');
+                }
+            });
+
+            checkResultMateri9();
+        });
+
+        /* SHUFFLE ITEM */
+        const items = Array.from(source.children);
+        for (let i = items.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [items[i], items[j]] = [items[j], items[i]];
+        }
+        items.forEach(i => source.appendChild(i));
     }
 
-    /* ===== FULLSCREEN (PER MODAL) ===== */
-    const modal = document.getElementById('modalMateri9');
-    const fullscreenBtn = modal.querySelector('.btn-fullscreen');
-    const fullscreenTarget = modal.querySelector('.modal-dialog');
+    /* 🔎 CEK HASIL */
+    function checkResultMateri9() {
 
-    fullscreenBtn.addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            fullscreenTarget.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
-    });
-
-    document.addEventListener('fullscreenchange', () => {
-        fullscreenBtn.textContent =
-            document.fullscreenElement ? '⤫' : '⛶';
-    });
-
-    /* ===== STOP VIDEO + EXIT FULLSCREEN ===== */
-    modal.addEventListener('hidden.bs.modal', () => {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-        }
-        modal.querySelectorAll('iframe').forEach(i => i.src = i.src);
-    });
-
-    /* ===== DRAG & DROP ===== */
-
-    let draggedItem = null;
-
-    document.addEventListener('dragstart', e => {
-        if (e.target.classList.contains('drag-item')) {
-            draggedItem = e.target;
-        }
-    });
-
-    /* SLOT */
-    document.querySelectorAll('.drop-slot').forEach(slot => {
-
-        slot.addEventListener('dragover', e => e.preventDefault());
-
-        slot.addEventListener('drop', e => {
-            e.preventDefault();
-
-            if (slot.children.length > 0) return;
-
-            slot.appendChild(draggedItem);
-            slot.classList.add('filled');
-
-            // ⬇️ bikin slot menyesuaikan ukuran item
-            slot.style.width = draggedItem.offsetWidth + 12 + 'px';
-            slot.style.height = draggedItem.offsetHeight + 6 + 'px';
-
-            if (draggedItem.dataset.code === slot.dataset.answer) {
-                slot.classList.add('correct');
-                slot.classList.remove('wrong');
-            } else {
-                slot.classList.add('wrong');
-                slot.classList.remove('correct');
-            }
-
-            checkResult();
-        });
-    });
-
-    /* KEMBALIKAN KE DAFTAR */
-    const source = document.getElementById('dragSource9');
-
-    source.addEventListener('dragover', e => e.preventDefault());
-
-    source.addEventListener('drop', e => {
-        e.preventDefault();
-        source.appendChild(draggedItem);
-
-        document.querySelectorAll('.drop-slot').forEach(slot => {
-            if (slot.contains(draggedItem)) {
-                slot.classList.remove('filled', 'correct', 'wrong');
-                slot.style.width = '';
-                slot.style.height = '';
-            }
-        });
-
-        checkResult();
-    });
-
-    function checkResult() {
-        const slots = document.querySelectorAll('.drop-slot');
+        const slots = document.querySelectorAll('#materi9-praktik .drop-slot');
         const filled = [...slots].every(s => s.children.length > 0);
         const correct = [...slots].every(s => s.classList.contains('correct'));
 
-        const feedback = document.getElementById('dragFeedback8');
+        const feedback = document.getElementById('dragFeedback9');
+        if (!feedback) return;
 
         if (filled && correct) {
             feedback.className = 'alert alert-success small mt-3';
@@ -363,17 +341,53 @@ document.addEventListener('DOMContentLoaded', function () {
             feedback.textContent = 'Lengkapi semua kotak dengan benar.';
         }
     }
-    const container = document.getElementById('dragSource9');
-        const items = Array.from(container.children);
 
-        // Fisher-Yates Shuffle
-        for (let i = items.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [items[i], items[j]] = [items[j], items[i]];
+    /* =========================
+    DOM READY
+    ========================= */
+    document.addEventListener('DOMContentLoaded', function () {
+
+        /* LIVE PREVIEW */
+        const editor = document.getElementById('editorMateri9');
+        const output = document.getElementById('outputMateri9');
+
+        if (editor && output) {
+            const updatePreview = () => output.srcdoc = editor.value;
+            editor.addEventListener('input', updatePreview);
+            updatePreview();
         }
 
-        // masukkan kembali ke container
-        items.forEach(item => container.appendChild(item));
+        /* FULLSCREEN */
+        const modal = document.getElementById('modalMateri9');
+        const fullscreenBtn = modal.querySelector('.btn-fullscreen');
+        const fullscreenTarget = modal.querySelector('.modal-dialog');
+
+        fullscreenBtn.addEventListener('click', () => {
+            document.fullscreenElement
+                ? document.exitFullscreen()
+                : fullscreenTarget.requestFullscreen();
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            fullscreenBtn.textContent =
+                document.fullscreenElement ? '⤫' : '⛶';
+        });
+
+        modal.addEventListener('hidden.bs.modal', () => {
+            if (document.fullscreenElement) document.exitFullscreen();
+        });
+
+        /* 🔥 INIT SAAT TAB AKTIF */
+        document
+            .querySelector('[data-bs-target="#materi9-praktik"]')
+            .addEventListener('shown.bs.tab', () => {
+                initDragDropMateri9();
+            });
+
+        /* 🔥 INIT JUGA SAAT MODAL DIBUKA */
+        modal.addEventListener('shown.bs.modal', () => {
+            initDragDropMateri9();
+        });
     });
 </script>
 

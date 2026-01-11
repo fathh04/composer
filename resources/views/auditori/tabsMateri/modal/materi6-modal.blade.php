@@ -79,7 +79,7 @@
                                         id="materiAudio6"
                                         class="w-100 mb-3"
                                         controls
-                                        preload="metadata"
+                                        preload="auto"
                                         playsinline
                                     >
                                         <!-- FORMAT UTAMA -->
@@ -150,7 +150,7 @@
 
                                                 <audio
                                                     id="walkthroughAudio6"
-                                                    preload="metadata"
+                                                    preload="auto"
                                                     playsinline
                                                 >
                                                     <!-- FORMAT UTAMA -->

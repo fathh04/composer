@@ -79,7 +79,7 @@
                                         id="materiAudio3"
                                         controls
                                         class="w-100 mb-3"
-                                        preload="metadata"
+                                        preload="auto"
                                         playsinline
                                     >
                                         <source src="{{ url('audio/pembuatan list.mp3') }}" type="audio/mpeg">
@@ -142,7 +142,7 @@
                                                     🎧 Walkthrough Kode
                                                 </button>
 
-                                                <audio id="walkthroughAudio3" preload="metadata" playsinline>
+                                                <audio id="walkthroughAudio3" preload="auto" playsinline>
                                                     <source src="/audio/materi 3-kode.mp3" type="audio/mpeg">
                                                     <source src="/audio/materi 3-kode.ogg" type="audio/ogg">
                                                     <source src="/audio/materi 3-kode.wav" type="audio/wav">
