@@ -533,5 +533,26 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    function shuffle(elements) {
+        for (let i = elements.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [elements[i], elements[j]] = [elements[j], elements[i]];
+        }
+        return elements;
+    }
+
+    document.querySelectorAll('.survey-step').forEach(step => {
+        const buttons = Array.from(step.querySelectorAll('.answer-btn'));
+        const shuffled = shuffle(buttons);
+
+        shuffled.forEach(btn => step.appendChild(btn));
+    });
+
+});
+</script>
+
 </body>
 </html>
