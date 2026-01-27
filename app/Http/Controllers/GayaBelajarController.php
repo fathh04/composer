@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\pengguna;
+use App\Models\LmsLog;
 use App\Services\GeminiService;
 
 class GayaBelajarController extends Controller
@@ -28,6 +29,36 @@ class GayaBelajarController extends Controller
         }
 
         /* ------------------------------------------------------
+        * Ambil LOG LMS (synthetic / real)
+        * ------------------------------------------------------ */
+        // $lms = LmsLog::where('user_id', $user->id)->first(); //Aktifkan jika pakai data persiswa
+        $lms = LmsLog::selectRaw('
+            AVG(login_count) as login_count,
+            AVG(avg_session_time) as avg_session_time,
+            AVG(material_access) as material_access,
+            AVG(forum_activity) as forum_activity,
+            AVG(assignment_submit) as assignment_submit,
+            AVG(quiz_score) as quiz_score
+        ')->first();
+
+        /* Fallback jika belum ada log (synthetic default) */
+        if (!$lms) {
+            $lms = (object)[
+                'login_count' => rand(5,15),
+                'avg_session_time' => rand(10,40),
+                'material_access' => rand(5,20),
+                'forum_activity' => rand(0,10),
+                'assignment_submit' => rand(1,5),
+                'quiz_score' => rand(60,90)
+            ];
+        }
+
+        /* ================================
+        * BUILD FEATURE LMS  <<< TAMBAHKAN DI SINI
+        * ================================ */
+        $lmsFeature = $this->buildLmsFeature($lms);
+
+        /* ------------------------------------------------------
          * Menggabungkan jawaban user
          * ------------------------------------------------------ */
         $answers = strtolower(implode(' ', $request->answers));
@@ -38,9 +69,8 @@ class GayaBelajarController extends Controller
         $userEmbedding = GeminiService::embedding($answers);
 
         if (!$userEmbedding) {
-            // Fallback hard rule
             $label = ucfirst($this->hardRule($answers));
-            $detail = $this->getDetail($label);
+            $detail = $this->getDetailWithLms($label, $lmsFeature);
             return $this->finalize($user, $label, $detail['alasan'], $detail['rekom']);
         }
 
@@ -70,7 +100,12 @@ class GayaBelajarController extends Controller
         /* ------------------------------------------------------
          * 5) Validasi LLM
          * ------------------------------------------------------ */
-        $llm = $this->llmValidation($datasetPrediction, $rulePrediction, $answers);
+        $llm = $this->llmValidation(
+            $datasetPrediction,
+            $rulePrediction,
+            $answers,
+            $lmsFeature
+        );
 
         // AKTIFKAN KEMBALI APABILA DATASET SUDAH ADA
         // if ($llm) {
@@ -81,12 +116,12 @@ class GayaBelajarController extends Controller
         // }
 
         // nonAktifkan ketika dataset sudah ada
-        if ($llm && in_array($llm['label'], ['Visual','Auditori','Kinestetik'])) {
+        if ($llm && isset($llm['label'])) {
             return $this->finalize(
                 $user,
-                $llm['label'],
-                $llm['alasan'],
-                $llm['rekomendasi']
+                ucfirst($llm['label']),
+                $llm['alasan'] ?? 'Analisis berbasis LMS menunjukkan pola keterlibatan tertentu.',
+                $llm['rekomendasi'] ?? 'Gunakan strategi pembelajaran sesuai gaya belajar.'
             );
         }
 
@@ -105,9 +140,15 @@ class GayaBelajarController extends Controller
         // return $this->finalize($user, $label, $detail['alasan'], $detail['rekom']);
 
         //Nonaktifkan ketika dataset sudah ada
-        $label = ucfirst($rulePrediction);
-        $detail = $this->getDetail($label);
-        return $this->finalize($user, $label, $detail['alasan'], $detail['rekom']);
+        $label = ucfirst($datasetPrediction ?? $rulePrediction);
+        $detail = $this->getDetailWithLms($label, $lmsFeature);
+
+        return $this->finalize(
+            $user,
+            $label,
+            "[Fallback Sistem] ".$detail['alasan'],
+            $detail['rekom']
+        );
     }
 
     /* =========================================================
@@ -231,27 +272,38 @@ class GayaBelajarController extends Controller
     }
 
     /* =========================================================
-     *   LLM VALIDATION
-     * ========================================================= */
-    private function llmValidation($datasetPrediction, $rulePrediction, $answers)
+    *   LLM VALIDATION (ANGKET + LMS)
+    * ========================================================= */
+    private function llmValidation($datasetPrediction, $rulePrediction, $answers, $lmsFeature)
     {
         $prompt = "
-            Anda adalah model klasifikasi gaya belajar.
-            Konteks:
-            - Prediksi dataset: $datasetPrediction
-            - Prediksi rule (utama): $rulePrediction
+Anda adalah AI Decision Support System pembelajaran.
 
-            Jawaban user:
-            $answers
+DATA ANGKET (preferensi belajar siswa):
+$answers
 
-            Tolong balas HANYA JSON murni.
+RINGKASAN PERILAKU LMS (data dinamis):
+- Login: {$lmsFeature['login_frequency']}
+- Engagement: {$lmsFeature['engagement']}
+- Konsistensi Tugas: {$lmsFeature['assignment']}
+- Tren Kuis: {$lmsFeature['quiz_trend']}
 
-            Format:
-            {
-            \"label\": \"Visual/Auditori/Kinestetik\",
-            \"alasan\": \"...\",
-            \"rekomendasi\": \"...\"
-            }";
+TUGAS ANDA:
+1. Tentukan gaya belajar utama siswa (Visual/Auditori/Kinestetik)
+2. BUAT REKOMENDASI BELAJAR berdasarkan GAYA BELAJAR (ANGKET)
+3. BUAT ALASAN berdasarkan DATA LMS (bukan angket)
+
+ATURAN PENTING:
+- Rekomendasi HARUS berasal dari gaya belajar
+- Alasan HARUS menyebut kondisi LMS secara eksplisit
+- Jangan gunakan kalimat template
+
+Balas JSON MURNI:
+{
+  \"label\": \"...\",
+  \"alasan\": \"...\",
+  \"rekomendasi\": \"...\"
+}";
         $raw = GeminiService::predict($prompt);
         if (!$raw) return null;
 
@@ -275,24 +327,39 @@ class GayaBelajarController extends Controller
     /* =========================================================
      *   DETAIL ALASAN DAN REKOMENDASI
      * ========================================================= */
-    private function getDetail($label)
+    private function getDetailWithLms($label, $lmsFeature)
     {
-        $data = [
-            "Visual" => [
-                "alasan" => "Pengguna memahami informasi lebih baik melalui gambar, warna, diagram, dan visualisasi.",
-                "rekom"  => "Gunakan mind map, catatan berwarna, diagram alur, gambar, dan infografis."
-            ],
-            "Auditori" => [
-                "alasan" => "Pengguna memahami informasi lebih baik melalui pendengaran, penjelasan verbal, dan diskusi.",
-                "rekom"  => "Gunakan audio, diskusi, tanya jawab, podcast, dan penjelasan langsung."
-            ],
-            "Kinestetik" => [
-                "alasan" => "Pengguna belajar melalui aktivitas langsung, praktik fisik, dan pengalaman nyata.",
-                "rekom"  => "Gunakan simulasi, eksperimen, roleplay, demonstrasi, dan aktivitas fisik."
-            ]
-        ];
+        $alasan = "Berdasarkan hasil angket, siswa menunjukkan kecenderungan gaya belajar $label. Analisis data aktivitas LMS secara umum menunjukkan pola perilaku belajar yang relevan dengan kecenderungan tersebut. ";
 
-        return $data[$label] ?? ["alasan" => "-", "rekom" => "-"];
+        if ($lmsFeature['engagement'] === 'Passive') {
+            $alasan .= "Namun, tingkat keterlibatan belajar pada LMS masih rendah. ";
+        }
+
+        if ($lmsFeature['quiz_trend'] === 'Needs Improvement') {
+            $alasan .= "Hasil evaluasi menunjukkan perlunya penguatan konsep dasar. ";
+        }
+
+        $rekom = match ($label) {
+            'Visual' =>
+                "Gunakan video pembelajaran, diagram, dan infografis. ",
+            'Auditori' =>
+                "Gunakan diskusi, penjelasan verbal, dan audio pembelajaran. ",
+            'Kinestetik' =>
+                "Gunakan praktik langsung, simulasi, dan aktivitas hands-on. "
+        };
+
+        if ($lmsFeature['engagement'] === 'Passive') {
+            $rekom .= "Mulai dengan aktivitas singkat dan interaktif untuk meningkatkan keterlibatan. ";
+        }
+
+        if ($lmsFeature['quiz_trend'] === 'Needs Improvement') {
+            $rekom .= "Tambahkan latihan bertahap dan evaluasi formatif sebelum ujian. ";
+        }
+
+        return [
+            'alasan' => trim($alasan),
+            'rekom'  => trim($rekom)
+        ];
     }
 
     /* =========================================================
@@ -313,5 +380,30 @@ class GayaBelajarController extends Controller
 
         return redirect()->route('login')
             ->with('success', 'Gaya belajar berhasil ditentukan.');
+    }
+
+    private function buildLmsFeature($lms)
+    {
+        // Ambil pola global seluruh siswa
+        $avg = LmsLog::selectRaw('
+            AVG(login_count) as avg_login,
+            AVG(material_access) as avg_material,
+            AVG(assignment_submit) as avg_assignment,
+            AVG(quiz_score) as avg_quiz
+        ')->first();
+
+        return [
+            'login_frequency' =>
+                $lms->login_count >= $avg->avg_login ? 'High' : 'Low',
+
+            'engagement' =>
+                $lms->material_access >= $avg->avg_material ? 'Active' : 'Passive',
+
+            'assignment' =>
+                $lms->assignment_submit >= $avg->avg_assignment ? 'Consistent' : 'Inconsistent',
+
+            'quiz_trend' =>
+                $lms->quiz_score >= $avg->avg_quiz ? 'Good' : 'Needs Improvement'
+        ];
     }
 }

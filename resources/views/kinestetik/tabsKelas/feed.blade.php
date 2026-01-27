@@ -2,6 +2,7 @@
     $rataRataNilai = $rataRataNilai ?? 0;
     $rekomendasiAI = $rekomendasiAI ?? 'Belum ada rekomendasi saat ini.';
     $feedbackGuru  = $feedbackGuru ?? collect();
+    $alasanAI      = $alasanAI ?? session('alasan') ?? 'Alasan belum tersedia.';
 @endphp
 
 <div id="feedbackSection">
@@ -30,14 +31,30 @@
             </div>
         </div>
 
-        <!-- Rekomendasi AI -->
+        <!-- Rekomendasi AI + Alasan -->
         <div class="col-md-6" data-aos="fade-left" data-aos-delay="600">
-            <div class="p-3 rounded-4 bg-primary-soft shadow-sm">
-            <h6 class="fw-semibold text-primary text-center">Rekomendasi AI</h6>
-            <p class="small text-muted mb-0">
-                {{ $rekomendasiAI }}
+        <div class="p-3 rounded-4 bg-primary-soft shadow-sm">
+
+            <h6 class="fw-semibold text-primary text-center">
+            Rekomendasi AI
+            </h6>
+
+            <p class="small text-muted mb-3">
+            {{ $rekomendasiAI }}
+            </p>
+
+            <!-- ALASAN -->
+            <div class="p-3 rounded-3 bg-white border-start border-4 border-primary">
+            <h6 class="fw-semibold text-primary mb-2">
+                🧠 Alasan Penentuan
+            </h6>
+
+            <p class="small text-dark mb-0" style="line-height:1.6">
+                {{ $alasanAI }}
             </p>
             </div>
+
+        </div>
         </div>
 
         </div>
