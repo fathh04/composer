@@ -335,26 +335,6 @@ const bankSoal = {
   1:{
     audio:"/audio/soal1.wav",
     soal:[
-      {
-      q:"Dengarkan audio, lalu pilih jawaban yang benar.",
-      o:[
-        "Tag &lt;title&gt; diletakkan di dalam &lt;body&gt;",
-        "Tag &lt;title&gt; tidak diberi atribut",
-        "Tag &lt;title&gt; berada di luar &lt;html&gt;",
-        "Tag &lt;title&gt; tidak memiliki teks"
-      ],
-      k:0
-    },
-    {
-      q:"Perhatikan struktur berikut:<pre>&lt;html&gt;\n  &lt;body&gt;\n    &lt;head&gt;&lt;/head&gt;\n  &lt;/body&gt;\n&lt;/html&gt;</pre>Kesalahan utama dari struktur tersebut adalah …",
-      o:[
-        "&lt;head&gt; harus berada sebelum &lt;html&gt;",
-        "&lt;head&gt; tidak boleh kosong",
-        "&lt;head&gt; harus berada di dalam &lt;body&gt;",
-        "&lt;head&gt; harus berada di dalam &lt;html&gt; dan sebelum &lt;body&gt;"
-      ],
-      k:3
-    },
     {
       q:"Dengarkan audio, lalu pilih jawaban yang benar",
       o:[
@@ -476,32 +456,12 @@ const bankSoal = {
       k:2
     },
     {
-      q:"Dengarkan audio, lalu pilih jawaban yang benar",
-      o:[
-        "&lt;body&gt;&lt;html&gt;&lt;/html&gt;&lt;/body&gt;",
-        "&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;/body&gt;&lt;/html&gt;",
-        "&lt;head&gt;&lt;html&gt;&lt;body&gt;",
-        "&lt;body&gt;&lt;head&gt;&lt;/head&gt;&lt;/body&gt;"
-      ],
-      k:1
-    },
-    {
       q:"Evaluasi penggunaan &lt;strong&gt; berikut:<pre>&lt;strong&gt;Judul Artikel&lt;/strong&gt;</pre>Jika digunakan sebagai judul utama, perbaikan terbaik adalah …",
       o:[
         "Tetap menggunakan &lt;strong&gt;",
         "Mengganti dengan &lt;p&gt;",
         "Mengganti dengan &lt;h1&gt;",
         "Menambahkan &lt;br&gt;"
-      ],
-      k:2
-    },
-    {
-      q:"Dengarkan audio, lalu pilih jawaban yang benar",
-      o:[
-        "Menyimpan metadata",
-        "Menampilkan isi halaman",
-        "Membungkus seluruh elemen HTML",
-        "Menghubungkan halaman lain"
       ],
       k:2
     },
@@ -531,7 +491,7 @@ const bankSoal = {
   2:{
     audio:"/audio/soal2.wav",
     soal:[
-      {
+    {
         q:"Dengarkan audio, lalu pilih jawaban yang benar",
         o:[
             "rowspan=&quot;3&quot;",
@@ -550,16 +510,6 @@ const bankSoal = {
             "Mengatur tinggi sel"
         ],
         k:1
-    },
-    {
-        q:"Dengarkan audio, lalu pilih jawaban yang benar",
-        o:[
-            "Jumlah baris bertambah",
-            "Jumlah kolom berkurang menjadi 2",
-            "Sel tersebut mengisi dua kolom",
-            "Tabel menjadi tidak valid"
-        ],
-        k:2
     },
     {
         q:"Dengarkan audio, lalu pilih jawaban yang benar",
@@ -584,16 +534,6 @@ const bankSoal = {
     {
         q:"Dengarkan audio, lalu pilih jawaban yang benar",
         o:[
-            "Menggunakan &lt;td&gt;",
-            "Tidak menyesuaikan jumlah kolom atau baris lainnya",
-            "Tidak menambahkan &lt;table&gt;",
-            "Menggunakan &lt;tr&gt;"
-        ],
-        k:1
-    },
-    {
-        q:"Dengarkan audio, lalu pilih jawaban yang benar",
-        o:[
             "Menghapus &lt;table&gt;",
             "Mengecek jumlah &lt;tr&gt;",
             "Mengevaluasi keseimbangan kolom pada setiap baris",
@@ -608,16 +548,6 @@ const bankSoal = {
             "&lt;picture&gt;",
             "&lt;img&gt;",
             "&lt;src&gt;"
-        ],
-        k:2
-    },
-    {
-        q:"Dengarkan audio, lalu pilih jawaban yang benar",
-        o:[
-            "alt",
-            "title",
-            "src",
-            "width"
         ],
         k:2
     },
@@ -654,16 +584,6 @@ const bankSoal = {
     {
         q:"Dengarkan audio, lalu pilih jawaban yang benar",
         o:[
-            "&lt;movie&gt;",
-            "&lt;media&gt;",
-            "&lt;video&gt;",
-            "&lt;iframe&gt;"
-        ],
-        k:2
-    },
-    {
-        q:"Dengarkan audio, lalu pilih jawaban yang benar",
-        o:[
             "Menghapus video",
             "Menambahkan beberapa &lt;source&gt; dengan format berbeda",
             "Mengganti &lt;video&gt; menjadi &lt;img&gt;",
@@ -690,16 +610,6 @@ const bankSoal = {
             "Local link"
         ],
         k:2
-    },
-    {
-        q:"Dengarkan audio, lalu pilih jawaban yang benar",
-        o:[
-            "Menghubungkan ke website lain",
-            "Menghubungkan antar halaman dalam satu website",
-            "Menghubungkan ke email",
-            "Menghubungkan ke file video"
-        ],
-        k:1
     },
     {
         q:"Atribut <code>target=&quot;_blank&quot;</code> pada tag &lt;a&gt; berfungsi untuk …",
@@ -737,7 +647,7 @@ const bankSoal = {
   3:{
     audio:"/audio/soal3.wav",
     soal:[
-      {q:"Dengarkan audio, lalu pilih jawaban yang benar",
+    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
     o:[
         "Menampilkan data tabel",
         "Mengelompokkan elemen input untuk dikirim ke server",
@@ -759,16 +669,6 @@ const bankSoal = {
 
     {q:"Dengarkan audio, lalu pilih jawaban yang benar",
     o:["get","post","put","send"],
-    k:1
-    },
-
-    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
-    o:[
-        "&lt;textarea&gt;",
-        "&lt;input type=&quot;text&quot;&gt;",
-        "&lt;input type=&quot;email&quot;&gt;",
-        "&lt;label&gt;"
-    ],
     k:1
     },
 
@@ -812,26 +712,6 @@ const bankSoal = {
     k:1
     },
 
-    {q:"Perhatikan kode berikut:<pre>&lt;select&gt;\n  &lt;option&gt;HTML&lt;/option&gt;\n  &lt;option&gt;CSS&lt;/option&gt;\n&lt;/select&gt;</pre>Fungsi struktur tersebut adalah …",
-    o:[
-        "Menampilkan daftar pilihan dropdown",
-        "Menampilkan checkbox",
-        "Menampilkan radio button",
-        "Menampilkan tabel"
-    ],
-    k:0
-    },
-
-    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
-    o:[
-        "Radio button",
-        "Dropdown tanpa atribut tambahan",
-        "Checkbox",
-        "Text input"
-    ],
-    k:2
-    },
-
     {q:"Dengarkan audio, lalu pilih jawaban yang benar",
     o:["readonly","disabled","required","checked"],
     k:2
@@ -845,16 +725,6 @@ const bankSoal = {
         "Input otomatis terisi"
     ],
     k:1
-    },
-
-    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
-    o:[
-        "CSS",
-        "JavaScript saja",
-        "Server-side script (PHP, dll)",
-        "&lt;br&gt;"
-    ],
-    k:2
     },
 
     {q:"Dengarkan audio, lalu pilih jawaban yang benar",
@@ -883,16 +753,6 @@ const bankSoal = {
         "Data dikirim sesuai action dan method",
         "Browser ditutup",
         "CSS dijalankan"
-    ],
-    k:1
-    },
-
-    {q:"Dengarkan audio, lalu pilih jawaban yang benar",
-    o:[
-        "&lt;input type=&quot;reset&quot;&gt;",
-        "&lt;button type=&quot;submit&quot;&gt;",
-        "&lt;input type=&quot;button&quot;&gt;",
-        "&lt;label&gt;"
     ],
     k:1
     },

@@ -54,7 +54,7 @@ class TugasSubmissionController extends Controller
         $field = $request->hasFile('file_tugas') ? 'file_tugas' : 'pdf_file';
 
         $request->validate([
-            $field => 'required|mimes:pdf|max:2048'
+            $field => 'required|mimes:pdf|max:10240'
         ]);
 
         $userId = auth()->id();
@@ -127,6 +127,10 @@ class TugasSubmissionController extends Controller
             ->latest()
             ->first();
 
+        $tugasPdf = TugasGuru::where('pengguna_id', $id)
+            ->latest()
+            ->first();
+
         $kuis = KuisResult::where('pengguna_id', $id)
             ->orderBy('posttest')
             ->get()
@@ -150,8 +154,8 @@ class TugasSubmissionController extends Controller
 
             'html_code' => $submission ? $submission->html_code : 'Belum ada submission.',
 
-            'pdf_file' => $submission && $submission->pdf_file
-                ? asset('storage/' . $submission->pdf_file)
+            'pdf_file' => $tugasPdf && $tugasPdf->pdf_file
+                ? asset('storage/' . $tugasPdf->pdf_file)
                 : null,
 
             'quiz' => [

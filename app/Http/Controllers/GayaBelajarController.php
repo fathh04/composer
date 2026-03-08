@@ -20,18 +20,44 @@ class GayaBelajarController extends Controller
             'user_email' => 'required|email'
         ]);
 
-        /* ------------------------------------------------------
-         * Ambil user
-         * ------------------------------------------------------ */
+        /* ================================
+        * 1. Ambil user
+        * ================================ */
         $user = pengguna::where('email', $request->user_email)->first();
         if (!$user) {
             return back()->with('error', 'Akun tidak ditemukan.');
         }
 
-        /* ------------------------------------------------------
-        * Ambil LOG LMS (synthetic / real)
-        * ------------------------------------------------------ */
-        // $lms = LmsLog::where('user_id', $user->id)->first(); //Aktifkan jika pakai data persiswa
+        /* ================================
+        * 2. SKORING ANGKET (MODEL UTAMA)
+        * ================================ */
+        $score = ['visual'=>0,'auditori'=>0,'kinestetik'=>0];
+
+        foreach ($request->answers as $ans) {
+            $a = strtolower($ans);
+
+            if (str_contains($a, 'gambar') || str_contains($a, 'melihat') || str_contains($a, 'catatan')) {
+                $score['visual']++;
+            }
+            elseif (str_contains($a, 'mendengar') || str_contains($a, 'diskusi') || str_contains($a, 'penjelasan')) {
+                $score['auditori']++;
+            }
+            elseif (
+                str_contains($a, 'gerak') ||
+                str_contains($a, 'praktik') ||
+                str_contains($a, 'game') ||
+                str_contains($a, 'simulasi')
+            ) {
+                $score['kinestetik']++;
+            }
+        }
+
+        arsort($score);
+        $label = ucfirst(array_key_first($score));
+
+        /* ================================
+        * 3. Ambil & olah LMS
+        * ================================ */
         $lms = LmsLog::selectRaw('
             AVG(login_count) as login_count,
             AVG(avg_session_time) as avg_session_time,
@@ -41,112 +67,44 @@ class GayaBelajarController extends Controller
             AVG(quiz_score) as quiz_score
         ')->first();
 
-        /* Fallback jika belum ada log (synthetic default) */
         if (!$lms) {
             $lms = (object)[
-                'login_count' => rand(5,15),
-                'avg_session_time' => rand(10,40),
-                'material_access' => rand(5,20),
-                'forum_activity' => rand(0,10),
-                'assignment_submit' => rand(1,5),
-                'quiz_score' => rand(60,90)
+                'login_count'=>10,
+                'material_access'=>10,
+                'assignment_submit'=>3,
+                'quiz_score'=>75
             ];
         }
 
-        /* ================================
-        * BUILD FEATURE LMS  <<< TAMBAHKAN DI SINI
-        * ================================ */
         $lmsFeature = $this->buildLmsFeature($lms);
 
-        /* ------------------------------------------------------
-         * Menggabungkan jawaban user
-         * ------------------------------------------------------ */
-        $answers = strtolower(implode(' ', $request->answers));
-
-        /* ------------------------------------------------------
-         * 1) Embedding user
-         * ------------------------------------------------------ */
-        $userEmbedding = GeminiService::embedding($answers);
-
-        if (!$userEmbedding) {
-            $label = ucfirst($this->hardRule($answers));
-            $detail = $this->getDetailWithLms($label, $lmsFeature);
-            return $this->finalize($user, $label, $detail['alasan'], $detail['rekom']);
-        }
-
-        /* ------------------------------------------------------
-         * 2) Load dataset + embedding dataset (AKTIFKAN KEMBALI APABILA DATASET SUDAH ADA)
-         * ------------------------------------------------------ */
-        // $datasetRows = $this->loadDataset();
-        // $datasetEmbedding = $this->loadOrCreateDatasetEmbedding($datasetRows);
-
-        /* ------------------------------------------------------
-         * 3) Prediksi similarity (AKTIKAN KEMBALI APABILA DATASET SUDAH ADA)
-         * ------------------------------------------------------ */
-        // $datasetPrediction = $this->predictFromSimilarity($userEmbedding, $datasetEmbedding);
-
-        /* ------------------------------------------------------
-         * Kode Sementara ketika dataset nonAktif (NonAktifkan KEMBALI APABILA DATASET SUDAH ADA)
-         * ------------------------------------------------------ */
-        $datasetPrediction = count($this->loadDataset()) >= 20
-            ? $this->predictFromSimilarity($userEmbedding, $this->loadOrCreateDatasetEmbedding($this->loadDataset()))
-            : null;
-
-        /* ------------------------------------------------------
-         * 4) Hard-rule
-         * ------------------------------------------------------ */
-        $rulePrediction = $this->hardRule($answers);
-
-        /* ------------------------------------------------------
-         * 5) Validasi LLM
-         * ------------------------------------------------------ */
+        /* ================================
+        * 4. LLM = VALIDASI & NARASI
+        * ================================ */
         $llm = $this->llmValidation(
-            $datasetPrediction,
-            $rulePrediction,
-            $answers,
+            $label,
+            $request->answers,
             $lmsFeature
         );
 
-        // AKTIFKAN KEMBALI APABILA DATASET SUDAH ADA
-        // if ($llm) {
-        //     $label = ucfirst(strtolower($llm['label']));
-        //     if (in_array($label, ['Visual','Auditori','Kinestetik'])) {
-        //         return $this->finalize($user, $label, $llm['alasan'], $llm['rekomendasi']);
-        //     }
-        // }
-
-        // nonAktifkan ketika dataset sudah ada
-        if ($llm && isset($llm['label'])) {
+        if ($llm && isset($llm['alasan'])) {
             return $this->finalize(
                 $user,
-                ucfirst($llm['label']),
-                $llm['alasan'] ?? 'Analisis berbasis LMS menunjukkan pola keterlibatan tertentu.',
-                $llm['rekomendasi'] ?? 'Gunakan strategi pembelajaran sesuai gaya belajar.'
+                $label,
+                $llm['alasan'],
+                $llm['rekomendasi']
             );
         }
 
-        /* ------------------------------------------------------
-         * 6) Fallback Akhir
-         * ------------------------------------------------------ */
-        // AKTIFKAN KEMBALI KETIKA DATASET SUDAH ADA
-        // if ($datasetPrediction === $rulePrediction) {
-        //     $label = ucfirst($datasetPrediction);
-        // } else {
-        //     $label = ucfirst($datasetPrediction);
-        // }
-
-        // $detail = $this->getDetail($label);
-
-        // return $this->finalize($user, $label, $detail['alasan'], $detail['rekom']);
-
-        //Nonaktifkan ketika dataset sudah ada
-        $label = ucfirst($datasetPrediction ?? $rulePrediction);
+        /* ================================
+        * 5. FALLBACK AMAN
+        * ================================ */
         $detail = $this->getDetailWithLms($label, $lmsFeature);
 
         return $this->finalize(
             $user,
             $label,
-            "[Fallback Sistem] ".$detail['alasan'],
+            $detail['alasan'],
             $detail['rekom']
         );
     }
@@ -274,43 +232,41 @@ class GayaBelajarController extends Controller
     /* =========================================================
     *   LLM VALIDATION (ANGKET + LMS)
     * ========================================================= */
-    private function llmValidation($datasetPrediction, $rulePrediction, $answers, $lmsFeature)
+    private function llmValidation($label, $answers, $lmsFeature)
     {
+        $answerText = implode(' | ', $answers);
+
         $prompt = "
-Anda adalah AI Decision Support System pembelajaran.
+    Anda adalah AI pendukung keputusan pembelajaran.
 
-DATA ANGKET (preferensi belajar siswa):
-$answers
+    GAYA BELAJAR (SUDAH DITENTUKAN DARI ANGKET):
+    $label
 
-RINGKASAN PERILAKU LMS (data dinamis):
-- Login: {$lmsFeature['login_frequency']}
-- Engagement: {$lmsFeature['engagement']}
-- Konsistensi Tugas: {$lmsFeature['assignment']}
-- Tren Kuis: {$lmsFeature['quiz_trend']}
+    DATA ANGKET:
+    $answerText
 
-TUGAS ANDA:
-1. Tentukan gaya belajar utama siswa (Visual/Auditori/Kinestetik)
-2. BUAT REKOMENDASI BELAJAR berdasarkan GAYA BELAJAR (ANGKET)
-3. BUAT ALASAN berdasarkan DATA LMS (bukan angket)
+    DATA PERILAKU LMS:
+    - Login: {$lmsFeature['login_frequency']}
+    - Engagement: {$lmsFeature['engagement']}
+    - Tugas: {$lmsFeature['assignment']}
+    - Durasi Belajar: {$lmsFeature['session_duration']}
+    - Aktivitas Forum: {$lmsFeature['forum_participation']}
+    - Kuis: {$lmsFeature['quiz_trend']}
 
-ATURAN PENTING:
-- Rekomendasi HARUS berasal dari gaya belajar
-- Alasan HARUS menyebut kondisi LMS secara eksplisit
-- Jangan gunakan kalimat template
+    TUGAS:
+    1. Jelaskan ALASAN berbasis LMS (bukan angket)
+    2. Buat REKOMENDASI belajar sesuai gaya $label
 
-Balas JSON MURNI:
-{
-  \"label\": \"...\",
-  \"alasan\": \"...\",
-  \"rekomendasi\": \"...\"
-}";
+    Balas JSON:
+    {
+    \"alasan\": \"...\",
+    \"rekomendasi\": \"...\"
+    }";
+
         $raw = GeminiService::predict($prompt);
         if (!$raw) return null;
 
-        $clean = $this->extractJson($raw);
-        $json = json_decode($clean, true);
-
-        return $json ?: null;
+        return json_decode($this->extractJson($raw), true);
     }
 
     /* =========================================================
@@ -329,7 +285,11 @@ Balas JSON MURNI:
      * ========================================================= */
     private function getDetailWithLms($label, $lmsFeature)
     {
-        $alasan = "Berdasarkan hasil angket, siswa menunjukkan kecenderungan gaya belajar $label. Analisis data aktivitas LMS secara umum menunjukkan pola perilaku belajar yang relevan dengan kecenderungan tersebut. ";
+        $alasan = "Hasil angket menunjukkan kecenderungan gaya belajar $label. ";
+
+        $alasan .= "Berdasarkan data LMS, frekuensi login tergolong {$lmsFeature['login_frequency']}, ";
+        $alasan .= "tingkat keterlibatan belajar {$lmsFeature['engagement']}, ";
+        $alasan .= "dan performa kuis {$lmsFeature['quiz_trend']}. ";
 
         if ($lmsFeature['engagement'] === 'Passive') {
             $alasan .= "Namun, tingkat keterlibatan belajar pada LMS masih rendah. ";
@@ -339,14 +299,29 @@ Balas JSON MURNI:
             $alasan .= "Hasil evaluasi menunjukkan perlunya penguatan konsep dasar. ";
         }
 
-        $rekom = match ($label) {
-            'Visual' =>
-                "Gunakan video pembelajaran, diagram, dan infografis. ",
-            'Auditori' =>
-                "Gunakan diskusi, penjelasan verbal, dan audio pembelajaran. ",
-            'Kinestetik' =>
-                "Gunakan praktik langsung, simulasi, dan aktivitas hands-on. "
-        };
+        $rekom = '';
+
+        if ($label === 'Visual') {
+            if ($lmsFeature['quiz_trend'] === 'Needs Improvement') {
+                $rekom = "Gunakan video pendek dan infografis ringkas disertai latihan visual bertahap. ";
+            } else {
+                $rekom = "Gunakan video pembelajaran, diagram, dan infografis. ";
+            }
+        }
+        elseif ($label === 'Auditori') {
+            if ($lmsFeature['engagement'] === 'Passive') {
+                $rekom = "Gunakan diskusi singkat dan penjelasan audio berdurasi pendek. ";
+            } else {
+                $rekom = "Gunakan diskusi, penjelasan verbal, dan audio pembelajaran. ";
+            }
+        }
+        elseif ($label === 'Kinestetik') {
+            if ($lmsFeature['assignment'] === 'Inconsistent') {
+                $rekom = "Gunakan praktik langsung dengan tugas kecil dan terstruktur. ";
+            } else {
+                $rekom = "Gunakan praktik langsung, simulasi, dan aktivitas hands-on. ";
+            }
+        }
 
         if ($lmsFeature['engagement'] === 'Passive') {
             $rekom .= "Mulai dengan aktivitas singkat dan interaktif untuk meningkatkan keterlibatan. ";
@@ -387,7 +362,9 @@ Balas JSON MURNI:
         // Ambil pola global seluruh siswa
         $avg = LmsLog::selectRaw('
             AVG(login_count) as avg_login,
+            AVG(avg_session_time) as avg_session_time,
             AVG(material_access) as avg_material,
+            AVG(forum_activity) as avg_forum,
             AVG(assignment_submit) as avg_assignment,
             AVG(quiz_score) as avg_quiz
         ')->first();
@@ -401,6 +378,12 @@ Balas JSON MURNI:
 
             'assignment' =>
                 $lms->assignment_submit >= $avg->avg_assignment ? 'Consistent' : 'Inconsistent',
+
+            'session_duration' =>
+                $lms->avg_session_time >= $avg->avg_session_time ? 'Long' : 'Short',
+
+            'forum_participation' =>
+                $lms->forum_activity >= $avg->avg_forum ? 'Active' : 'Passive',
 
             'quiz_trend' =>
                 $lms->quiz_score >= $avg->avg_quiz ? 'Good' : 'Needs Improvement'

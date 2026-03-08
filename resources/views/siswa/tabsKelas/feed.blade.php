@@ -2,7 +2,7 @@
     $rataRataNilai = $rataRataNilai ?? 0;
     $rekomendasiAI = $rekomendasiAI ?? 'Belum ada rekomendasi saat ini.';
     $feedbackGuru  = $feedbackGuru ?? collect();
-    $alasanAI      = $alasanAI ?? session('alasan') ?? 'Alasan belum tersedia.';
+    $alasanAI = $alasanAI ?? 'Alasan belum tersedia.';
 @endphp
 <!-- ======================= -->
 <!-- UMPAN BALIK BELAJAR     -->

@@ -80,10 +80,15 @@ class KelasController extends Controller
                 view()->share('rataRataNilai', $rataRataNilai);
 
                 /* ============================================
-                *  REKOMENDASI AI
+                *  REKOMENDASI & ALASAN AI
                 * ============================================ */
                 $rekomendasiAI = $user->rekomendasi ?? 'Belum ada rekomendasi';
-                view()->share('rekomendasiAI', $rekomendasiAI);
+                $alasanAI      = $user->alasan ?? 'Alasan belum tersedia.';
+
+                view()->share([
+                    'rekomendasiAI' => $rekomendasiAI,
+                    'alasanAI'      => $alasanAI,
+                ]);
 
                 /* ============================================
                 *  JUMLAH KELAS DIMILIKI GURU
