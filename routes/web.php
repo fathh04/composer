@@ -32,6 +32,7 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('proseslogin');
 Route::get('/signup', [AuthController::class, 'showSignUpForm'])->name('signup');
 Route::post('/signup', [AuthController::class, 'register'])->name('prosesdaftar');
+Route::post('/reset-password',[AuthController::class,'resetPassword'])->name('reset.password');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

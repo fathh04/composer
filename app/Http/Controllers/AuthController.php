@@ -161,4 +161,33 @@ class AuthController extends Controller
         return redirect()->route('login')
             ->with('success', 'Akun berhasil dihapus.');
     }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'new_password' => 'required|min:8|confirmed'
+        ],[
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Format email tidak valid',
+            'new_password.required' => 'Password wajib diisi',
+            'new_password.min' => 'Password minimal 8 karakter',
+            'new_password.confirmed' => 'Konfirmasi password tidak sama'
+        ]);
+
+        $user = pengguna::where('email',$request->email)->first();
+
+        if(!$user){
+            return back()
+            ->withInput()
+            ->withErrors([
+                'email_reset'=>'Email tidak terdaftar'
+            ]);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return back()->with('success','Password baru berhasil dibuat');
+    }
 }
