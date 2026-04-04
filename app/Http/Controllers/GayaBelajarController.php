@@ -110,7 +110,7 @@ class GayaBelajarController extends Controller
     }
 
     /* =========================================================
-     *   DATASET LOADER
+     *   DATASET LOADER [Tidak Dipakai]
      * ========================================================= */
     private function loadDataset()
     {
@@ -138,7 +138,7 @@ class GayaBelajarController extends Controller
     }
 
     /* =========================================================
-     *   LOAD / BUILD EMBEDDING DATASET
+     *   LOAD / BUILD EMBEDDING DATASET [Tidak Dipakai]
      * ========================================================= */
     private function loadOrCreateDatasetEmbedding($datasetRows)
     {
@@ -168,7 +168,7 @@ class GayaBelajarController extends Controller
     }
 
     /* =========================================================
-     *   SIMILARITY
+     *   SIMILARITY [Tidak Dipakai]
      * ========================================================= */
     private function predictFromSimilarity($userVec, $dataset)
     {
@@ -184,7 +184,7 @@ class GayaBelajarController extends Controller
     }
 
     /* =========================================================
-     *   HARD RULE
+     *   HARD RULE [Tidak Dipakai]
      * ========================================================= */
     private function hardRule($answers)
     {
@@ -212,7 +212,7 @@ class GayaBelajarController extends Controller
     }
 
     /* =========================================================
-     *   COSINE SIMILARITY
+     *   COSINE SIMILARITY [Tidak Dipakai]
      * ========================================================= */
     private function cosineSimilarity($a, $b)
     {
